@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>管理员注册</title>
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+    <link type="text/css"  rel="stylesheet" href="../static/css/font.css">
+	<link type="text/css" rel="stylesheet" href="../static/css/weadmin.css">
+    <script type="text/javascript" src="../lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../lib/jquery-3.2.1.min.js" charset="utf-8"></script>
+
+
+</head>
+<body class="login-bg">
+    
+    <div class="login">
+        <div class="message">Bug统计考量脚本-注册</div>
+        <div id="darkbannerwrap"></div>
+        
+        <form method="post" class="layui-form">
+            <input name="username" placeholder="用户名"  type="text" lay-verify="username" class="layui-input" >
+            <hr class="hr15">
+            <input name="password" lay-verify="password" placeholder="密码"  type="password" class="layui-input">
+            <hr class="hr15">
+            <input class="loginin" value="注册" lay-submit lay-filter="login" style="width:100%;" type="submit">
+            <hr class="hr20" >
+            <!--<div hidden>  -->
+            <div>
+                 <a href="/loginView" target="_blank">已有账号，去登录</a>
+            </div>
+
+        </form>
+    </div>
+
+<!-- 定义表单相关校验 -->
+<script type="text/javascript">
+    //<!--定义layer-->
+    layui.extend({
+				admin: '{/}./static/js/admin'
+			});
+    layui.use('form', function () {
+        var form = layui.form;
+
+          //自定义验证规则
+          form.verify({
+            username: function(value){
+              if(value.length < 6){
+                return '用户名至少得6个字符啊';
+              }
+              if(value.length > 12){
+                return '用户名不能超过12个字符啊';
+              }
+            }
+            ,password: [
+              /^[\S]{6,12}$/
+              ,'密码必须6到12位，且不能出现空格'
+            ]
+
+          });
+
+          //监听提交
+              form.on('submit(login)', function(data){
+                // alert(888)
+                /*
+                  console.log(data.elem) //被执行事件的元素DOM对象，一般为button对象
+                  console.log(data.form) //被执行提交的form对象，一般在存在form标签时才会返回
+                  console.log(data.field) //当前容器的全部表单字段，名值对形式：{name: value}
+                  return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+                */
+
+                //layer.msg(JSON.stringify(data.field),function(){
+                    //location.href='./index.html'
+                //});
+
+                //打印表单内容
+                dataFiled = data.field;
+                console.log("form-username == " + dataFiled.username);
+                console.log("form-password == " + dataFiled.password);
+
+                //请求后台数据
+                $.ajax({
+                    type: "post", //请求方法
+                    url: "/register", //请求地址
+                    data: {"username":dataFiled.username, "password":dataFiled.password},
+                    datatype: "json",
+                    success:function(datas){
+
+                        console.log(typeof(datas)); //返回的json是str
+                        console.log("发送注册请求成功，返回内容如下：");
+                        //转成json
+                        datasJson = $.parseJSON(datas)
+                        console.log("返回结果" + datas);
+                        console.log(datasJson.code);
+
+                        returnCode = datasJson.code
+                        returnMsg = datasJson.msg
+                        console.log("msg--type==" + typeof(returnMsg))
+                        returnCount = datasJson.count
+                        returnData = datasJson.data
+                        //判断跳转
+                        if(returnCode == 500 && returnMsg == "此用户已存在" ){ //== 字符串
+                            console.log("此用户已存在");
+                            layer.msg("此用户已存在")
+
+                        }
+                        if(returnCode == 200){
+                            console.log("注册成功，跳转到登录界面");
+                            location.href='loginView';
+                        }
+
+                    },
+                    error:function(){
+                        console.log("前台点击注册，发送请求失败");
+                    }
+                });
+
+                return false;
+              });
+
+    });
+
+</script>
+</body>
+</html>

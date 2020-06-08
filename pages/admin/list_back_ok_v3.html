@@ -1,0 +1,223 @@
+<!--
+批量删除不行，暂时先不做了，
+单个删除可以，但是复选框和个数没有删除，测试使用，官方的方法进行删除。
+-->
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>管理员列表-WeAdmin Frame型后台管理系统-WeAdmin 1.0</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<link rel="stylesheet" href="../../static/css/font.css">
+		<link rel="stylesheet" href="../../static/css/weadmin.css">
+		<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+		<!--[if lt IE 9]>
+	      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+	      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+	    <![endif]-->
+
+        <script src="../../lib/layui/layui.js" charset="utf-8"></script>
+    	<script src="../../static/js/eleDel.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+
+	<body>
+		<div class="weadmin-nav">
+			<span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">管理员管理</a>
+        <a>
+          <cite>管理员列表</cite></a>
+            </span>
+        <a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+				<i class="layui-icon" style="line-height:30px">ဂ</i></a>
+		</div>
+
+        <div class="weadmin-body">
+            <!--  头部工具栏-->
+            <div class="layui-btn-container" id="toolbarId" hidden>
+            <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+            <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+            <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+            <button class="layui-btn layui-btn-sm" onclick="WeAdminShow('添加用户','./add.html')"><i class="layui-icon"></i>添加</button>
+            <button class="layui-btn layui-btn-sm  layui-btn-danger" onclick="delAll()">批量删除</button>
+            <span style="float: right">数据库共有数据：88 条</span>
+            </div>
+
+            <div id="rowBar" hidden>
+                <!--
+            <a class="layui-btn layui-btn-xs" lay-event="rowSubmit">单行编辑提交</a>
+            <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            -->
+                <a class="layui-btn layui-btn-xs" lay-event="rowSubmit" onclick="member_stop(this,'10001')" href="javascript:;" title="单行编辑提交">单行编辑提交</a>
+                <a title="编辑" onclick="WeAdminShow('编辑','./edit.html')" href="javascript:;"><i class="layui-icon">&#xe642;</i></a>
+                <a title="删除" onclick="member_del(this,'要删除的id')" href="javascript:;"><i class="layui-icon">&#xe640;</i></a>
+            </div>
+
+            <!--  表格搜索框-->
+            <div class="demoTable">
+
+                  <div class="layui-input-inline">
+                    <input type="text" class="layui-input" id="startTime" placeholder="开始时间：yyyy-MM-dd">
+                  </div>
+                  <div class="layui-input-inline">
+                    <input type="text" class="layui-input" id="endTime" placeholder="结束时间：yyyy-MM-dd">
+                  </div>
+
+                  <div class="layui-inline">
+                    <input class="layui-input" name="id" id="tableReloadBtn" autocomplete="off" placeholder=" 搜索ID">
+                  </div>
+                  <button class="layui-btn" data-type="reload">搜索 <i class="layui-icon">&#xe615;</i></button>
+            </div>
+            <table class="layui-hide" id="tableUsers" lay-filter="tableUsers"></table>
+
+        </div>
+        <!--  body - end-->
+
+        <!--  请求urlt  == ../../json/test_1.json-->
+        <!--  渲染table estart-->
+             <script>
+                layui.use('table', function(){
+                  var table = layui.table;
+
+                  <!-- ,url: '/demo/table/user/???' -->
+                  //方法级渲染
+                  table.render({
+                    elem: '#tableUsers' //指向table的id
+                    ,toolbar: '#toolbarId' //开启头部工具栏，并为其绑定左侧模板
+                    //,url: '../../json/test.json' //render只需要json data里的数据，所以只返回data就行
+                    ,url: '/getUserList' //render只需要json data里的数据，所以只返回data就行
+                    //,data: [] //数据前段直接处理数组，分页生效， data和url不能公用
+                    //method: 'post' //如果无需自定义HTTP类型，可不加该参数
+                    //where: {page: 1, limit: 10} // 如果无需传递额外参数，可不加该参数 page=第几页，limit=当页显示个数
+                    ,loading: true //是否显示加载条（默认：true）
+                    ,response: {
+                        statusCode: 200
+                      }
+                    ,cols: [[
+                      {type:'numbers',fixed: 'left' }//, fixed: true
+                      ,{checkbox: true, fixed: true}  //{type: 'checkbox'}
+                      ,{field:'userid', title: 'userid', sort: true, width: '8%'}
+                      ,{field:'username', title: '用户名'}
+                      ,{field:'password', title: '密码', sort: true}
+                      ,{field:'user_remark', title: '用户备注'}
+                      ,{field:'user_email', title: '邮箱' }
+                      ,{field:'user_level', title: '用户等级', sort:true}
+                      ,{field:'create_time', title: '创建时间', sort: true}
+                      ,{field:'session', title: '用户缓存', sort: true}
+                      ,{title:'操作', toolbar: '#rowBar', width: '15%'}
+                    ]]
+                    ,id: 'tableRenderReloadId' //给渲染制定一个id,共其他监听调用
+                    ,page: true
+                    //,limit: 10     // 每页显示的条数（默认：10）,url请求方式此条没用
+                    ,limits: [1,10,15,20,25,30,100,200,500,1000]  //每页条数的选择项，默认：[10,20,30,40,50,60,70,80,90]
+                    ,height: 'full-140'
+                  });
+                  //ddd这是一个特定的语法格式，其中 full 是固定的，而 差值 则是一个数值，这需要你来预估，比如：表格容器距离浏览器顶部和底部的距离“和”'full-20'
+
+                  var $ = layui.$, active = {
+                    reload: function(){
+                      var tableReloadBtn = $('#tableReloadBtn'); //指向按钮的id
+
+
+                      //执行重载
+                      table.reload('tableRenderReloadId1', { //指向render 自定义的id
+                        page: {
+                          curr: 1 //重新从第 1 页开始
+                        }
+                        ,where: {
+                          key: {
+                            id: tableReloadBtn.val() //指向按钮的id
+                          }
+                        }
+                      }, 'data');
+                    }
+                  };
+
+                  //管所有btn按钮的
+                  $('.demoTable .layui-btn').on('click', function(){ //指向table的class
+                    var type = $(this).data('type');
+                    active[type] ? active[type].call(this) : '';
+                  });
+                });
+                </script>
+    <!--x渲染日历 -->
+        <script>
+            layui.use('laydate', function () {
+                var laydate = layui.laydate;
+                laydate.render({
+                    elem: '#startTime'
+                })
+                laydate.render({
+                    elem: '#endTime'
+                })
+
+            })
+
+        </script>
+
+    <!-- 行按钮相关-->
+    <script>
+        /*
+ * @Author: https://github.com/WangEn
+ * @Author: https://gitee.com/lovetime/
+ * @Date:   2018-03-27
+ * @lastModify 2018-3-28
+ * +----------------------------------------------------------------------
+ * | WeAdmin 表格table中多个删除等操作公用js
+ * | 有改用时直接复制到对应页面也不影响使用
+ * +----------------------------------------------------------------------
+ */
+        /*
+layui.extend({
+	admin: '{/}../../static/js/admin'
+});
+
+         */
+layui.use(['laydate', 'jquery', 'admin'], function() {
+	var laydate = layui.laydate;
+	var	$ = layui.jquery;
+	var	admin = layui.admin;
+	//执行一个laydate实例
+	laydate.render({
+		elem: '#start' //指定元素
+	});
+	//执行一个laydate实例
+	laydate.render({
+		elem: '#end' //指定元素
+	});
+	
+
+	/*用户-删除*/
+	window.member_del = function (obj, id) {
+		layer.confirm('确认要删除吗？', function(index) {
+			//发异步删除数据
+			$(obj).parents("tr").remove();
+			layer.msg('已删除!', {
+				icon: 1,
+				time: 1000
+			});
+		});
+	};
+
+	window.delAll = function (argument) {
+		var data = tableCheck.getData();
+		layer.confirm('确认要删除吗？' + data, function(index) {
+			//捉到所有被选中的，发异步进行删除
+			layer.msg('删除成功', {
+				icon: 1
+			});
+			$(".layui-form-checked").not('.header').parents('tr').remove();
+		});
+	}
+
+});
+    </script>
+
+
+	</body>
+
+</html>

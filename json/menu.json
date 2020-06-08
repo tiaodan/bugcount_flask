@@ -1,0 +1,42 @@
+{
+	"status": 0,
+	"msg": "ok",
+	"data": [
+		{
+			"id": 11,
+			"name": "bug管理",
+			"icon": "&#xe723;",
+			"url": "",
+			"children": [{
+				"id": 12,
+				"name": "bug列表",
+				"icon": "",
+				"url": "./pages/buglist/list.html"
+			}]
+		},
+		{
+			"id": 13,
+			"name": "管理员权限",
+			"icon": "&#xe726;",
+			"url": "",
+			"children": [{
+				"id": 14,
+				"name": "管理员列表",
+				"icon": "",
+				"url": "./pages/admin/list.html"
+			}]
+		},
+		{
+			"id": 18,
+			"name": "系统统计",
+			"icon": "&#xe6ce;",
+			"url": "",
+			"children": [{
+				"id": 19,
+				"name": "bug统计图",
+				"icon": "",
+				"url": "./pages/echarts/echarts1.html"
+			}]
+		}
+	]
+}

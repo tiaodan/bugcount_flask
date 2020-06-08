@@ -1,0 +1,316 @@
+////////////json数据格式
+{
+  "code": 0,
+  "msg": "",
+  "count": 15,
+  "data": [
+    {
+      "usersId": "1",
+      "userName": "user12",
+      "userEmail": "123@qq.com",
+      "userSex": "女",
+      "userStatus": "0",
+      "userGrade": "倔强青铜",
+      "userEndTime": "2018-11-11 15:22:33"
+    },{
+      "usersId": "2",
+      "userName": "asd",
+      "userEmail": "123@qq.com",
+      "userSex": "男",
+      "userStatus": "1",
+      "userGrade": "秩序白银",
+      "userEndTime": "2018-11-11 15:22:33"
+    },
+    ......
+  ]
+}
+
+
+{
+	"code": 0,
+	"msg": "",
+	"count": 15,
+	"data": [
+	  {
+			"usersId": "1",
+			"userName": "user12",
+			"userEmail": "123@qq.com",
+			"userSex": "女",
+			"userStatus": "0",
+			"userGrade": "倔强青铜",
+			"userEndTime": "2018-11-11 15:22:33"
+	  },
+	  {
+			"usersId": "2",
+			"userName": "asd",
+			"userEmail": "123@qq.com",
+			"userSex": "男",
+			"userStatus": "1",
+			"userGrade": "秩序白银",
+			"userEndTime": "2018-11-11 15:22:33"
+	  }
+
+	]
+}
+    """
+$.ajax({
+                    url:"/getUserList",
+                    type:"post",
+                    data:{"name":"李四","score":"99"},
+                    datatype:"json",
+                    success:function (d) {
+                        $("h1").html("武汉感染人数" + d)
+                    },error:function () {
+                        alert("发送ajaxx失败")
+                    }
+                })
+
+                 $("button[id='getUserList']").click(function (){
+                console.log('前台点击了按钮');
+                $.post('/getUserList');
+
+              })
+
+//监听按钮点击事件
+form.on('submit(register)', function(data){
+                // alert(888)
+                  /*
+                layer.msg(JSON.stringify(data.field),function(){
+                    //location.href='./index.html'
+                });
+                */
+                layer.msg(data)
+                //return false;
+              });
+
+
+#ajax监听事件
+$.ajax({
+    type: "post", //请求方法
+    url: "/目标路由", //请求地址
+    data: {"k1":"v1", "k2","v2"},
+    datatype: "json",
+    success:function(datas){
+
+    },error:function(){
+
+    }
+});
+
+   /*
+                $.ajax({
+                    type: "post", //请求方法
+                    url: "/register", //请求地址
+                    data: {"username":dataFiled.username, "password":dataFiled.password},
+                    success:function(datas){
+                        console.log("success");
+                    },error:function(){
+                        console.log("fail");
+                    }
+                });*/
+
+         ////////html界面中判断能否继续登陆
+layui.use(['jquery', 'admin', 'menu'], function(){
+				var $ = layui.jquery,
+					admin = layui.admin,
+					menu = layui.menu;
+				$(function(){
+					menu.getMenu('./json/menu.json');
+					var login = JSON.parse(localStorage.getItem("login"));
+					if(login){
+						if(login===0){
+							window.location.href='pages/login.html';
+							return false;
+						}else{
+							return false;
+						}
+					}else{
+						window.location.href='pages/login.html';
+						return false;
+					}
+				});
+			});
+//  下拉框
+                    <div class="layui-input-inline">
+						<select name="contrller">
+							<option>支付方式</option>
+							<option>支付宝</option>
+							<option>微信</option>
+							<option>货到付款</option>
+						</select>
+					</div>
+			//输入框
+<div class="layui-form-item layui-form-text">
+			<label for="desc" class="layui-form-label">描述</label>
+			<div class="layui-input-block">
+				<textarea placeholder="请输入内容" id="desc" name="desc" class="layui-textarea"></textarea>
+			</div>
+		</div>
+
+  <!-- 自定义表头高度 -->
+        <style type="text/css">
+             th {
+              height: 200px;
+              line-height: 30px;
+}
+        </style>
+
+
+        /////////////// buglist 请求后台数据
+        //请求后台数据
+        //请求后台数据
+                            $.ajax({
+                                type: "post", //请求方法
+                                url: "/editBug1", //请求地址
+                                //data: {"bugid":bugid, "bug_submit_date":bug_submit_date},
+                                datatype: "json",
+                                success:function(datas){
+
+                                    console.log(typeof(datas)); //返回的json是str
+                                    console.log("发送编辑 bug 请求成功，返回内容如下：");
+                                    //转成json
+                                    datasJson = $.parseJSON(datas)
+                                    console.log("返回结果" + datas);
+                                    console.log(datasJson.code);
+
+                                    returnCode = datasJson.code
+                                    returnMsg = datasJson.msg
+                                    console.log("msg--type==" + typeof(returnMsg))
+                                    returnCount = datasJson.count
+                                    returnData = datasJson.data
+                                    //判断跳转
+                                    if(returnCode == 500 ){ //== 字符串
+                                        console.log("修改 bug 失败");
+                                        layer.msg("修改 bug 失败")
+                                    }
+                                    if(returnCode == 200){
+                                        console.log("修改 bug 成功,请手动重载。。");
+                                        layer.msg("修改 bug 成功,请手动重载。。")
+                                        /*
+                                        //添加div消失
+                                        // 获得frame索引
+                                        var index = parent.layer.getFrameIndex(window.name);
+                                        //关闭当前frame
+                                        parent.layer.close(index);
+
+                                         */
+                                        //是否要重载一下？？？？？？？？？？？？？？
+                                        console.log("执行重载，失败了，之后再处理")
+                                        //table.reload('tableRenderReloadId')
+                                    }
+
+                                },
+                                error:function(){
+                                    console.log("前台点击 修改bug  edit-bug，发送请求失败");
+                                }
+                            });
+
+
+//////////////////test 前端显示json数据
+{
+	"code": 200,
+	"msg": "查询语句执行成功",
+	"count": 1,
+	"data": [{
+		"bug_submit_date": "2020-01-10",
+		"project": "",
+		"addNumByProject": 1,
+		"closeNumByProject": 0,
+		"regressionNumByProject": 0,
+		"delayNumByProject": 0,
+		"addLeve12NumByProject": 0,
+		"closeLevel12NumByProject": 0,
+		"regressionLeve12NumByProject": 0,
+		"delayLeve12NumByProject": 0,
+		"totalLevel12NumByProject": 0,
+		"bugCloseRateByProject": 0,
+		"rankByProjectByProject": 1,
+		"totalNumByProject": 0,
+
+		"projectName0": 1,
+		"projectBugAdd0": 1,
+		"projectBugClose0": 1,
+		"projectBugRegression0": 1,
+		"projectBugDelay0": 1,
+
+		"projectName1": 1,
+		"projectBugAdd1": 1,
+		"projectBugClose1": 1,
+		"projectBugRegression1": 1,
+		"projectBugDelay1": 1,
+
+		"projectName2": 1,
+		"projectBugAdd2": 1,
+		"projectBugClose2": 1,
+		"projectBugRegression2": 1,
+		"projectBugDelay2": 1,
+
+		"projectName3": 1,
+		"projectBugAdd3": 1,
+		"projectBugClose3": 1,
+		"projectBugRegression3": 1,
+		"projectBugDelay03": 1,
+
+		"projectName4": 1,
+		"projectBugAdd4": 1,
+		"projectBugClose4": 1,
+		"projectBugRegression4": 1,
+		"projectBugDelay4": 1,
+
+		"projectName5": 1,
+		"projectBugAdd5": 1,
+		"projectBugClose5": 1,
+		"projectBugRegression5": 1,
+		"projectBugDelay5": 1,
+
+		"projectName6": 1,
+		"projectBugAdd6": 1,
+		"projectBugClose6": 1,
+		"projectBugRegression6": 1,
+		"projectBugDelay6": 1,
+
+		"projectName7": 1,
+		"projectBugAdd7": 1,
+		"projectBugClose7": 1,
+		"projectBugRegression7": 1,
+		"projectBugDelay7": 1,
+
+		"projectName8": 1,
+		"projectBugAdd8": 1,
+		"projectBugClose8": 1,
+		"projectBugRegression8": 1,
+		"projectBugDelay8": 1,
+
+		"projectName9": 1,
+		"projectBugAdd9": 1,
+		"projectBugClose9": 1,
+		"projectBugRegression9": 1,
+		"projectBugDelay9": 1,
+
+		"projectName10": 1,
+		"projectBugAdd10": 1,
+		"projectBugClose10": 1,
+		"projectBugRegression10": 1,
+		"projectBugDelay10": 1,
+
+		"projectName11": 1,
+		"projectBugAdd11": 1,
+		"projectBugClose11": 1,
+		"projectBugRegression11": 1,
+		"projectBugDelay11": 1,
+
+		"projectName12": 1,
+		"projectBugAdd12": 1,
+		"projectBugClose12": 1,
+		"projectBugRegression12": 1,
+		"projectBugDelay12": 1,
+
+		"projectName13": 1,
+		"projectBugAdd13": 1,
+		"projectBugClose13": 1,
+		"projectBugRegression13": 1,
+		"projectBugDelay13": 1
+	}]
+}
+
+//////////////////test 前端显示json数据

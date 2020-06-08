@@ -1,0 +1,320 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>管理员列表-WeAdmin Frame型后台管理系统-WeAdmin 1.0</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<link rel="stylesheet" href="../../static/css/font.css">
+		<link rel="stylesheet" href="../../static/css/weadmin.css">
+		<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+		<!--[if lt IE 9]>
+	      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+	      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+	    <![endif]-->
+
+        <script src="../../lib/layui/layui.js" charset="utf-8"></script>
+    	<script src="../../static/js/eleDel.js" type="text/javascript" charset="utf-8"></script>
+	</head>
+
+	<body>
+		<div class="weadmin-nav">
+			<span class="layui-breadcrumb">
+        <a href="">首页</a>
+        <a href="">管理员管理</a>
+        <a>
+          <cite>管理员列表</cite></a>
+            </span>
+        <a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
+				<i class="layui-icon" style="line-height:30px">ဂ</i></a>
+		</div>
+
+        <div class="weadmin-body">
+            <!--  头部工具栏-->
+            <div class="layui-btn-container" id="toolbarId" hidden>
+            <button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+            <button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+            <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
+            <button class="layui-btn layui-btn-sm" onclick="WeAdminShow('添加用户','./add.html')"><i class="layui-icon"></i>添加</button>
+            <button class="layui-btn layui-btn-sm  layui-btn-danger" onclick="delAll()">批量删除</button>
+            <span style="float: right">数据库共有数据：88 条</span>
+            </div>
+
+            <div id="rowBar" hidden>
+                <!--
+            <a class="layui-btn layui-btn-xs" lay-event="rowSubmit">单行编辑提交</a>
+            <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+            <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+            -->
+                <!--<a title="编辑" onclick="WeAdminShow('编辑','./edit.html')" href="javascript:;"><i class="layui-icon">&#xe642;</i></a>-->
+                <!--<a title="删除" onclick="member_del(this,'要删除的id')" href="javascript:;"><i class="layui-icon">&#xe640;</i></a> -->
+                <!--<a title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>-->
+                <a class="layui-btn layui-btn-xs" lay-event="rowSubmit" title="单行编辑提交">单行编辑提交</a>
+                <a class="layui-btn layui-btn-xs" lay-event="edit" >编辑</a>
+                <a class="layui-btn layui-btn-danger layui-btn-xs" title="删除" lay-event="del">删除</a>
+            </div>
+
+            <!--  表格搜索框-->
+            <div class="demoTable">
+
+                  <div class="layui-input-inline">
+                    <input type="text" class="layui-input" id="startTime" placeholder="开始时间：yyyy-MM-dd">
+                  </div>
+                  <div class="layui-input-inline">
+                    <input type="text" class="layui-input" id="endTime" placeholder="结束时间：yyyy-MM-dd">
+                  </div>
+
+                  <div class="layui-inline">
+                    <input class="layui-input" name="id" id="tableReloadBtn" autocomplete="off" placeholder=" 搜索ID">
+                  </div>
+                  <button class="layui-btn" data-type="reload">搜索 <i class="layui-icon">&#xe615;</i></button>
+            </div>
+            <table class="layui-hide" id="tableUsers" lay-filter="tableUsers"></table>
+
+        </div>
+        <!--  body - end-->
+
+        <!--  请求urlt  == ../../json/test_1.json-->
+        <!--  渲染table estart-->
+             <script>
+                layui.use('table', function(){
+                  var table = layui.table;
+
+                  <!-- ,url: '/demo/table/user/???' -->
+                  //方法级渲染
+                  table.render({
+                    elem: '#tableUsers' //指向table的id
+                    ,toolbar: '#toolbarId' //开启头部工具栏，并为其绑定左侧模板
+                    //,url: '../../json/test.json' //render只需要json data里的数据，所以只返回data就行
+                    ,url: '/getUserList' //render只需要json data里的数据，所以只返回data就行
+                    //,data: [] //数据前段直接处理数组，分页生效， data和url不能公用
+                    //method: 'post' //如果无需自定义HTTP类型，可不加该参数
+                    //where: {page: 1, limit: 10} // 如果无需传递额外参数，可不加该参数 page=第几页，limit=当页显示个数
+                    ,loading: true //是否显示加载条（默认：true）
+                    ,response: {
+                        statusCode: 200
+                      }
+                    ,cols: [[
+                      {type:'numbers',fixed: 'left' }//, fixed: true
+                      ,{checkbox: true, fixed: true}  //{type: 'checkbox'}
+                      ,{field:'userid', title: 'userid', sort: true, width: '8%'}
+                      ,{field:'username', title: '用户名'}
+                      ,{field:'password', title: '密码', sort: true}
+                      ,{field:'user_remark', title: '用户备注', edit: 'text'}
+                      ,{field:'user_email', title: '邮箱', edit: 'text' }
+                      ,{field:'user_level', title: '用户等级', sort:true, edit: 'text'}
+                      ,{field:'create_time', title: '创建时间', sort: true ,placeholder: "格式:YYYY-MM-DD", edit: 'text'}
+                      ,{field:'session', title: '用户缓存', sort: true, edit: 'text'}
+                      ,{title:'操作', toolbar: '#rowBar', width: '15%'}
+                    ]]
+                    ,id: 'tableRenderReloadId' //给渲染制定一个id,共其他监听调用
+                    ,page: true
+                    //,limit: 10     // 每页显示的条数（默认：10）,url请求方式此条没用
+                    ,limits: [1,10,15,20,25,30,100,200,500,1000]  //每页条数的选择项，默认：[10,20,30,40,50,60,70,80,90]
+                    ,height: 'full-140'
+                  });
+                  //ddd这是一个特定的语法格式，其中 full 是固定的，而 差值 则是一个数值，这需要你来预估，比如：表格容器距离浏览器顶部和底部的距离“和”'full-20'
+
+                  var $ = layui.$, active = {
+                    reload: function(){
+                      var tableReloadBtn = $('#tableReloadBtn'); //指向按钮的id
+
+
+                      //执行重载
+                      table.reload('tableRenderReloadId', { //指向render 自定义的id
+                        page: {
+                          curr: 1 //重新从第 1 页开始
+                        }
+                        ,where: {
+                          key: {
+                            id: tableReloadBtn.val() //指向按钮的id
+                          }
+                        }
+                      }, 'data');
+                    }
+                  };
+
+                  //管所有btn按钮的
+                  $('.demoTable .layui-btn').on('click', function(){ //指向table的class
+                    var type = $(this).data('type');
+                    active[type] ? active[type].call(this) : '';
+                  });
+
+                  //行相关/////////////////////////////////////////////////////////
+                  //监听工具条
+                  table.on('tool(tableUsers)', function(obj){ //tool()对应table的lay-filter-
+                    var data = obj.data;
+                    if(obj.event === 'rowSubmit'){ //对应行里的lay-event
+                      //layer.msg('ID：'+ data.userid + ' 的查看操作');
+                      //提交到后台
+                            //需要获取的参数userid username, password, user_remark, user_email, user_level, create_time, session
+                            console.log("前台传输的值==Json.stringfiy（data.filed）" + JSON.stringify(data.field));
+                            userid = data.userid;
+                            username = data.username;
+                            password = data.password;
+                            user_remark = data.user_remark;
+                            user_email = data.user_email;
+                            user_level = parseInt(data.user_level);  // 转成int
+                            create_time = data.create_time;
+                            session = data.session;
+
+                            console.log("获取前台提交的值");
+                            console.log("获取前台提交的值 usrname-type =" + typeof(data.level) );
+
+
+                            console.log("form-userid == " + userid);
+                            console.log("form-username == " + username);
+                            console.log("form-password == " + password);
+                            console.log("form-user_remark == " + user_remark);
+                            console.log("form-user_email == " + user_email);
+                            console.log("form-user_level== " + user_level);
+                            console.log("form-user_level type== " + typeof(user_level));
+                            console.log("form-create_time == " + create_time);
+                            console.log("form-session == " + session);
+
+                            //请求后台数据
+
+                            $.ajax({
+                                type: "post", //请求方法
+                                url: "/editUser", //请求地址
+                                data: {"userid":userid, "username":username, "password":password, "user_remark":user_remark, "user_email":user_email, "user_level":user_level, "create_time":create_time, "session":session},
+                                datatype: "json",
+                                success:function(datas){
+
+                                    console.log(typeof(datas)); //返回的json是str
+                                    console.log("发送编辑用户请求成功，返回内容如下：");
+                                    //转成json
+                                    datasJson = $.parseJSON(datas)
+                                    console.log("返回结果" + datas);
+                                    console.log(datasJson.code);
+
+                                    returnCode = datasJson.code
+                                    returnMsg = datasJson.msg
+                                    console.log("msg--type==" + typeof(returnMsg))
+                                    returnCount = datasJson.count
+                                    returnData = datasJson.data
+                                    //判断跳转
+                                    if(returnCode == 500 ){ //== 字符串
+                                        console.log("修改用户失败");
+                                        layer.msg("修改用户失败")
+                                    }
+                                    if(returnCode == 200){
+                                        console.log("修改用户成功,请手动重载。。");
+                                        layer.msg("修改用户成功,请手动重载。。")
+                                        /*
+                                        //添加div消失
+                                        // 获得frame索引
+                                        var index = parent.layer.getFrameIndex(window.name);
+                                        //关闭当前frame
+                                        parent.layer.close(index);
+
+                                         */
+                                        //是否要重载一下？？？？？？？？？？？？？？
+                                        console.log("执行重载，失败了，之后再处理")
+                                        //table.reload('tableRenderReloadId')
+                                    }
+
+                                },
+                                error:function(){
+                                    console.log("前台点击 修改用户 edit-user，发送请求失败");
+                                }
+                            });
+
+                    } else if(obj.event === 'del'){ //对应按钮的lay-event
+                      layer.confirm('真的删除行么', function(index){
+                        //发送数据库删除命令
+                        userid = data.userid
+                        console.log("要删除行的userid==" + userid)
+                        console.log("要删除行的userid type==number" + typeof(userid))
+
+                        //请求后台数据
+                        $.ajax({
+                            type: "post", //请求方法
+                            url: "/delUser", //请求地址
+                            //data: {"username":username, "password":password, "user_remark":user_remark, "user_email":user_email, "user_level":user_level, "create_time":create_time, "session":session},
+                            data: {"userid":userid},
+                            datatype: "json",
+                            success:function(datas){
+
+                                console.log("删除用户，返回的数据类型==" + typeof(datas)); //返回的json是str
+                                console.log("发送删除用户请求成功，返回内容如下：");
+                                //转成json
+                                datasJson = $.parseJSON(datas)
+                                console.log("返回结果" + datas);
+                                console.log(datasJson.code);
+
+                                returnCode = datasJson.code
+                                returnMsg = datasJson.msg
+                                console.log("msg--type==" + typeof(returnMsg))
+                                returnCount = datasJson.count
+                                returnData = datasJson.data
+                                //判断跳转
+                                if(returnCode == 500 ){ //== 字符串
+                                    console.log("删除用户失败");
+                                    layer.msg("删除用户失败")
+                                }
+                                if(returnCode == 200){
+                                    console.log("删除用户成功");
+                                    layer.msg("删除用户成功")
+
+                                    //删除表格对应的行
+                                    console.log("删除对应行index==", index);
+                                    obj.del();
+                                    layer.close(index); //关闭弹出框
+                                    //是否要重载一下？？？？？？？？？？？？？？
+                                }
+
+                            },
+                            error:function(){
+                                console.log("前台点击 删除用户 del-user，发送请求失败");
+                            }
+                        });
+                        //ajax end
+
+                      });
+
+                    } else if(obj.event === 'edit'){
+                      //layer.alert('编辑行：<br>'+ JSON.stringify(data))
+                      WeAdminShow('编辑','./edit.html')
+
+                    }
+                  });
+                  //监听行事件方法结束
+
+                  //监听单元格编辑
+                  table.on('edit(tableUsers)', function(obj){
+                    var value = obj.value //得到修改后的值
+                    ,data = obj.data //得到所在行所有键值
+                    ,field = obj.field; //得到字段
+                    layer.msg('[ID: '+ data.userid +'] ' + field + ' 字段更改为：'+ value);
+                  });
+
+                //layui.user(table) 结束之前的所有方法
+                });
+                //layui.user(table) 结束
+                </script>
+
+    <!--x渲染日历 -->
+        <script>
+            layui.use('laydate', function () {
+                var laydate = layui.laydate;
+                laydate.render({
+                    elem: '#startTime'
+                })
+                laydate.render({
+                    elem: '#endTime'
+                })
+
+            })
+
+        </script>
+
+    <!-- 行按钮相关-->
+
+
+
+	</body>
+
+</html>

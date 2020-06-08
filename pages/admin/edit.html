@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html>
+  
+  <head>
+    <meta charset="UTF-8">
+    <title>编辑用户</title>
+    <meta name="renderer" content="webkit">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <link rel="stylesheet" href="../../static/css/font.css">
+      <link rel="stylesheet" href="../../static/css/weadmin.css">
+    <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+    <!--[if lt IE 9]>
+      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+    <![endif]-->
+
+    <script type="text/javascript" src="../../lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript" src="../../lib/jquery-3.2.1.min.js" charset="utf-8"></script>
+  </head>
+
+  <body>
+    <div class="weadmin-body">
+        <form class="layui-form">
+            <!-- form start-->
+          <div class="layui-form-item">
+              <label for="userid" class="layui-form-label">
+                  <span class="we-red">*</span>用户id
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="userid" name="userid" required="" lay-verify="userid" autocomplete="off" class="layui-input" readonly value="71">
+              </div>
+          </div>
+
+          <div class="layui-form-item">
+              <label for="username" class="layui-form-label">
+                  <span class="we-red">*</span>登录名
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="username" name="username" required="" lay-verify="username" autocomplete="off" class="layui-input" readonly value="admin1">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  <span class="we-red">*</span>6-12个字符
+              </div>
+          </div>
+
+          <div class="layui-form-item">
+              <label for="password" class="layui-form-label">
+                  <span class="we-red">*</span>密码
+              </label>
+              <div class="layui-input-inline">
+                  <input type="password" id="password" name="password" required="" lay-verify="password" autocomplete="off" class="layui-input">
+              </div>
+              <div class="layui-form-mid layui-word-aux">
+                  <span class="we-red">*</span>6到12个字符
+              </div>
+          </div>
+
+          <div class="layui-form-item">
+              <label for="remark" class="layui-form-label">
+                  备注
+              </label>
+              <div class="layui-input-inline">
+                  <input type="text" id="remark" name="remark" lay-verify="remark" autocomplete="off" class="layui-input">
+              </div>
+          </div>
+
+          <div class="layui-form-item">
+              <label for="email" class="layui-form-label"><span class="we-red">*</span>邮箱</label>
+              <div class="layui-input-inline">
+                  <input type="text" id="email" name="email"  lay-verify="email" autocomplete="off" class="layui-input">
+              </div>
+          </div>
+
+          <div class="layui-form-item">
+              <label class="layui-form-label">角色</label>
+              <div class="layui-input-block">
+                <input type="radio" name="level"   title="超级管理员" value="1">
+                <input type="radio" name="level"   title="普通用户" value="2" checked="">
+              </div>
+          </div>
+
+          <div class="layui-form-item">
+              <label for="createTime" class="layui-form-label">创建时间</label>
+              <div class="layui-input-inline">
+                  <input type="text" id="createTime" name="createTime" lay-verify="createTime" autocomplete="off" class="layui-input" placeholder="格式：2020-01-01">
+              </div>
+          </div>
+
+          <div class="layui-form-item">
+              <label for="session" class="layui-form-label">session</label>
+              <div class="layui-input-inline">
+                  <input type="text" id="session" name="session" lay-verify="session" autocomplete="off" class="layui-input">
+              </div>
+          </div>
+
+          <div class="layui-form-item">
+              <label  class="layui-form-label"></label>
+              <button  class="layui-btn" lay-filter="editDone" lay-submit="">完成</button>
+          </div>
+
+        </form>
+    </div>
+
+<!-- ////////////////////////////////////////////////////////////////////////////////////////////////////////////////  -->
+		<script src="../../lib/layui/layui.js" charset="utf-8"></script>
+    <script type="text/javascript">
+    		layui.extend({
+					admin: '{/}../../static/js/admin'
+				});
+        layui.use(['form','layer','admin','table'], function(){
+          var form = layui.form,
+          	admin = layui.admin,
+          	layer = layui.layer;
+          var table = layui.table;
+          	form.render();
+
+          //自定义验证规则
+          form.verify({
+            password: [
+              /^[\S]{6,12}$/
+              ,'密码必须6到12位，且不能出现空格'
+            ]
+          });
+
+          //监听提交
+          form.on('submit(editDone)', function(data){
+
+                //需要获取的参数userid username, password, user_remark, user_email, user_level, create_time, session
+                // DataFiled = data.field; //不好用
+                jsonDataFiled = JSON.stringify(data.field);
+                jsonData = JSON.parse(jsonDataFiled);
+
+                console.log("获取前台提交的值");
+                userid = jsonData.userid;
+                username = jsonData.username;
+                console.log("获取前台提交的值 usrname-type =" + typeof(jsonData.level) );
+
+                password = jsonData.password;
+                user_remark = jsonData.remark;
+                user_email = jsonData.email;
+                user_level = parseInt(jsonData.level);  // 转成int
+                create_time = jsonData.createTime;
+                session = jsonData.session;
+
+                console.log("form-userid == " + userid);
+                console.log("form-username == " + username);
+                console.log("form-password == " + password);
+                console.log("form-user_remark == " + user_remark);
+                console.log("form-user_email == " + user_email);
+                console.log("form-user_level== " + user_level);
+                console.log("form-user_level type== " + typeof(user_level));
+                console.log("form-create_time == " + create_time);
+                console.log("form-session == " + session);
+
+                //请求后台数据
+                $.ajax({
+                    type: "post", //请求方法
+                    url: "/editUser", //请求地址
+                    data: {"userid":userid, "username":username, "password":password, "user_remark":user_remark, "user_email":user_email, "user_level":user_level, "create_time":create_time, "session":session},
+                    datatype: "json",
+                    success:function(datas){
+
+                        console.log(typeof(datas)); //返回的json是str
+                        console.log("发送编辑用户请求成功，返回内容如下：");
+                        //转成json
+                        datasJson = $.parseJSON(datas)
+                        console.log("返回结果" + datas);
+                        console.log(datasJson.code);
+
+                        returnCode = datasJson.code
+                        returnMsg = datasJson.msg
+                        console.log("msg--type==" + typeof(returnMsg))
+                        returnCount = datasJson.count
+                        returnData = datasJson.data
+                        //判断跳转
+                        if(returnCode == 500 ){ //== 字符串
+                            console.log("修改用户失败");
+                            layer.msg("修改用户失败")
+                        }
+                        if(returnCode == 200){
+                            console.log("修改用户成功");
+                            layer.msg("修改用户成功")
+                            //添加div消失
+                            // 获得frame索引
+                            var index = parent.layer.getFrameIndex(window.name);
+                            //关闭当前frame
+                            parent.layer.close(index);
+                            //是否要重载一下？？？？？？？？？？？？？？
+                            console.log("执行重载，失败了，之后再处理")
+                            //table.reload('tableRenderReloadId')
+                        }
+
+                    },
+                    error:function(){
+                        console.log("前台点击 修改用户 edit-user，发送请求失败");
+                    }
+                });
+
+                return false;
+
+              });
+          <!-- form。on监听事件完毕 -->
+
+        });
+    </script>
+  </body>
+
+</html>

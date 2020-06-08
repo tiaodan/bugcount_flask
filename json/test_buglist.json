@@ -1,0 +1,34 @@
+{
+	"code": 200,
+	"msg": "查询语句执行成功",
+	"count": 1,
+	"data": [{
+		"bugid": "None",
+		"bug_submit_date": "",
+		"project": "",
+		"software": "",
+		"test_version": "",
+		"bug_description": "",
+		"severity_level": "",
+		"priority": "",
+		"bug_difficulty": "",
+		"bug_status": "",
+		"bug_close_date": "",
+		"close_version": "",
+		"cause_analysis": "",
+		"bug_img": "",
+		"intermediate_situation": "",
+		"developer": "",
+		"remark": "",
+		"first_bug_regression_date": "",
+		"first_bug_regression_status": "",
+		"first_bug_regression_remark": "",
+		"second_bug_regression_date": "",
+		"second_bug_regression_status": "",
+		"second_bug_regression_remark": "",
+		"third_bug_regression_date": "",
+		"third_bug_regression_status": "",
+		"third_bug_regression_remark": ""
+	}
+	]
+}

@@ -1,0 +1,4 @@
+Python>=3.6
+pymysql==0.9.3
+xlrd==1.2.0
+flask-login=0.5.0
