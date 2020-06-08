@@ -1410,8 +1410,9 @@ def get_allprojectdata_withproject_orderby_date(startTime, endTime):
 
                 # project0
 
-                #   str1808[1:len(str1808)-2] 截取字符串 中project名字
-                bug['project' + str(index)] = str(project)[1:len(str(project))-2]  # 项目名称并不是从sql语句中读出来的，而是单独查询project sql语句中读出
+                #   str1808[1:len(str1808)-2] 截取字符串 中project名字--》'1808'
+                #   str1808[2:len(str1808)-3] 截取字符串 中project名字--》1808 (去掉''格式的)
+                bug['project' + str(index)] = str(project)[2:len(str(project))-3]  # 项目名称并不是从sql语句中读出来的，而是单独查询project sql语句中读出
                 bug['add_project' + str(index)] = r[13 + 5*index + 1]
                 bug['close_project' + str(index)] = r[13 + 5*index + 2]
                 bug['regression_project' + str(index)] = r[13 + 5*index + 3]

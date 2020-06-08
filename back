@@ -314,3 +314,67 @@ layui.use(['jquery', 'admin', 'menu'], function(){
 }
 
 //////////////////test 前端显示json数据
+
+////////////////////////////////////////
+ //触发事件
+                var active = {
+                //lay-event
+                search: function () {
+                    //获取开始时间和截至时间
+                    startTime = document.getElementById("startTime").value;
+                    endTime = document.getElementById("endTime").value;
+                    console.log("点击搜索按钮，获取的startTime=" + startTime)
+                    console.log("点击搜索按钮，获取的 endTime=" + endTime)
+
+                    //请求后台数据
+                    $.ajax({
+                        type: "post", //请求方法
+                        //url: "/getBugcountByProjectOrderbyTime", //请求地址
+                        url: "../../json/test_project_map.json", //请求地址
+                        data: {"startTime": startTime, "endTime": endTime},
+                        datatype: "json",
+                        success:function(datas){
+
+                            console.log(typeof(datas)); //返回的json是str
+                            console.log("发送编辑用户请求成功，返回内容如下：");
+                            //转成json
+                            datasJson = $.parseJSON(datas)
+                            console.log("返回结果" + datas);
+                            console.log(datasJson.code);
+
+                            returnCode = datasJson.code
+                            returnMsg = datasJson.msg
+                            console.log("msg--type==" + typeof(returnMsg))
+                            returnCount = datasJson.count
+                            returnData = datasJson.data
+                            //判断跳转
+                            if(returnCode == 500 ){ //== 字符串
+                                console.log("获取 项目维度 按时间排序的数据 失败");
+                                layer.msg("获取 项目维度 按时间排序的数据失败")
+                            }
+                            if(returnCode == 200){
+                                console.log("获取 项目维度 按时间排序的数据 成功,请手动重载。。");
+                                layer.msg("获取 项目维度 按时间排序的数据 成功,请手动重载。。")
+                                /*
+                                //添加div消失
+                                // 获得frame索引
+                                var index = parent.layer.getFrameIndex(window.name);
+                                //关闭当前frame
+                                parent.layer.close(index);
+
+                                 */
+                                //是否要重载一下？？？？？？？？？？？？？？
+                                console.log("执行重载，失败了，之后再处理")
+                                //table.reload('tableRenderReloadId')
+                            }
+
+                        },
+                        error:function(){
+                            console.log("前台点击 搜索按钮，获取 项目维度 按时间排序的数据，发送请求失败");
+                        }
+                    });
+                    //ajax end
+                }
+
+            };
+//////////////////////////////////////////
