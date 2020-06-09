@@ -377,4 +377,16 @@ layui.use(['jquery', 'admin', 'menu'], function(){
                 }
 
             };
-//////////////////////////////////////////
+////////////////////////////////////////// 关闭当前界面
+                            //添加div消失
+                            // 获得frame索引
+                            var index = parent.layer.getFrameIndex(window.name);
+                            //关闭当前frame
+                            parent.layer.close(index);
+
+
+
+////////////////////////////////////////重载
+//是否要重载一下？？？？？？？？？？？？？？
+                            console.log("执行重载，失败了，之后再处理")
+                            //table.reload('tableRenderReloadId')
