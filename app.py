@@ -967,6 +967,26 @@ def getTableForDrawMapWithProject():
     return json_str
 
 
+# 为了画折线图 获取所有 开发的数据 get
+@app.route('/getTableForDrawMapWithDeveloper', methods=['POST', 'GET'])
+def getTableForDrawMapWithDeveloper():
+    # 获取前台传的参数
+    startTime = request.values.get("startTime")
+    endTime = request.values.get("endTime")
+    print(f"前台传的参数{startTime}， {endTime}")
+
+    json_str = ''
+
+    # 默认get 请求
+    if request.method == "GET":
+        print('get请求')
+        json_str = buglist.get_allprojectdata_withdeveoper_orderby_date(startTime, endTime)
+        print('《app.py》画折线图 获取所有项目的数据, 返回json==jsonStr=====', json_str)
+
+    return json_str
+
+
+
 # #########################  bug操作相关 end ############################################################################
 # 主函数
 if __name__ == '__main__':

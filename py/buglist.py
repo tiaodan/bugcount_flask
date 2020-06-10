@@ -1469,6 +1469,223 @@ def get_allprojectdata_withproject_orderby_date(startTime, endTime):
     return json_str
 
 
+# 获取所有项目的数据，为了画折线图project0 - project13(默认给13个开发，没有值默认不返回数据, ！！ 有几个项目返回几个项目的值)
+def get_allprojectdata_withdeveoper_orderby_date(startTime, endTime):
+    print('=================================获取所有 开发 的数据 start ===================================')
+    print(f'app.py 传的参数{startTime}， {endTime}')
+
+    # 初始化返回的数据 [arg1, arg2, arg3, arg4] arg1=状态码（num）arg2=msg(str) arg3= count(num) arg4=tuple
+    #json数据
+    data = {}
+    bugcount = []
+    #默认定义数据
+    code = 500  # 默认失败
+    msg = 'sql语句执行失败'
+    count = 0  # sql语句执行结果个数
+
+    # 打开数据库连接
+    conn = pymysql.connect(db_host, db_user, db_passwd, db_dbname)
+    # 使用 cursor() 方法创建一个游标对象 cursor
+    cursor = conn.cursor()
+
+    # 使用 execute()  方法执行 SQL 查询
+    try:
+        # 拿到各种想要的参数
+
+        # 1. 获取有几个project
+        get_developer_sql = 'select developer from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date <= %s ) group by developer'
+        cursor.execute(get_developer_sql, [startTime, endTime])
+        conn.commit()
+        #     获取project tuple
+        developer_tuple = cursor.fetchall()
+
+
+        print(f'1. 获取有多少开发==={developer_tuple}')
+        print(f'1. 获取 project_tuple type ==={type(developer_tuple)}')
+        print(f'1. 获取有多少开发 len===', len(developer_tuple))
+        print(f'1. project_tuplen===> list', list(developer_tuple))
+        print(f'1. project_tuplen===> list[0]', list(developer_tuple)[0])
+        print(f'1. project_tuplen===> tuple[0],结论 tuple[0]==list[0]', developer_tuple[0])
+        print(f'1. project_tuplen===> tuple[0] type', type(developer_tuple[0]))
+        str1808 = str(developer_tuple[0])
+        print(f'1. project_tuplen===> tuple[0] type tuple --> str', str1808)
+        print(f'1. project_tuplen===> tuple[0] type str1808 --> str', type(str1808))
+        print(f'1. project_tuplen===> tuple[0] type str1808 --> 截取字符串（"1808",）', type(str1808))
+        print(f'1. project_tuplen===> tuple[0] type str1808 --> 字符串长度（"1808",）', len(str1808)) # 9位
+        print(f'1. project_tuplen===> tuple[0] type str1808 --> 截取（"1808",）', str1808[0])  # 9位
+        # 0-len(str)-2
+        ppname = str1808[1:len(str1808)-2]
+        print(f'1. project_tuplen===> tuple[0] type str1808 --> 截取（"1808",） 1-len(str)-2', ppname)
+
+        """
+        # 获取有多少日期
+        get_date_sql = 'select bug_submit_date from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date <= %s )  group by bug_submit_date order by bug_submit_date'
+        cursor.execute(get_date_sql, [startTime, endTime])
+        conn.commit()
+        date_tuple = cursor.fetchall()
+        """
+
+        # 1. 拼接sql查询语句
+        searchsql_not_complete = "select bug_submit_date, project,count(bug_status = 1 or null) as 'add', " \
+                                  "count(bug_status = 2 or null) as 'close'," \
+                                  "count(bug_status = 3 or null) as 'regression', " \
+                                  "count(bug_status = 4 or null) as 'delay', " \
+                                  "count(bug_status = 1 and severity_level <= 2 or null) as 'add12', " \
+                                  "count(bug_status = 2 and severity_level <= 2 or null) as 'close12', " \
+                                  "count(bug_status = 3 and severity_level <= 2 or null) as 'regression12', " \
+                                  "count(bug_status = 4 and severity_level <= 2 or null) as 'delay12', " \
+                                  "count(severity_level <= 2 or null) as 'delay12', " \
+                                  "convert( count(bug_status = 2 or null)/count(bugid or null),decimal(10,2) ) as 'rate', " \
+                                  "count(bugid or null) as 'totalNum' "
+
+        searchsql_end =  " from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date <= %s ) group by bug_submit_date order by bug_submit_date"
+        # 初始化 sqlc查询参数 total_roject0 add_project0 close_project0
+        search_sql_args = list()
+        print('未拼接好的字符串==', searchsql_not_complete + searchsql_end)
+
+        search_sql_middle_about_developer = ""
+        # 循环拼接字符串
+        for developer in developer_tuple:
+            # 当前索引
+            print(f'当前 developer =={str(developer)}')
+            index = developer_tuple.index(developer)
+            developer_name_tuple_to_str = str(developer_tuple[index])
+            developer_name = developer_name_tuple_to_str[1:len(developer_name_tuple_to_str)-2]
+            print('循环中的 developer 名str==', developer_name)
+
+
+            print(f'当前第{index}项 循环：第{index}项目为', developer_name)
+            print('拼接sql语句')
+            # count(project='1808' or null) as 'totalNumByProjectBelongProject0',
+            # 依次为开发1 / 属于开发1的全部bug / 属于开发1的新增bug / 属于开发1的关闭bug
+
+            # project='1808' as project0
+            sql_name_developer = ",developer=" + developer_name + " as developer" + str(index)
+            print('name ==========', sql_name_developer)
+            # 执行到这没问题
+
+            sql_add_num_bydeveloper_belong_developer = ",count(bug_status=1 and developer = " + developer_name + " or null) as add_num_developer" + str(index)
+            sql_close_num_bydeveloper_belong_developer = ",count(bug_status=2 and developer = " + developer_name + " or null) as close_num_developer" + str(index)
+            sql_regression_num_bydeveloper_belong_developer = ",count(bug_status=3 and developer = " + developer_name + " or null) as regression_num_developer" + str(index)
+            sql_delay_num_bydeveloper_belong_developer = ",count(bug_status=4 and developer = " + developer_name + " or null) as delay_num_developer" + str(index)
+            print('for 循环拼接的sql == ', sql_name_developer + sql_add_num_bydeveloper_belong_developer +sql_close_num_bydeveloper_belong_developer +
+                  sql_regression_num_bydeveloper_belong_developer + sql_delay_num_bydeveloper_belong_developer)
+
+            for_sql = sql_name_developer + sql_add_num_bydeveloper_belong_developer +sql_close_num_bydeveloper_belong_developer + sql_regression_num_bydeveloper_belong_developer + sql_delay_num_bydeveloper_belong_developer
+            print('for sql ======', for_sql)
+            # search_sql_middle_about_developer 基础上拼接
+            search_sql_middle_about_developer += for_sql
+            print('开发相关sql 拼接结果==', search_sql_middle_about_developer)
+
+
+        # for循环拼接sql end
+        search_sql = searchsql_not_complete + search_sql_middle_about_developer + searchsql_end
+        print('最终sql ==', search_sql)
+
+        # 2. 执行sql语句
+        cursor.execute(search_sql, [startTime, endTime])
+        # 提交到数据库执行
+        conn.commit()
+        # 执行语句，返回结果
+        sql_return_result_tuple = cursor.fetchall()
+
+        # 转换查询结果为[{},{},{}]这种格式的
+        print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
+        print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
+        print("执行语句返回结果(类型)==", type(sql_return_result_tuple))
+        print("sql语句执行成功")
+
+        rank = 1 # 排名
+        # 3. 整理返回给前端的值,相当于按时间循环
+            # 返回数据 第几行 第几列xx数据
+        for r in sql_return_result_tuple:
+            print('=======================r=', r)
+
+            bug = dict()
+            bug['bug_submit_date'] = str(r[0])  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
+            print('========================bug_submit_date', bug['bug_submit_date'])
+            bug['project'] = r[1]  # 项目名称
+            bug['add'] = r[2]  # 新增
+            bug['close'] = r[3]  # 关闭
+            bug['regression'] = r[4]  # 回归
+            bug['delay'] = r[5]  # 延迟
+            bug['add12'] = r[6]  # 12级bug新增
+            bug['close12'] = r[7]  # 1-2级bug关闭
+            bug['regression12'] = r[8]  # 1-2级bug回归
+            bug['delay12'] = r[9]  # 1-2级bug延迟
+            bug['total12'] = r[10]  # 1-2级bug总数
+            bug['bugCloseRate'] = float(r[11])  # bug解决率(关闭/总数) 是decimall类型，转成float
+            bug['rank'] = rank  # 排名 sql未查出来，自己算,因为sql查出来是根据 解决率 倒序的，第一个是排名第1，不是从数据库查的，自己算的
+            bug['totalNum'] = r[12]  # 总数
+
+            # 后面是项目相关的 关闭情况，有几个项目循环几次
+            for developer in developer_tuple:
+                # 当前索引
+                print(f'当前developer=={str(developer)}')
+                index = developer_tuple.index(developer)
+                print(f'当前索引=={index}')
+                print(f'第{index}次循环开始================================================')
+
+                # project0
+
+                #   str1808[1:len(str1808)-2] 截取字符串 中developer名字--》'1808'
+                #   str1808[2:len(str1808)-3] 截取字符串 中developer名字--》1808 (去掉''格式的)
+                bug['developer' + str(index)] = str(developer)[2:len(str(developer))-3]  # 项目名称并不是从sql语句中读出来的，而是单独查询project sql语句中读出
+                bug['add_developer' + str(index)] = r[13 + 5*index + 1]
+                bug['close_developer' + str(index)] = r[13 + 5*index + 2]
+                bug['regression_developer' + str(index)] = r[13 + 5*index + 3]
+                bug['delay_developer' + str(index)] = r[13 + 5*index + 4]
+
+                print(f'developer{index}=', bug['developer' + str(index)])  #
+                print(f'add_developer{index}=', bug['add_developer' + str(index)])
+                print(f'close_developer{index} ==', bug['close_developer' + str(index)])
+                print(f'regression_developer{index}  ===', bug['regression_developer' + str(index)])
+                print(f'delay_developer{index}  ===', bug['delay_developer' + str(index)])
+
+                print(f'第{index}次循环结束================================================')
+
+            # 循环完1次 累加
+            bugcount.append(bug)
+            # for end
+
+        # 拼接返回数据,返回列表
+        count = len(sql_return_result_tuple)  # sql语句结果个数
+
+        # 判断是否 查询成功
+        if count > 0:
+            code = 200  # 成功
+            msg = '查询语句执行成功'
+
+    # except Exception:
+    except:
+        # 如果发生错误则回滚
+        # 输出异常信息
+        traceback.print_exc()
+        print('出现异常，sql语句执行失败')
+        # print('出现异常，sql语句执行失败', Exception)
+        conn.rollback()
+    finally:
+        # 不管是否异常，都关闭数据库连接
+        cursor.close()
+        conn.close()
+
+    #  返回json格式的数据
+    data['code'] = code
+    data['msg'] = msg
+    data['count'] = count
+    data['data'] = bugcount
+    # 转化下查询结果为{},{},{}这种格式======================
+    print('<admin.py> 搜索开发count方法 type(data)== ', type(data))
+    print('<admin.py> 搜索开发方法 type== ', data)
+    # json.dumps()用于将dict类型的数据转成str .json.loads():用于将str类型的数据转成dict
+    json_str = json.dumps(data, ensure_ascii=False)
+    print('<buglist> 返回结果==jsonStr=====', json_str)
+
+
+    print('=================================获取所有项目的数据 end ===================================')
+    # 这些只是从数据库中，查出来的每天的数据，前端需要求和处理
+    return json_str
+
 
 def testtest():
 

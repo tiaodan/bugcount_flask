@@ -37,6 +37,18 @@
 				"icon": "",
 				"url": "./pages/echarts/echarts1.html"
 			}]
+		},
+		{
+			"id": 15,
+			"name": "测试数据1808&K",
+			"icon": "&#xe6ce;",
+			"url": "",
+			"children": [{
+				"id": 15,
+				"name": "bug测试",
+				"icon": "",
+				"url": "./pages/echarts/test_1808k.html"
+			}]
 		}
 	]
 }
