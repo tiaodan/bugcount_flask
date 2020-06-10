@@ -390,3 +390,160 @@ layui.use(['jquery', 'admin', 'menu'], function(){
 //是否要重载一下？？？？？？？？？？？？？？
                             console.log("执行重载，失败了，之后再处理")
                             //table.reload('tableRenderReloadId')
+                            /
+/////////////////////////请求后台数据
+
+//请求后台数据
+                $.ajax({
+                    type: "post", //请求方法
+                    url: "/getTableForDrawMapWithProject", //请求地址
+                    //url: "../../json/test_project_map.json", //请求地址
+                    data: {"startTime": startTimeFromTable, "endTime": endTimeFromTable},
+                    datatype: "json",
+                    success:function(datas){
+
+                        console.log(typeof(datas)); //返回的json是str
+                        console.log("获取bug 数据请求成功，返回内容如下：");
+                        //转成json
+                        datasJson = $.parseJSON(datas);
+                        console.log("返回结果" + datas);
+
+                        returnCode = datasJson.code;
+                        returnMsg = datasJson.msg;
+                        returnCount = datasJson.count;
+                        returnData = datasJson.data;
+                        //判断跳转
+                        if(returnCode == 500 ){ //== 字符串
+                            console.log("获取 项目维度 按时间排序的数据 失败");
+                            layer.msg("获取 项目维度 按时间排序的数据失败")
+                        }
+
+                        if(returnCode == 200){
+                            console.log("获取 项目维度 按时间排序的数据 成功");
+                            layer.msg("获取 项目维度 按时间排序的数据 成功");
+
+                            //累加数据，复制给折线图
+
+                        }
+
+                    },
+                    error:function(){
+                        console.log("前台点击 搜索按钮，获取 项目维度 按时间排序的数据，发送请求失败");
+                    }
+                });
+                  //ajax end
+
+///////////////////////////渲染图
+//渲染图 start=========================================
+                  // 基于准备好的dom，初始化echarts实例
+                    var myChartProject = echarts.init(document.getElementById('echartsProject'));  //指向id
+
+
+                    // 指定图表的配置项和数据 -项目维度
+                    /*
+                    * title: 提示信息（位于左上角）
+                    * tooltip: 工具提示
+                    * legend：折现图 标准 （中上）
+                    * grid：布局
+                    * toolbox：
+                    * xAxis： x轴坐标{
+                    *     type:
+                    *     boundarGap:false
+                    *     data
+                    * }
+                    * yAxis：y轴坐标{  //y坐标
+                            type: 'value'
+                        },
+                      series：具体数据
+                      * {
+                                name:'1808',
+                                type:'line',
+                                stack: '总量',
+                                data:[1, 2, 3, 4, 5, 6, 7]
+                            }
+                            * ['2020-01-01','2020-01-02','2020-01-03','2020-01-04','2020-01-05','2020-01-06','2020-01-07',
+                                '2020-01-01','2020-01-02','2020-01-03','2020-01-04','2020-01-05','2020-01-06','2020-01-07',
+                                '2020-01-01','2020-01-02','2020-01-03','2020-01-04','2020-01-05','2020-01-06','2020-01-07',
+                                '2020-01-01','2020-01-02','2020-01-03','2020-01-04','2020-01-05','2020-01-06','2020-01-07']
+                    * */
+
+                    //数据化参数
+                    console.log("start 开始时间" + startTimeFromTable);
+                    console.log("end 结束时间" + endTimeFromTable);
+
+                    var titleStartTime = startTimeFromTable;
+                    var titleEndTime = endTimeFromTable;
+                    var dataProjectHead = ['1808','1809','1810','1811','1812'];
+                    var dataX = ['2020-01-01','2020-01-02','2020-01-03','2020-01-04','2020-01-05','2020-01-06','2020-01-07']; //时间
+                    var dataSeries = [//具体数据
+                            {
+                                name: dataProjectHead[0],
+                                type:'line',
+                                stack: '总量',
+                                data:[1, 2, 3, 4, 5, 6, 7]
+                            },
+                            {
+                                name:'1809',
+                                type:'line',
+                                stack: '总量',
+                                data:[220, 182, 191, 234, 290, 330, 310]
+                            },
+                            {
+                                name:'1810',
+                                type:'line',
+                                stack: '总量',
+                                data:[150, 232, 201, 154, 190, 330, 410]
+                            },
+                            {
+                                name:'1811',
+                                type:'line',
+                                stack: '总量',
+                                data:[320, 332, 301, 334, 390, 330, 320]
+                            },
+                            {
+                                name:'1812',
+                                type:'line',
+                                stack: '总量',
+                                data:[820, 932, 901, 934, 1290, 1330, 1320]
+                            }
+                        ];
+
+                    var optionProject = {
+                        title: {
+                            text: 'bug统计图 - 项目维度 ' + titleStartTime + ' - ' + titleEndTime//图的名称
+                        },
+                        tooltip: {
+                            trigger: 'axis'  //工具提示
+                        },
+                        legend: {
+                            //data:['邮件营销','联盟广告','视频广告','直接访问','搜索引擎']  // 头部标签，用来显示/隐藏折线
+                            data: dataProjectHead  // 头部标签，用来显示/隐藏折线
+                        },
+                        grid: {
+                            left: '3%',
+                            right: '4%',
+                            bottom: '3%',
+                            containLabel: true
+                        },
+                        toolbox: {
+                            feature: {
+                                saveAsImage: {}
+                            }
+                        },
+                        xAxis: { //x坐标
+                            type: 'category',
+                            boundaryGap: false,
+                            //data: ['周一','周二','周三','周四','周五','周六','周日']
+
+                            data: dataX
+                        },
+                        yAxis: {  //y坐标
+                            type: 'value'
+                        },
+                        series: dataSeries
+                    };
+                     // 使用刚指定的配置项和数据显示图表。
+                        myChartProject.setOption(optionProject);  //项目维度
+                //渲染图 end==========================================
+
+///////////////////////////////////////////

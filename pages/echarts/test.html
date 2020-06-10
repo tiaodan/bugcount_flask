@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Test</title>
+    <link rel="stylesheet" href="../../static/css/font.css">
+    <link rel="stylesheet" href="../../static/css/weadmin.css">
+    <script src="../../lib/layui/layui.js" charset="utf-8"></script>
+</head>
+<body>
+<form class="layui-form">
+    <button class="layui-btn" lay-submit lay-filter="search">搜索 <i class="layui-icon">&#xe615;</i></button>
+</form>
+
+<script>
+    layui.use('form',function () {
+        var form = layui.form;
+        var $ = layui.jquery;
+
+        form.on('submit(search)',function (data) {
+        console.log(data.field);
+        layer.msg('hshshsh');
+        $.ajax({
+            url:"/getUserList",
+            type:"post",
+            success:function (d) {
+                        layer.msg("武汉感染人数" );
+                    },error:function () {
+                        layer.msg("发送ajaxx失败");
+                    }
+        });
+
+        return false;
+
+        });
+
+        //
+        form.on('submit(testSearch)', function (data) {
+                  hah = document.getElementById('testStartTime').value;
+
+                  console.log(hah);
+                  console.log(data.field);
+
+                  return false;
+        });
+
+    })
+
+</script>
+</body>
+</html>
