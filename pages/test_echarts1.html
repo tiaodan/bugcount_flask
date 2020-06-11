@@ -1,0 +1,183 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <title>统计图表-WeAdmin Frame型后台管理系统-WeAdmin 1.0</title>
+        <meta name="renderer" content="webkit|ie-comp|ie-stand">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+        <meta http-equiv="Cache-Control" content="no-siteapp" />
+		<link rel="stylesheet" href="../static/css/font.css">
+		<link rel="stylesheet" href="../static/css/weadmin.css">
+        <!-- ><script src="//cdn.bootcss.com/echarts/4.0.2/echarts.min.js"></script> -->
+        <!-- ><script src="//cdn.bootcss.com/echarts/4.0.2/echarts.min.js"></script> -->
+       <!-- <script src="../static/js/incubator-echarts-4.2.1/echarts.all.js"></script>-->  <!-- 引入echarts-->
+        <script src="../static/js/echarts_4.0.2.min.js"></script> <!-- 引入echarts-->
+    </head>
+    <body>
+        <div class="weadmin-body">
+
+            <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM -->
+            <div id="main" style="width: 100%;height:400px;"></div>
+
+            <blockquote class="layui-elem-quote">
+                测试项目曲线数值错误问题
+            </blockquote>
+            <!-- 为 ECharts 准备一个具备大小（宽高）的 DOM  测试项目曲线数值错误问题-->
+            <div id="test" style="width: 100%;height:400px;"></div>
+
+
+        </div>
+
+        <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('main'));
+
+        // 指定图表的配置项和数据
+        var option = {
+            title: {
+                text: '折线图堆叠'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data:['邮件营销','联盟广告','视频广告','直接访问','搜索引擎']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: ['周一','周二','周三','周四','周五','周六','周日']
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [
+                {
+                    name:'邮件营销',
+                    type:'line',
+                    stack: '总量',
+                    //data:[120, 132, 101, 134, 90, 230, 210]
+                    data:[221, 183, 192, 233, 291, 331, 311]
+                },
+                {
+                    name:'联盟广告',
+                    type:'line',
+                    stack: '总量',
+                    data:[220, 182, 191, 234, 290, 330, 310]
+                },
+                {
+                    name:'视频广告',
+                    type:'line',
+                    stack: '总量',
+                    data:[150, 232, 201, 154, 190, 330, 410]
+                },
+                {
+                    name:'直接访问',
+                    type:'line',
+                    stack: '总量',
+                    data:[320, 332, 301, 334, 390, 330, 320]
+                },
+                {
+                    name:'搜索引擎',
+                    type:'line',
+                    stack: '总量',
+                    //data:[820, 932, 901, 934, 1290, 1330, 1320]
+                    data:[820, 932, 901, 934, 1290, 1330, 3000 ]
+                }
+            ]
+        };
+
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+        </script>
+
+        <!-- 测试项目曲线数值错误问题 -->
+        <script type="text/javascript">
+        // 基于准备好的dom，初始化echarts实例
+        var myChart = echarts.init(document.getElementById('test'));
+
+        // 指定图表的配置项和数据
+        var option = {
+            title: {
+                text: '测试项目曲线数值错误问题'
+            },
+            tooltip: {
+                trigger: 'axis'
+            },
+            legend: {
+                data:['a','b','c','d','e']
+            },
+            grid: {
+                left: '3%',
+                right: '4%',
+                bottom: '3%',
+                containLabel: true
+            },
+            toolbox: {
+                feature: {
+                    saveAsImage: {}
+                }
+            },
+            xAxis: {
+                type: 'category',
+                boundaryGap: false,
+                data: ['周一','周二','周三','周四','周五','周六','周日']
+            },
+            yAxis: {
+                type: 'value'
+            },
+            series: [
+                {
+                    name:'a',
+                    type:'line',
+                    stack: '总量',
+                    //data:[120, 132, 101, 134, 90, 230, 210]
+                    data:[220, 182, 191, 234, 290, 330, 310]
+                },
+                {
+                    name:'b',
+                    type:'line',
+                    stack: '总量',
+                    data:[220, 182, 191, 234, 290, 330, 310]
+                },
+                {
+                    name:'c',
+                    type:'line',
+                    stack: '总量',
+                    data:[150, 232, 201, 154, 190, 330, 410]
+                },
+                {
+                    name:'d',
+                    type:'line',
+                    stack: '总量',
+                    data:[320, 332, 301, 334, 390, 330, 320]
+                },
+                {
+                    name:'e',
+                    type:'line',
+                    stack: '总量',
+                    //data:[820, 932, 901, 934, 1290, 1330, 1320]
+                    data:[820, 932, 901, 934, 1290, 1330, 3000 ]
+                }
+            ]
+        };
+
+
+        // 使用刚指定的配置项和数据显示图表。
+        myChart.setOption(option);
+        </script>
+    </body>
+</html>

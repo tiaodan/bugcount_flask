@@ -9,39 +9,87 @@
 </head>
 <body>
 <form class="layui-form">
-    <button class="layui-btn" lay-submit lay-filter="search">搜索 <i class="layui-icon">&#xe615;</i></button>
+    <button class="layui-btn" lay-submit lay-filter="test">搜索 <i class="layui-icon">&#xe615;</i></button>
 </form>
+<form class="layui-form">
+    <button class="layui-btn" lay-submit lay-filter="test2">搜索 <i class="layui-icon">&#xe615;</i></button>
+</form>
+
+<form class="layui-form" style="margin-bottom: 8px">
+
+                  <span class="layui-input-inline">
+                    <input type="text" class="layui-input" id="startTime" placeholder="开始时间：yyyy-MM-dd">
+                  </span>
+                  <span class="layui-input-inline">
+                    <input type="text" class="layui-input" id="endTime" placeholder="结束时间：yyyy-MM-dd">
+                  </span>
+
+                      <span class="layui-input-inline">
+                            <select name="contrller">
+                                <option>支付状态</option>
+                                <option>已支付</option>
+                                <option>未支付</option>
+                            </select>
+                        </span>
+                        <span class="layui-input-inline">
+                            <select name="contrller">
+                                <option>支付方式</option>
+                                <option>支付宝</option>
+                                <option>微信</option>
+                                <option>货到付款</option>
+                            </select>
+                        </span>
+                        <span class="layui-input-inline">
+                            <select name="contrller">
+                                <option value="">订单状态</option>
+                                <option value="0">待确认</option>
+                                <option value="1">已确认</option>
+                                <option value="2">已收货</option>
+                                <option value="3">已取消</option>
+                                <option value="4">已完成</option>
+                                <option value="5">已作废</option>
+                            </select>
+                        </span>
+
+                  <div class="layui-inline">
+                    <input class="layui-input" name="" id="" autocomplete="off" placeholder=" 搜索 BugID">
+                  </div>
+
+                  <button class="layui-btn" lay-submit lay-filter="search">搜索 <i class="layui-icon">&#xe615;</i></button>
+                  <button class="layui-btn" id="testButton">测试</button>
+</form>
+<!--  表格搜索框 end-->
 
 <script>
     layui.use('form',function () {
         var form = layui.form;
         var $ = layui.jquery;
 
-        form.on('submit(search)',function (data) {
-        console.log(data.field);
-        layer.msg('hshshsh');
-        $.ajax({
-            url:"/getUserList",
-            type:"post",
-            success:function (d) {
-                        layer.msg("武汉感染人数" );
-                    },error:function () {
-                        layer.msg("发送ajaxx失败");
-                    }
+        //监听1
+        form.on('submit(test2)',function (data) {
+            console.log(data.field);
+            layer.msg('hshshsh');
+            $.ajax({
+                url:"/getUserList",
+                type:"post",
+                success:function (d) {
+                            layer.msg("武汉感染人数" );
+                        },error:function () {
+                            layer.msg("发送ajaxx失败");
+                        }
+            });
+
+            return false;
         });
 
-        return false;
+        //监听2
+        form.on('submit(search)', function (data) {
+              hah = document.getElementById('testStartTime').value;
 
-        });
+              console.log(hah);
+              console.log(data.field);
 
-        //
-        form.on('submit(testSearch)', function (data) {
-                  hah = document.getElementById('testStartTime').value;
-
-                  console.log(hah);
-                  console.log(data.field);
-
-                  return false;
+              return false;
         });
 
     })
