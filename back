@@ -762,3 +762,129 @@ def get_allprojectdata_withdeveoper_orderby_date(startTime, endTime):
     # 这些只是从数据库中，查出来的每天的数据，前端需要求和处理
     return json_str
 
+///////////////menu json 菜单
+				//"url": "./static/js/incubator-echarts-4.2.1/test/echarts1.html"
+
+/////////////循环获取每日数据
+
+"""
+    for r in sql_return_result_tuple:
+        print('=======================r=', r)
+
+        bug = dict()
+        bug['bug_submit_date'] = str(r[0])  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
+        print('========================bug_submit_date', bug['bug_submit_date'])
+        bug['project'] = r[1]  # 项目名称
+        bug['add'] = r[2]  # 新增
+        bug['close'] = r[3]  # 关闭
+        bug['regression'] = r[4]  # 回归
+        bug['delay'] = r[5]  # 延迟
+        bug['add12'] = r[6]  # 12级bug新增
+        bug['close12'] = r[7]  # 1-2级bug关闭
+        bug['regression12'] = r[8]  # 1-2级bug回归
+        bug['delay12'] = r[9]  # 1-2级bug延迟
+        bug['total12'] = r[10]  # 1-2级bug总数
+        bug['bugCloseRate'] = float(r[11])  # bug解决率(关闭/总数) 是decimall类型，转成float
+        bug['rank'] = rank  # 排名 sql未查出来，自己算,因为sql查出来是根据 解决率 倒序的，第一个是排名第1，不是从数据库查的，自己算的
+        bug['totalNum'] = r[12]  # 总数
+
+        # 后面是项目相关的 关闭情况，有几个项目循环几次
+        for developer in developer_tuple:
+            # 当前索引
+            print(f'当前developer=={str(developer)}')
+            index = developer_tuple.index(developer)
+            print(f'当前索引=={index}')
+            print(f'第{index}次循环开始================================================')
+
+            # project0
+
+            #   str1808[1:len(str1808)-2] 截取字符串 中developer名字--》'1808'
+            #   str1808[2:len(str1808)-3] 截取字符串 中developer名字--》1808 (去掉''格式的)
+            bug['developer' + str(index)] = str(developer)[
+                                            2:len(str(developer)) - 3]  # 项目名称并不是从sql语句中读出来的，而是单独查询project sql语句中读出
+            bug['add_developer' + str(index)] = r[13 + 5 * index + 1]
+            bug['close_developer' + str(index)] = r[13 + 5 * index + 2]
+            bug['regression_developer' + str(index)] = r[13 + 5 * index + 3]
+            bug['delay_developer' + str(index)] = r[13 + 5 * index + 4]
+
+            print(f'developer{index}=', bug['developer' + str(index)])  #
+            print(f'add_developer{index}=', bug['add_developer' + str(index)])
+            print(f'close_developer{index} ==', bug['close_developer' + str(index)])
+            print(f'regression_developer{index}  ===', bug['regression_developer' + str(index)])
+            print(f'delay_developer{index}  ===', bug['delay_developer' + str(index)])
+
+            print(f'第{index}次循环结束================================================')
+
+        # 循环完1次 累加
+        bugcount.append(bug)
+"""
+///////////////////////////定义13个项目的变量
+addsum_project1 = 0
+    closesum_project1 = 0
+    regressionsum_project1 = 0
+    delaysum_project1 = 0
+
+    addsum_project2 = 0
+    closesum_project2 = 0
+    regressionsum_project2 = 0
+    delaysum_project2 = 0
+
+    addsum_project3 = 0
+    closesum_project3 = 0
+    regressionsum_project3 = 0
+    delaysum_project3 = 0
+
+    addsum_project4 = 0
+    closesum_project4 = 0
+    regressionsum_project4 = 0
+    delaysum_project4 = 0
+
+    addsum_project5 = 0
+    closesum_project5 = 0
+    regressionsum_project5 = 0
+    delaysum_project5 = 0
+
+    addsum_project6 = 0
+    closesum_project6 = 0
+    regressionsum_project6 = 0
+    delaysum_project6 = 0
+
+    addsum_project7 = 0
+    closesum_project7 = 0
+    regressionsum_project7 = 0
+    delaysum_project7 = 0
+
+    addsum_project8 = 0
+    closesum_project8 = 0
+    regressionsum_project8 = 0
+    delaysum_project8 = 0
+
+    addsum_project9 = 0
+    closesum_project9 = 0
+    regressionsum_project9 = 0
+    delaysum_project9 = 0
+
+    addsum_project10 = 0
+    closesum_project10 = 0
+    regressionsum_project10 = 0
+    delaysum_project10 = 0
+
+    addsum_project10 = 0
+    closesum_project10 = 0
+    regressionsum_project10 = 0
+    delaysum_project10 = 0
+
+    addsum_project11 = 0
+    closesum_project11 = 0
+    regressionsum_project11 = 0
+    delaysum_project11 = 0
+
+    addsum_project12 = 0
+    closesum_project12 = 0
+    regressionsum_project12 = 0
+    delaysum_project12 = 0
+
+    addsum_project13 = 0
+    closesum_project13 = 0
+    regressionsum_project13 = 0
+    delaysum_project13 = 0

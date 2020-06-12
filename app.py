@@ -958,10 +958,39 @@ def getTableForDrawMapWithProject():
 
     json_str = ''
 
-    # 默认get 请求
+    # 默认使用 get 请求
     if request.method == "GET":
         print('get请求')
         json_str = buglist.get_allprojectdata_withproject_orderby_date(startTime, endTime)
+        print('《app.py》画折线图 获取所有项目的数据, 返回json==jsonStr=====', json_str)
+
+    if request.method == "POST":
+        print('get请求')
+        json_str = buglist.get_allprojectdata_withproject_orderby_date(startTime, endTime)
+        print('《app.py》画折线图 获取所有项目的数据, 返回json==jsonStr=====', json_str)
+
+    return json_str
+
+
+# 为了画折线图 获取所有项目 每日累加的数据 get
+@app.route('/getTableForDrawMapWithProjectEverydaySum', methods=['POST', 'GET'])
+def getTableForDrawMapWithProjectEverydaySum():
+    # 获取前台传的参数
+    startTime = request.values.get("startTime")
+    endTime = request.values.get("endTime")
+    print(f"前台传的参数{startTime}， {endTime}")
+
+    json_str = ''
+
+    # 默认使用 get 请求
+    if request.method == "GET":
+        print('get请求')
+        json_str = buglist.get_allprojectdata_everyday_sum_withproject_orderby_date(startTime, endTime)
+        print('《app.py》画折线图 获取所有项目的数据, 返回json==jsonStr=====', json_str)
+
+    if request.method == "POST":
+        print('get请求')
+        json_str = buglist.get_allprojectdata_everyday_sum_withproject_orderby_date(startTime, endTime)
         print('《app.py》画折线图 获取所有项目的数据, 返回json==jsonStr=====', json_str)
 
     return json_str

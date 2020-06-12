@@ -16,6 +16,8 @@ software distributed under the License is distributed on an
 KIND, either express or implied.  See the License for the
 specific language governing permissions and limitations
 under the License.
+
+复制的axis-multi.html
 -->
 
 
@@ -31,14 +33,17 @@ under the License.
         <link rel="stylesheet" href="lib/reset.css" />
     </head>
     <body>
-    <!--
+
         <style>
             .test-title {
                 background: #146402;
                 color: #fff;
+                height:5px;
+                line-height: 5px; /*当把 line-height 的高度设置和 height 高度一样就能使 文字垂直居中*/
+
             }
         </style>
-    -->
+
         <div id="main0"></div>
 
         <script>
@@ -148,22 +153,9 @@ under the License.
 
                 chart = myChart = testHelper.create(echarts, 'main0', {
                     option: option,
-                    //title: '测试折线图 - 项目维度 bug每日累计增长情况'
+                    title: '测试折线图 - 项目维度 bug每日累计增长情况'
                 });
             });
-
-            /*
-            {
-                            type: 'value',
-                            name: '温度',
-                            min: 0,
-                            max: 25,
-                            interval: 5,
-                            axisLabel: {
-                                formatter: '{value} °C'
-                            }
-                        }
-             */
         </script>
 
     </body>
