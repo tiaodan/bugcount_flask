@@ -27,10 +27,11 @@
         <!-- 折线图标题的样式-->
         <style>
             .test-title {
-                background: #146402;
-                color: #fff;
-                height:5px;
-                line-height: 5px; /*当把 line-height 的高度设置和 height 高度一样就能使 文字垂直居中*/
+                /*background: #146402; */
+                background: #fff;
+                color: #fff; /* 文字颜色*/
+                height:1px;
+                /*line-height: 1px; /*当把 line-height 的高度设置和 height 高度一样就能使 文字垂直居中*/
 
             }
         </style>
@@ -40,8 +41,8 @@
     <body>
         <!--  顶行 文字 start-->
 		<div class="weadmin-nav">
-        <a href="">首页/ </a>
-        <a href="">系统统计/ </a>
+        <a href="">首页 / </a>
+        <a href="">系统统计 / </a>
         <a><cite>bug统计图</cite></a>
         <a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
 				<i class="layui-icon" style="line-height:30px">ဂ</i></a>
@@ -60,7 +61,7 @@
                         <div class="layui-col-xs6"><div class="grid-demo">2) 优先等级：1 优先级最高，2 优先级中等，3 优先级一般</div></div>
                     </div>
                     <div class="layui-row">
-                        <div class="layui-col-xs6"><div class="grid-demo grid-demo-bg1">3）难度等级：1 难度最高，2 难度中等，3 难度一般</div></div>
+                        <div class="layui-col-xs6"><div class="grid-demo grid-demo-bg1">3）难度等级：1 难，2 易</div></div>
                         <div class="layui-col-xs6"><div class="grid-demo">4）关闭情况：1 处理，2 关闭，3 回归，4 延迟</div></div>
                     </div>
 
@@ -73,48 +74,154 @@
              <form class="layui-form" style="margin-bottom: 8px">
                   <span class="layui-input-inline"><input type="text" class="layui-input" id="startTime" placeholder="开始时间：yyyy-MM-dd" value="2020-01-01"></span>
                   <span class="layui-input-inline"><input type="text" class="layui-input" id="endTime" placeholder="结束时间：yyyy-MM-dd" value="2020-06-10"></span>
+                  <div class="layui-input-inline">
+						<select name="contrller">
+                            <!--
+							<option value="1">时间颗粒度</option>
+							<option value="90">季</option>
+							<option value="30">月</option>
+							<option value="7">周</option>
+							<option value="14">二周</option>
+							<option value="21">三周</option>
+							-->
+						</select>
+                  </div>
                   <div class="layui-inline"><input class="layui-input" name="" id="" autocomplete="off" placeholder=" 搜索 BugID"></div>
 
-                  <button class="layui-btn" lay-submit lay-filter="searchtt">搜索 <i class="layui-icon">&#xe615;</i></button>
+                  <button class="layui-btn" lay-submit lay-filter="search">搜索 <i class="layui-icon">&#xe615;</i></button>
              </form>
              <!--  表格搜索框 end-->
 
-            <!--  项目维度的数据都放在这个div start-->
-            <div id="project" name="project">
-                    <blockquote class="layui-elem-quote">
-                        项目维度
-                    </blockquote>
-
-                    <!-- 项目数据表格，用来查看画图数据的 start-->
-
-                    <blockquote class="layui-elem-quote"><div align="center">每日数据</div></blockquote>
-                    <div class="layui-row">
-                        <!-- 测试表格，x == bug数量(新增，关闭，回归，延迟)-->
-                        <!-- 测试表格，y == 项目每天数据   -->
-                        <table class="layui-hide" id="tableForDrawMapWithProject" lay-filter="tableForDrawMapWithProject"></table>
-                    </div>
-
-                    <blockquote class="layui-elem-quote"><div align="center">每日累加数据</div></blockquote>
-                    <div class="layui-row">
-                        <!-- 测试表格，x == bug数量(新增，关闭，回归，延迟)-->
-                        <!-- 测试表格，y == 项目每天数据   -->
-                        <table class="layui-hide" id="tableForDrawMapWithProjectEverydaySum" lay-filter="tableForDrawMapWithProjectEverydaySum"></table>
-                    </div>
-
-                    <!-- 项目数据表格，用来查看画图数据的 end-->
-
-                    <!-- 折线图 end-->
-                    <div id="allBugMap"></div> <!-- 1 所有bug end-->
-                    <div id="Bug12Map"></div> <!-- 1 所有bug end-->
+            <!--  项目和开发维度的选项卡 start-->
+            <div name="projectAndDeveloper">
+            <!-- 弃用
+            <fieldset class="layui-elem-field layui-field-title" hidden>
+                <legend>项目和开发维度的选项卡</legend>
+            </fieldset>
+            <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief" hidden>
+                  <ul class="layui-tab-title">
+                    <li class="layui-this">项目维度</li>
+                    <li>开发维度</li>
+                  </ul>
+                  <div class="layui-tab-content" style="height: 100px;">
+                    <div class="layui-tab-item layui-show">内容不一样是要有，因为你可以监听tab事件（阅读下文档就是了）</div>
+                    <div class="layui-tab-item">内容2</div>
+                  </div>
             </div>
-            <!--  项目维度的数据都放在这个div end-->
+             -->
+
+            <div class="layui-collapse" lay-accordion="">
+                  <div class="layui-colla-item">
+                        <h2 class="layui-colla-title">项目维度</h2>
+                        <!--  项目维度的数据都放在这个div start-->
+                        <div id="project" name="project" class="layui-colla-content">
+                                <blockquote class="layui-elem-quote" hidden>
+                                    项目维度
+                                </blockquote>
+
+                                <!--  标签页 显示统计数据-->
+                                <!-- 项目数据表格，用来查看画图数据的 start layui-tab-brief layui-tab-card-->
+                                <div class="layui-tab layui-tab-brief">
+                                      <ul class="layui-tab-title">
+                                            <li class="layui-this">每日数据</li>
+                                            <li>每日新增/关闭数据</li>
+                                            <li>每日累计数据</li>
+                                            <li>全部bug趋势图</li>
+                                            <li>12级别bug趋势图</li>
+                                      </ul>
+                                      <div class="layui-tab-content">
+                                            <div class="layui-tab-item layui-show">
+                                                    <blockquote class="layui-elem-quote" hidden><div align="center">每日数据</div></blockquote>
+                                                    <div class="layui-row">
+                                                        <!-- 测试表格，x == bug数量(新增，关闭，回归，延迟)-->
+                                                        <!-- 测试表格，y == 项目每天数据   -->
+                                                        <table class="layui-hide" id="tableForDrawMapWithProject" lay-filter="tableForDrawMapWithProject"></table>
+                                                    </div>
+                                            </div>
+
+                                            <div class="layui-tab-item">新增bug 增长/关闭数据(今天相对昨天)
+                                                    <blockquote class="layui-elem-quote" hidden><div align="center">每日新增/关闭数据</div></blockquote>
+                                                    <table class="layui-hide" id="tableForDrawMapWithProjectEverydayNewBugAddAndClose" lay-filter="tableForDrawMapWithProjectEverydayNewBugAddAndClose"></table>
+                                            </div>
+
+                                            <div class="layui-tab-item">
+                                                    <blockquote class="layui-elem-quote" hidden><div align="center">每日累计数据</div></blockquote>
+                                                    <div class="layui-row">
+                                                        <!-- 测试表格，x == bug数量(新增，关闭，回归，延迟)-->
+                                                        <!-- 测试表格，y == 项目每天数据   -->
+                                                        <table class="layui-hide" id="tableForDrawMapWithProjectEverydaySum" lay-filter="tableForDrawMapWithProjectEverydaySum"></table>
+                                                    </div>
+                                            </div>
+
+                                            <div class="layui-tab-item">
+                                                <!-- 折线图 start-->
+                                                <blockquote class="layui-elem-quote"><div align="center">1）项目维度，按时间（时间可自定义）统计新增bug、关闭bug、待回归bug等</div></blockquote>
+                                                <div id="allBugMap1"></div> <!--  所有bug end-->
+                                            </div>
+
+                                            <div class="layui-tab-item">
+                                                <!--  12bug start-->
+                                                <blockquote class="layui-elem-quote"><div align="center">2）项目维度，按时间（时间可自定义）统计新增一、二级新增bug、关闭bug、待回归bug等</div></blockquote>
+                                                <div id="Bug12Map1"></div>
+                                                <!--  12bug end-->
+                                            </div>
+                                      </div>
+                                 </div>
+                                <!-- 项目数据表格，用来查看画图数据的 end-->
+
+
+
+                        </div>
+                        <!--  项目维度的数据都放在这个div end-->
+                  </div>
+                  <div class="layui-colla-item">
+                    <h2 class="layui-colla-title">开发维度</h2>
+                    <div class="layui-colla-content">
+                      <p>有不少其他答案说是因为JS太差。我下面的答案已经说了，这不是根本性的原因。但除此之外，我还要纠正一些对JS具体问题的误解。JS当初是被作为脚本语言设计的，所以某些问题并不是JS设计得差或者是JS设计者的失误。比如var的作用域问题，并不是“错误”，而是当时绝大部分脚本语言都是这样的，如perl/php/sh等。模块的问题也是，脚本语言几乎都没有模块/命名空间功能。弱类型、for-in之类的问题也是，只不过现在用那些老的脚本语言的人比较少，所以很多人都误以为是JS才有的坑。另外有人说JS是半残语言，满足不了开发需求，1999年就该死。半残这个嘛，就夸张了。JS虽然有很多问题，但是设计总体还是优秀的。——来自知乎@贺师俊</p>
+                    </div>
+                  </div>
+
+            </div>
+
+
+
+
+            </div>
+            <!--  项目和开发维度的选项卡 end-->
+
+
+
+            <!-- 折线图 start-->
+            <blockquote class="layui-elem-quote"><div align="center">1）项目维度，按时间（时间可自定义）统计新增bug、关闭bug、待回归bug等</div></blockquote>
+            <div id="allBugMap"></div> <!--  所有bug end-->
+
+            <!--  12bug start-->
+            <blockquote class="layui-elem-quote"><div align="center">2）项目维度，按时间（时间可自定义）统计新增一、二级新增bug、关闭bug、待回归bug等</div></blockquote>
+            <div id="Bug12Map"></div>
+            <!--  12bug end-->
+
+            <!--  12bug start-->
+            <blockquote class="layui-elem-quote"><div align="center">项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；</div></blockquote>
+            <div id="AddBugAddAndCloseStatusMap"></div>
+
+
 
         </div>
         <!-- body div end -->
 
+
 <!-- ///////////////////////////////// 以下为脚本内容 -->
         <script>
             //--------------------------------------- 定义相关方法 start -------------------------------------------------------
+
+            //渲染分页方法
+            function renderElement(){
+                layui.use('element', function() {
+                    var element = layui.element;
+                });
+            }
+
+
             //渲染日历相关方法
             function renderLaydate(laydateId){ // 指向id
 
@@ -265,6 +372,46 @@
 
             }
 
+            /*
+            方法                         ：项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭数据（bugstatus=1 / 2）；
+            参数1： argElem              : 指向table的id
+            参数2： argUrl               : url路径
+            参数3： argStartTime         : 开始时间
+            参数4： argEndTime           : 结束时间
+            参数5： timeDifference       : 时间差/时间颗粒度（季度/月/周/二周/三周）
+            参数6： argTableRenderId     : 给渲染制定一个id,共其他监听调用
+             */
+            function renderTableForDrawMapWithProjectEverydayNewBugAddAndClose(argElem, argUrl, argStartTime, argEndTime, timeDifference, argTableRenderId){
+                layui.use('table',function () {
+                        var table = layui.table;
+
+                        <!-- tableForDrawMapWithProject 为了画图显示的表格 如果某个project是空，就赋值null -->
+                        table.render(   {
+                            elem: '#' + argElem //指向table的id
+                            , url: argUrl
+                            //, url: '../../../../json/test_project_map_allargs.json'
+                            , method: 'get'
+                            , loading: true //是否显示加载条（默认：true）
+                            , where: {startTime: argStartTime, endTime: argEndTime,timeDifference: timeDifference}
+                            , response: {
+                                statusCode: 200
+                            }
+                            , cols: [[
+                            {type: 'numbers', fixed: 'left'}//, fixed: true
+                            , {checkbox: true, fixed: true}  //{type: 'checkbox'}
+                            , {field: 'bug_submit_date', title: '时间', sort: true, width: 120}
+                            , {field: 'project', title: '项目', sort: true, width: 80, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'add', title: '新增', sort: true, width: 80}
+                            , {field: 'close', title: '关闭', sort: true, width: 80}
+                        ]]
+                            , id: argTableRenderId //给渲染制定一个id,共其他监听调用
+                            , page: false
+                            , height: 400
+                        });
+                });
+
+            }
+
             //渲染折线图----------------------------------------------------------
             // 1）项目维度，按时间（时间可自定义）统计新增bug、关闭bug、待回归bug等；后期传一个json
             /*
@@ -379,7 +526,7 @@
 
                         chart = myChart = testHelper.create(echarts, 'allBugMap', {
                             option: option,
-                            title: '1）项目维度，按时间（时间可自定义）统计新增bug、关闭bug、待回归bug等；'
+                            //title: '1）项目维度，按时间（时间可自定义）统计新增bug、关闭bug、待回归bug等；'
                         });
                     });
 
@@ -491,7 +638,7 @@
 
                         chart = myChart = testHelper.create(echarts, 'Bug12Map', {
                             option: option,
-                            title: '2）项目维度，按时间（时间可自定义）统计新增一、二级新增bug、关闭bug、待回归bug等；'
+                            //title: '2）项目维度，按时间（时间可自定义）统计新增一、二级新增bug、关闭bug、待回归bug等；'
                         });
                     });
             }
@@ -500,8 +647,13 @@
             //--------------------------------------- 定义相关方法 end -------------------------------------------------------
 
             //--------------------------------------- 执行脚本 start -------------------------------------------------------
+            //渲染分页
+            renderElement();
+
+            //渲染日历
             renderLaydate("startTime");
             renderLaydate("endTime");
+
 
             //渲染table相关方法
                 //每日数据
@@ -515,9 +667,10 @@
                 var $ = layui.jquery;
 
                 //监听提交
-                  form.on('submit(searchtt)', function(data){ // 对应lay-filter
+                  form.on('submit(search)', function(data){ // 对应lay-filter
                         startTimeFromForm = document.getElementById('startTime').value;
                         endTimeFromForm =  document.getElementById('endTime').value;
+                        timeDifference =  document.getElementById('timeDifference').value;
 
                         console.log("开始时间=" + startTimeFromForm);
                         console.log("结束时间=" + endTimeFromForm);
@@ -525,6 +678,8 @@
 
                         //渲染table - 每天数据
                         renderTable('tableForDrawMapWithProject', '/getTableForDrawMapWithProject', startTimeFromForm, endTimeFromForm, 'tableForDrawMapWithProjectId');
+                        //渲染table - 每天相对昨天 增长/关闭情况
+                        //renderTableForDrawMapWithProjectEverydayNewBugAddAndClose('tableForDrawMapWithProjectEverydayNewBugAddAndClose', '/getTableForDrawMapWithProjectEverydayNewBugAddAndClose', startTimeFromForm, endTimeFromForm, timeDifference, 'tableForDrawMapWithProjectEverydayNewBugAddAndCloseId');
                         //渲染table - 每天累加数据
                         renderTable('tableForDrawMapWithProjectEverydaySum', '/getTableForDrawMapWithProjectEverydaySum', startTimeFromForm, endTimeFromForm, 'tableForDrawMapWithProjectEverydaySumId');
 

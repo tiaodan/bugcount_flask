@@ -948,26 +948,27 @@ def importMysqlByExcel():
     return json_str
 
 
-# 为了画折线图 获取所有项目的数据 get
-@app.route('/getTableForDrawMapWithProject', methods=['POST', 'GET'])
-def getTableForDrawMapWithProject():
+# 为了画折线图 获取新增bug(status=1) 今天相对昨天的增长和关闭情况
+@app.route('/getTableForDrawMapWithProjectEverydayNewBugAddAndClose', methods=['POST', 'GET'])
+def getTableForDrawMapWithProjectEverydayNewBugAddAndClose():
     # 获取前台传的参数
     startTime = request.values.get("startTime")
     endTime = request.values.get("endTime")
-    print(f"前台传的参数{startTime}， {endTime}")
+    timeDifference = request.values.get("timeDifference")
+    print(f"前台传的参数{startTime}， {endTime}, {timeDifference}")
 
     json_str = ''
 
     # 默认使用 get 请求
     if request.method == "GET":
         print('get请求')
-        json_str = buglist.get_allprojectdata_withproject_orderby_date(startTime, endTime)
-        print('《app.py》画折线图 获取所有项目的数据, 返回json==jsonStr=====', json_str)
+        json_str = buglist.get_allprojectdata_withproject_everyday_newbug_adddndclose_orderby_date(startTime, endTime, timeDifference)
+        print('《app.py》画折线图 获取新增bug(status=1) 今天相对昨天的增长和关闭情况, 返回json==jsonStr=====', json_str)
 
     if request.method == "POST":
         print('get请求')
-        json_str = buglist.get_allprojectdata_withproject_orderby_date(startTime, endTime)
-        print('《app.py》画折线图 获取所有项目的数据, 返回json==jsonStr=====', json_str)
+        json_str = buglist.get_allprojectdata_withproject_everyday_newbug_adddndclose_orderby_date(startTime, endTime, timeDifference)
+        print('《app.py》画折线图 获取新增bug(status=1) 今天相对昨天的增长和关闭情况, 返回json==jsonStr=====', json_str)
 
     return json_str
 

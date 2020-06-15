@@ -10,6 +10,7 @@ import json
 #  引入python中的traceback模块，跟踪错误
 import traceback
 from py import utils
+import datetime
 
 # 数据库配置
 db_config_dict = utils.get_dbargs_from_config()
@@ -1616,6 +1617,167 @@ def get_allprojectdata_everyday_sum_withproject_orderby_date(startTime, endTime)
 
         print('bug==', bug)
         bugcount.append(bug)
+
+    #     按顺序执行完，就认为成功了
+    code = 200
+    msg = 'sql语句执行成功'
+    count = len(bugcount)
+
+
+    #  返回json格式的数据
+    data['code'] = code
+    data['msg'] = msg
+    data['count'] = count
+    data['data'] = bugcount
+
+    # 转化下查询结果为{},{},{}这种格式======================
+    json_str = json.dumps(data, ensure_ascii=False)
+    print('<buglist> 返回结果==jsonStr=====', json_str)
+
+    print('=================================获取所有项目 每日累加数据 end ===================================')
+    return json_str
+
+
+# 获取所有项目的 获取新增bug(status=1) 今天相对昨天的增长和关闭情况，为了画折线图project0 - project13(默认给13个项目，没有值默认不返回数据, ！！ 有几个项目返回几个项目的值)
+def get_allprojectdata_withproject_everyday_newbug_adddndclose_orderby_date(startTime, endTime, timeDifference):
+    print('=================================获取所有项目 每日累加的数据 start ===================================')
+    print(f'app.py 传的参数{startTime}， {endTime}, {timeDifference}')
+
+    # json数据
+    data = {}
+    bugcount = []
+    # 默认定义数据
+    code = 500  # 默认失败
+    msg = 'sql语句执行失败'
+    count = 0  # sql语句执行结果个数
+
+    #0. 先获取有多少个项目///////////////////////////////////////////////
+    # 打开数据库连接
+
+    conn = pymysql.connect(db_host, db_user, db_passwd, db_dbname)
+
+    # 使用 cursor() 方法创建一个游标对象 cursor
+    cursor = conn.cursor()
+
+    # 使用 execute()  方法执行 SQL 查询
+    try:
+        # 拿到各种想要的参数
+        # 1. 获取有几个project
+        get_project_sql = 'select project from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date <= %s ) group by project'
+        cursor.execute(get_project_sql, [startTime, endTime])
+        conn.commit()
+        #     获取project tuple
+        project_tuple = cursor.fetchall()
+
+    # except Exception:
+    except:
+        # 如果发生错误则回滚
+        # 输出异常信息
+        traceback.print_exc()
+        print('出现异常，sql语句执行失败')
+        # print('出现异常，sql语句执行失败', Exception)
+        conn.rollback()
+    finally:
+        # 不管是否异常，都关闭数据库连接
+        cursor.close()
+        conn.close()
+
+    #1. 先获取每日数据  /////////////////////////////////////////
+    json_str_everyday = get_allprojectdata_withproject_orderby_date(startTime, endTime)
+
+    # 2. 解析data ,获取每个时间颗粒度（timediffrent）最后一天的累加情况
+    print('每日数据==', json_str_everyday)
+    # 先json.loads 转成dict形式
+    json_dict = json.loads(json_str_everyday)
+    print('code==', json_dict['code'])
+    print('msg==', json_dict['msg'])
+    print('count==', json_dict['count'])
+    print('data==', json_dict['data'])
+    print('data.len==', len(json_dict['data']))
+    print('data.type==', type(json_dict['data']))  # list
+
+    print('data.list[0]==', json_dict['data'][0])  # list
+    print('data.list[0] type==', type(json_dict['data'][0]))  # dict
+
+
+    # 定义基础数据
+        # bug_submit_date', title: '时间', sort: true, width: 120}
+        #   'project', title: '项目'
+    addsum = 0
+    closesum = 0
+    regressionsum = 0
+    delaysum = 0
+    add12sum = 0
+    close12sum = 0
+    regression12sum = 0
+    delay12sum =0
+    total12sum = 0
+    bugCloseRatesum = 0
+    ranksum = 0
+    totalNumsum = 0
+
+    # 项目相关变量 先定义13个项目变量用到了就用- 使用字典
+    project_key_value_dict = dict()
+    for project in project_tuple:
+        project_index = project_tuple.index(project)
+        # addsum_project0 = 0
+        project_key_value_dict['addsum_project' + str(project_index)] = 0
+        project_key_value_dict['closesum_project' + str(project_index)] = 0
+        project_key_value_dict['regressionsum_project' + str(project_index)] = 0
+        project_key_value_dict['delaysum_project' + str(project_index)] = 0
+
+
+
+    # 除了时间外全部累加
+    datas_everyday_list = json_dict['data']
+    for r in datas_everyday_list:
+        index = datas_everyday_list.index(r)
+        date = datas_everyday_list[index]['bug_submit_date']
+        print(f'当前 第{index}次时间循环，日期{date}')
+
+        bug = dict()
+        # print('addsum=', addsum)
+        # print('bug[add]', bug['add'])
+
+        addsum += r['add']
+        closesum += r['close']
+        regressionsum += r['regression']
+        delaysum += r['delay']
+        add12sum += r['add12']
+        close12sum += r['close12']
+        regression12sum += r['regression12']
+        delay12sum += r['delay12']
+        total12sum += r['total12']
+        bugCloseRatesum += r['bugCloseRate']
+        ranksum += r['rank']
+        totalNumsum += r['totalNum']
+
+
+        bug['bug_submit_date'] = str(r['bug_submit_date'])  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
+        bug['project'] = r['project']  # 项目名称
+        bug['add'] = addsum  # 新增
+        bug['close'] = closesum  # 关闭
+
+        for project in project_tuple:
+            project_index = project_tuple.index(project)
+
+            # 累加数据--》 赋值给addsum 这种变量         # 项目0-13相关 - 累加
+            project_key_value_dict['addsum_project' + str(project_index)] += r['add_project' + str(project_index)]
+            project_key_value_dict['closesum_project' + str(project_index)] += r['close_project' + str(project_index)]
+
+
+            bug['project' + str(project_index)] = r['project0']  # 项目0名称
+            bug['add_project' + str(project_index)] = project_key_value_dict['addsum_project' + str(project_index)]  # 项目0新增
+            bug['close_project' + str(project_index)] = project_key_value_dict['closesum_project' + str(project_index)]  # 项目0关闭
+
+
+        print('bug==', bug)
+        # 到这里 是每天累加的数量
+        bugcount.append(bug)
+
+    #x轴应该有多少时间
+    bug_submit_date_list = []
+
 
     #     按顺序执行完，就认为成功了
     code = 200
