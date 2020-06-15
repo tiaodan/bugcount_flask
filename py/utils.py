@@ -65,7 +65,7 @@ def get_allargs_from_config():
 
 
 #  获取一段时间内的，一定颗粒度（时间差）的日期 集合list
-get_bug_submit_date_list(starttime_str, endtime_str, time_diffrent_int):
+get_bug_submit_date_list(starttime_str, endtime_str, date_diffrent_int):
 
     print('开始时间', start_time_str)
     start_time = datetime.datetime.strptime(start_time_str, '%Y-%m-%d')
@@ -76,7 +76,7 @@ get_bug_submit_date_list(starttime_str, endtime_str, time_diffrent_int):
     datesub = (end_time - start_time).days # 起始 终止时间相减
     print('时间间隔，=', datesub)
 
-    fortimes = datesub // (dateDiffrent)
+    fortimes = datesub // date_diffrent_int
     print('循环了多少次', fortimes)
 
     # 取余>=0 endTime = endtime_x 都= endtime，如果mod >0 多算一段时间 mod=0 不用多算一段时间
