@@ -73,17 +73,15 @@
             <!--<div class="demoTable layui-form layui-col-md12 we-search">-->
              <form class="layui-form" style="margin-bottom: 8px">
                   <span class="layui-input-inline"><input type="text" class="layui-input" id="startTime" placeholder="开始时间：yyyy-MM-dd" value="2020-01-01"></span>
-                  <span class="layui-input-inline"><input type="text" class="layui-input" id="endTime" placeholder="结束时间：yyyy-MM-dd" value="2020-06-10"></span>
+                  <span class="layui-input-inline"><input type="text" class="layui-input" id="endTime" placeholder="结束时间：yyyy-MM-dd" value="2020-01-14"></span>
                   <div class="layui-input-inline">
-						<select name="contrller">
-                            <!--
-							<option value="1">时间颗粒度</option>
-							<option value="90">季</option>
-							<option value="30">月</option>
-							<option value="7">周</option>
-							<option value="14">二周</option>
-							<option value="21">三周</option>
-							-->
+						<select id="selector">
+							<option  value="7">时间颗粒度</option>
+							<option  value="90">季</option>
+							<option  value="30">月</option>
+							<option  value="7">周</option>
+							<option  value="14">二周</option>
+							<option  value="21">三周</option>
 						</select>
                   </div>
                   <div class="layui-inline"><input class="layui-input" name="" id="" autocomplete="off" placeholder=" 搜索 BugID"></div>
@@ -193,16 +191,15 @@
 
             <!-- 折线图 start-->
             <blockquote class="layui-elem-quote"><div align="center">1）项目维度，按时间（时间可自定义）统计新增bug、关闭bug、待回归bug等</div></blockquote>
-            <div id="allBugMap"></div> <!--  所有bug end-->
+            <div id="allBugMapWithProject"></div> <!--  所有bug end-->
 
             <!--  12bug start-->
             <blockquote class="layui-elem-quote"><div align="center">2）项目维度，按时间（时间可自定义）统计新增一、二级新增bug、关闭bug、待回归bug等</div></blockquote>
-            <div id="Bug12Map"></div>
+            <div id="Bug12MapWithProject"></div>
             <!--  12bug end-->
 
-            <!--  12bug start-->
             <blockquote class="layui-elem-quote"><div align="center">项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；</div></blockquote>
-            <div id="AddBugAddAndCloseStatusMap"></div>
+            <div id="AddBugAddAndCloseStatusMapWithProject"></div>
 
 
 
@@ -403,6 +400,75 @@
                             , {field: 'project', title: '项目', sort: true, width: 80, style:'background-color: #009688; color: #fff;'}
                             , {field: 'add', title: '新增', sort: true, width: 80}
                             , {field: 'close', title: '关闭', sort: true, width: 80}
+
+                            , {field: 'project0', title: '项目0名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'add_project0', title: '项目0新增', sort: true, width: 120}
+                            , {field: 'close_project0', title: '项目0关闭', sort: true, width: 120}
+
+
+                            , {field: 'project1', title: '项目1名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'add_project1', title: '项目1新增', sort: true, width: 120}
+                            , {field: 'close_project1', title: '项目1关闭', sort: true, width: 120}
+
+
+                            , {field: 'project2', title: '项目2名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'add_project2', title: '项目2新增', sort: true, width: 120}
+                            , {field: 'close_project2', title: '项目2关闭', sort: true, width: 120}
+
+
+                            , {field: 'project3', title: '项目3名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'add_project3', title: '项目3新增', sort: true, width: 120}
+                            , {field: 'close_project3', title: '项目3关闭', sort: true, width: 120}
+
+
+                            , {field: 'project4', title: '项目4名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'add_project4', title: '项目4新增', sort: true, width: 120}
+                            , {field: 'close_project4', title: '项目4关闭', sort: true, width: 120}
+
+
+                            , {field: 'project5', title: '项目5名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'add_project5', title: '项目5新增', sort: true, width: 120}
+                            , {field: 'close_project5', title: '项目5关闭', sort: true, width: 120}
+
+
+                            , {field: 'project6', title: '项目6名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'add_project6', title: '项目6新增', sort: true, width: 120}
+                            , {field: 'close_project6', title: '项目6关闭', sort: true, width: 120}
+
+
+                            , {field: 'project7', title: '项目7名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'add_project7', title: '项目7新增', sort: true, width: 120}
+                            , {field: 'close_project7', title: '项目7关闭', sort: true, width: 120}
+
+
+                            , {field: 'project8', title: '项目8名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'add_project8', title: '项目8新增', sort: true, width: 120}
+                            , {field: 'close_project8', title: '项目8关闭', sort: true, width: 120}
+
+
+                            , {field: 'project9', title: '项目9名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'add_project9', title: '项目9新增', sort: true, width: 120}
+                            , {field: 'close_project9', title: '项目9关闭', sort: true, width: 120}
+
+
+                            , {field: 'project10', title: '项目10名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'add_project10', title: '项目10新增', sort: true, width: 120}
+                            , {field: 'close_project10', title: '项目10关闭', sort: true, width: 120}
+
+
+                            , {field: 'project11', title: '项目11名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'add_project11', title: '项目11新增', sort: true, width: 120}
+                            , {field: 'close_project11', title: '项目11关闭', sort: true, width: 120}
+
+
+                            , {field: 'project12', title: '项目12名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'add_project12', title: '项目12新增', sort: true, width: 120}
+                            , {field: 'close_project12', title: '项目12关闭', sort: true, width: 120}
+
+
+                            , {field: 'project13', title: '项目13名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'add_project13', title: '项目13新增', sort: true, width: 120}
+                            , {field: 'close_project13', title: '项目13关闭', sort: true, width: 120}
                         ]]
                             , id: argTableRenderId //给渲染制定一个id,共其他监听调用
                             , page: false
@@ -412,16 +478,178 @@
 
             }
 
-            //渲染折线图----------------------------------------------------------
+            //渲染折线图 获取所需参数----------------------------------------------------------
             // 1）项目维度，按时间（时间可自定义）统计新增bug、关闭bug、待回归bug等；后期传一个json
             /*
             参数1： legendData           : 折线图上方可以控制 是否显示折线的地方
-            参数1： xAxisData            : xAxisData x轴数组
-            参数1： seriesData           : seriesData 对应的具体数组
+            参数2： xAxisData            : xAxisData x轴数组
+            参数3： seriesData           : seriesData 对应的具体数组
+            返回值： json_str
+
+             */
+            function getRenderMapWithProjectByTimeAllBugArgs(startTimeFromForm, endTimeFromForm){
+                // 测试异步请求,返回值给的错误，因此使用同步 get请求
+                var $ = layui.jquery;
+
+                //创建需要返回的json数据 legendData（表头）, xAxisData（x轴）, seriesDataJson（具体数据）
+                var json_obj = {"legendData":[], xAxisData:[], seriesDataJson:[] };
+
+                console.log("json_obj.lengendData=", json_obj.legendData);
+                console.log("进入请求数据方法");
+
+                $.ajax({
+                            url: "/getTableForDrawMapWithProjectEverydaySum",
+                            method: "get",
+                            data:{"startTime":startTimeFromForm,"endTime":endTimeFromForm},
+                            datatype:"json",
+                            async:false,
+                            success:function(josnstr){//jsonstr 格式
+                                console.log("获取后台数据成功，解析数据");
+                                console.log("获取后台数据成功，解析数据datas="+ josnstr);
+                                console.log("获取后台数据成功，解析数据datas.type="+ typeof(josnstr));
+                                console.log("jsonstringfy==" + JSON.stringify(josnstr.field));
+                                returnDataJson = $.parseJSON(josnstr);
+                                console.log("，returnDataJson="+ returnDataJson);
+                                console.log("，returnDataJson.type="+ typeof(returnDataJson));
+
+                                //获取渲染折线图所需数据
+                                    //all bug
+                                var xAxisDataFromServer = [];
+                                var totoalNumArrFromServer = [];
+                                var addNumArrFromServer = [];
+                                var closeNumArrFromServer = [];
+                                var regressionNumArrFromServer = [];
+                                var delayNumArrFromServer = [];
+
+                                //循环获取[{xx,xx}, {xx,xx}] json中的数据
+                                $.each(returnDataJson.data,function (index, item) {
+                                    console.log('i+item=' + index + " "+item.add);
+                                    xAxisDataFromServer.push(item.bug_submit_date); //日期
+                                    totoalNumArrFromServer.push(item.totalNum); //总数
+                                    addNumArrFromServer.push(item.add); //新增
+                                    closeNumArrFromServer.push(item.close); //关闭
+                                    console.log(totoalNumArrFromServer);
+                                    regressionNumArrFromServer.push(item.regression); //回归
+                                    delayNumArrFromServer.push(item.delay); //延迟
+
+
+                                });
+
+                                var legendData = ['总数','新增','关闭','回归','延迟'];
+                                var xAxisData = xAxisDataFromServer;
+                                console.log("x轴数组" + xAxisData);
+
+                                totoalNumArr = totoalNumArrFromServer;
+                                addNumArr = addNumArrFromServer;
+                                closeNumArr = closeNumArrFromServer;
+                                regressionNumArr = regressionNumArrFromServer;
+                                delayNumArr = delayNumArrFromServer;
+
+                                var seriesDataJson = {"totoalNum": totoalNumArr, "add": addNumArr, "close": closeNumArr, "regression": regressionNumArr, "delay": delayNumArr};
+                                console.log('json类型= ',typeof(seriesDataJson) );
+
+                                //拼接json,返回参数数据
+                                    //转成json 对象 legendData（表头）, xAxisData（x轴）, seriesDataJson（具体数据）
+                                //创建需要返回的json数据 legendData（表头）, xAxisData（x轴）, seriesDataJson（具体数据）
+                               // var json_obj = {"legendData":[], xAxisData:[], seriesDataJson:[] };
+
+
+                                json_obj.legendData = legendData;
+                                json_obj.xAxisData = xAxisData;
+                                json_obj.seriesDataJson = seriesDataJson;
+
+                                //console.log(json_obj);
+                                //console.log("最终json数据==" + JSON.stringify(json_obj));
+
+                                //return "haha"; // 这里不能写return,引发错误
+
+                            },error:function(){
+                                console.log("获取后台数据失败");
+                            }
+                        });
+
+
+                /*
+                $.get('/getTableForDrawMapWithProjectEverydaySum', function (josnstr) {
+                    console.log("获取后台数据成功，解析数据");
+                                console.log("获取后台数据成功，解析数据datas="+ josnstr);
+                                console.log("获取后台数据成功，解析数据datas.type="+ typeof(josnstr));
+                                console.log("jsonstringfy==" + JSON.stringify(josnstr.field));
+                                returnDataJson = $.parseJSON(josnstr);
+                                console.log("，returnDataJson="+ returnDataJson);
+                                console.log("，returnDataJson.type="+ typeof(returnDataJson));
+
+                                //获取渲染折线图所需数据
+                                    //all bug
+                                var xAxisDataFromServer = [];
+                                var totoalNumArrFromServer = [];
+                                var addNumArrFromServer = [];
+                                var closeNumArrFromServer = [];
+                                var regressionNumArrFromServer = [];
+                                var delayNumArrFromServer = [];
+
+                                //循环获取[{xx,xx}, {xx,xx}] json中的数据
+                                $.each(returnDataJson.data,function (index, item) {
+                                    console.log('i+item=' + index + " "+item.add);
+                                    xAxisDataFromServer.push(item.bug_submit_date); //日期
+                                    totoalNumArrFromServer.push(item.totalNum); //总数
+                                    addNumArrFromServer.push(item.add); //新增
+                                    closeNumArrFromServer.push(item.close); //关闭
+                                    console.log(totoalNumArrFromServer);
+                                    regressionNumArrFromServer.push(item.regression); //回归
+                                    delayNumArrFromServer.push(item.delay); //延迟
+
+
+                                });
+
+                                var legendData = ['总数','新增','关闭','回归','延迟'];
+                                var xAxisData = xAxisDataFromServer;
+                                console.log("x轴数组" + xAxisData);
+
+                                totoalNumArr = totoalNumArrFromServer;
+                                addNumArr = addNumArrFromServer;
+                                closeNumArr = closeNumArrFromServer;
+                                regressionNumArr = regressionNumArrFromServer;
+                                delayNumArr = delayNumArrFromServer;
+
+                                var seriesDataJson = {"totoalNum": totoalNumArr, "add": addNumArr, "close": closeNumArr, "regression": regressionNumArr, "delay": delayNumArr};
+                                console.log('json类型= ',typeof(seriesDataJson) );
+
+                                //拼接json,返回参数数据
+                                    //转成json 对象 legendData（表头）, xAxisData（x轴）, seriesDataJson（具体数据）
+                                //创建需要返回的json数据 legendData（表头）, xAxisData（x轴）, seriesDataJson（具体数据）
+                                //var json_obj = {"legendData":[], xAxisData:[], seriesDataJson:[] };
+
+                                json_obj.legendData = legendData;
+                                json_obj.xAxisData = xAxisData;
+                                json_obj.seriesDataJson = seriesDataJson;
+                                console.log(json_obj);
+                                console.log("最终json数据==" + JSON.stringify(json_obj));
+
+                                return json_obj;
+                });
+
+                 */
+                //console.log("先打印了这条");
+                //console.log("要返回数据 json数据==" + JSON.stringify(json_obj));// 数据是有的，要返还json_str格式,返回对象保存不住
+                var json_str = JSON.stringify(json_obj);
+                console.log('返回的json_str=', json_str);
+                return json_str;
+
+            }
+
+            //渲染折线图----------------------------------------------------------
+            // 1-1）项目维度，按时间（时间可自定义）统计新增bug、关闭bug、待回归bug等；后期传一个json
+            /*
+            参数1： legendData           : 折线图上方可以控制 是否显示折线的地方
+            参数2： xAxisData            : xAxisData x轴数组
+            参数3： seriesData           : seriesData 对应的具体数组
 
              */
             function renderMapWithProjectByTimeAllBug(legendData, xAxisData, seriesDataJson){
-                    //解析json数据
+                    //先清空div中的数据 第一种：
+                    document.getElementById('allBugMapWithProject').innerHTML = "";
+                    //第二种：$('#bigDiv').html("");
 
                     var chart;
                     var myChart;
@@ -524,16 +752,102 @@
                             ]
                         };
 
-                        chart = myChart = testHelper.create(echarts, 'allBugMap', {
+                        chart = myChart = testHelper.create(echarts, 'allBugMapWithProject', {
                             option: option,
+                            lazyUpdate: false
                             //title: '1）项目维度，按时间（时间可自定义）统计新增bug、关闭bug、待回归bug等；'
                         });
                     });
 
+
             }
-            //2）项目维度，按时间（时间可自定义）统计新增一、二级新增bug、关闭bug、待回归bug等；
+
+
+            //渲染折线图 获取12级别bug 参数----------------------------------------------------------
+            // 2）项目维度参数，按时间（时间可自定义）统计新增一、二级新增bug、关闭bug、待回归bug等；后期传一个json
+            /*
+            参数1： legendData           : 折线图上方可以控制 是否显示折线的地方
+            参数2： xAxisData            : xAxisData x轴数组
+            参数3： seriesData           : seriesData 对应的具体数组
+            返回值： json_str
+
+             */
+            function getRenderMapWithProjectByTime12BugArgs(legendData, xAxisData, seriesDataJson){
+                var $ = layui.jquery;
+
+                //创建需要返回的json数据 legendData（表头）, xAxisData（x轴）, seriesDataJson（具体数据）
+                var json_obj = {"legendData":[], xAxisData:[], seriesDataJson:[] };
+
+                console.log("json_obj.lengendData=", json_obj.legendData);
+                console.log("进入请求数据方法");
+
+                $.ajax({
+                            url: "/getTableForDrawMapWithProjectEverydaySum",
+                            method: "get",
+                            data:{"startTime":startTimeFromForm,"endTime":endTimeFromForm},
+                            datatype:"json",
+                            async:false,
+                            success:function(josnstr){//jsonstr 格式
+                                console.log("获取后台数据成功，解析数据");
+                                console.log("获取后台数据成功，解析数据datas="+ josnstr);
+                                console.log("获取后台数据成功，解析数据datas.type="+ typeof(josnstr));
+                                console.log("jsonstringfy==" + JSON.stringify(josnstr.field));
+                                returnDataJson = $.parseJSON(josnstr);
+                                console.log("，returnDataJson="+ returnDataJson);
+                                console.log("，returnDataJson.type="+ typeof(returnDataJson));
+
+                                //获取渲染折线图所需数据
+                                    //12级bug参数
+                                var xAxisDataWithProject12BugFromServer = [];
+                                var totoalNumArrWithProject12BugFromServer = [];
+                                var addNumArrWithProject12BugFromServer = [];
+                                var closeNumArrWithProject12BugFromServer = [];
+                                var regressionWithProject12BugNumArrFromServer = [];
+                                var delayNumArrWithProject12BugFromServer = [];
+
+                                //循环获取[{xx,xx}, {xx,xx}] json中的数据
+                                $.each(returnDataJson.data,function (index, item) {
+                                    console.log('i+item=' + index + " "+item.add);
+                                    //1-2bug
+                                    xAxisDataWithProject12BugFromServer.push(item.bug_submit_date); //日期
+                                    totoalNumArrWithProject12BugFromServer.push(item.total12); //总数
+                                    addNumArrWithProject12BugFromServer.push(item.add12);  //新增
+                                    closeNumArrWithProject12BugFromServer.push(item.close12); //关闭
+                                    regressionWithProject12BugNumArrFromServer.push(item.regression12); //回归
+                                    delayNumArrWithProject12BugFromServer.push(item.delay12); //延迟
+
+                                });
+
+                                var legendDataWithProject12Bug = ['总数(1-2级bug)','新增(1-2级bug)','关闭(1-2级bug)','回归(1-2级bug)','延迟(1-2级bug)'];
+                                var xAxisDataWithProject12Bug = xAxisDataWithProject12BugFromServer;
+                                totoalNumArrWithProject12Bug = totoalNumArrWithProject12BugFromServer;
+                                addNumArrWithProject12Bug = addNumArrWithProject12BugFromServer;
+                                closeNumArrWithProject12Bug = closeNumArrWithProject12BugFromServer;
+                                regressionNumArrWithProject12Bug = regressionWithProject12BugNumArrFromServer;
+                                delayNumArrWithProject12Bug = delayNumArrWithProject12BugFromServer;
+                                var seriesDataJsonWithProject12Bug = {"totoal12": totoalNumArrWithProject12Bug, "add12": addNumArrWithProject12Bug, "close12": closeNumArrWithProject12Bug, "regression12": regressionNumArrWithProject12Bug, "delay12": delayNumArrWithProject12Bug};
+
+
+                                json_obj.legendData = legendDataWithProject12Bug;
+                                json_obj.xAxisData = xAxisDataWithProject12Bug;
+                                json_obj.seriesDataJson = seriesDataJsonWithProject12Bug;
+
+                            },error:function(){
+                                console.log("获取后台数据失败");
+                            }
+                        });
+
+                var json_str = JSON.stringify(json_obj);
+                console.log('获取12级别bug,折线图参数，返回的json_str=', json_str);
+                return json_str;
+            }
+
+
+            //2-1）项目维度，按时间（时间可自定义）统计新增一、二级新增bug、关闭bug、待回归bug等；
             function renderMapWithProjectByTime12Bug(legendData, xAxisData, seriesDataJson){
-                    //解析json数据
+                    //先清空div中的数据 第一种：
+                    document.getElementById('Bug12MapWithProject').innerHTML = "";
+                    //第二种：$('#bigDiv').html("");
 
                     var chart;
                     var myChart;
@@ -636,9 +950,198 @@
                             ]
                         };
 
-                        chart = myChart = testHelper.create(echarts, 'Bug12Map', {
+                        chart = myChart = testHelper.create(echarts, 'Bug12MapWithProject', {
                             option: option,
                             //title: '2）项目维度，按时间（时间可自定义）统计新增一、二级新增bug、关闭bug、待回归bug等；'
+                        });
+                    });
+            }
+
+            //渲染折线图 绘制新增bug增长和关闭曲线  参数----------------------------------------------------------
+            // 3）项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线
+            /*
+            参数1： legendData           : 折线图上方可以控制 是否显示折线的地方
+            参数2： xAxisData            : xAxisData x轴数组
+            参数3： seriesData           : seriesData 对应的具体数组
+            返回值： json_str            : 返回值
+
+             */
+            function getRenderMapWithProjectByTimeAddBugAddAndCloseArgs(legendData, xAxisData, seriesDataJson){
+                var $ = layui.jquery;
+
+                //创建需要返回的json数据 legendData（表头）, xAxisData（x轴）, seriesDataJson（具体数据）
+                var json_obj = {"legendData":[], xAxisData:[], seriesDataJson:[] };
+
+                console.log("json_obj.lengendData=", json_obj.legendData);
+                console.log("进入请求数据方法");
+
+                $.ajax({
+                            url: "/getTableForDrawMapWithProjectEverydayNewBugAddAndClose",
+                            method: "get",
+                            data:{"startTime":startTimeFromForm,"endTime":endTimeFromForm},
+                            datatype:"json",
+                            async:false,
+                            success:function(josnstr){//jsonstr 格式
+                                console.log("获取后台数据成功，解析数据");
+                                console.log("获取后台数据成功，解析数据datas="+ josnstr);
+                                console.log("获取后台数据成功，解析数据datas.type="+ typeof(josnstr));
+                                console.log("jsonstringfy==" + JSON.stringify(josnstr.field));
+                                returnDataJson = $.parseJSON(josnstr);
+                                console.log("，returnDataJson="+ returnDataJson);
+                                console.log("，returnDataJson.type="+ typeof(returnDataJson));
+
+                                //获取渲染折线图所需数据
+                                    //项目-新增bug增长和关闭参数
+                                var xAxisDataWithProjectNewAndCloseBugFromServer = [];
+                                var totoalNumArrWithProjectNewAndCloseBugFromServer = [];
+                                var addNumArrWithProjectNewAndCloseBugFromServer = [];
+                                var closeNumArrWithProjectNewAndCloseBugFromServer = [];
+
+
+                                //循环获取[{xx,xx}, {xx,xx}] json中的数据
+                                $.each(returnDataJson.data,function (index, item) {
+                                    console.log('i+item=' + index + " "+item.add);
+                                    //项目-新增bug增长和关闭
+                                    xAxisDataWithProjectNewAndCloseBugFromServer.push(item.bug_submit_date); //日期
+                                    addNumArrWithProjectNewAndCloseBugFromServer.push(item.add);  //新增
+                                    closeNumArrWithProjectNewAndCloseBugFromServer.push(item.close); //关闭
+
+                                });
+
+                                var legendDataWithProjectNewAndCloseBug = ["新增","关闭","项目N新增","项目N关闭"];
+                                var xAxisDataWithProjectNewAndCloseBug = xAxisDataWithProjectNewAndCloseBugFromServer;
+
+                                addNumArrWithProjectNewAndCloseBug = addNumArrWithProjectNewAndCloseBugFromServer;
+                                closeNumArrWithProjectNewAndCloseBug = closeNumArrWithProjectNewAndCloseBugFromServer;
+
+                                var seriesDataJsonWithProjectNewAndCloseBug = {"add": addNumArrWithProjectNewAndCloseBug, "close": closeNumArrWithProjectNewAndCloseBug};
+
+
+                                json_obj.legendData = legendDataWithProjectNewAndCloseBug;
+                                json_obj.xAxisData = xAxisDataWithProjectNewAndCloseBug;
+                                json_obj.seriesDataJson = seriesDataJsonWithProjectNewAndCloseBug;
+
+                            },error:function(){
+                                console.log("获取后台数据失败");
+                            }
+                        });
+
+                var json_str = JSON.stringify(json_obj);
+                console.log('获取12级别bug,折线图参数，返回的json_str=', json_str);
+                return json_str;
+            }
+
+
+            //3-1）3）项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线
+            function renderMapWithProjectByTimeAddBugAddAndClose(legendData, xAxisData, seriesDataJson){
+                    //先清空div中的数据 第一种：
+                    document.getElementById('AddBugAddAndCloseStatusMapWithProject').innerHTML = "";
+                    //第二种：$('#bigDiv').html("");
+
+                    var chart;
+                    var myChart;
+                    var option;
+
+                    require([
+                        'echarts'/*, 'map/js/china' */
+                    ], function (echarts) {
+
+                        var option = {
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {
+                                    type: 'cross',
+                                    crossStyle: {
+                                        color: '#999'
+                                    }
+                                }
+                            },
+                            toolbox: {
+                                feature: {
+                                    dataView: {show: true, readOnly: false},
+                                    magicType: {show: true, type: ['line', 'bar']},
+                                    restore: {show: true},
+                                    saveAsImage: {show: true}
+                                }
+                            },
+                            legend: {
+                                //data:['1808','LJG','ZG','test']
+                                data: legendData,
+                            },
+                            xAxis: [
+                                {
+                                    type: 'category',
+                                    //data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+                                    data: xAxisData,
+                                    axisPointer: {
+                                        type: 'shadow'
+                                    }
+                                }
+                            ],
+                            yAxis: [
+                                {
+                                    type: 'value',
+                                    name: 'bug数量',
+                                    min: 0,
+                                    max: 500,
+                                    interval: 100,
+                                    axisLabel: {
+                                        //formatter: '{value} ml'
+                                        formatter: '{value} 个'
+                                    }
+                                },
+                                {
+                                    type: 'value',
+                                    name: 'bug数量',
+                                    min: 0,
+                                    max: 500,
+                                    interval: 100,
+                                    axisLabel: {
+                                        formatter: '{value} 个 '
+                                    }
+                                }
+
+                            ],
+                            series: [
+                                {
+                                    name:legendData[0],
+                                    type:'line',
+                                    //data:[22,26,67,70,71,77,83,84,150,153,179,208,219,220,257,267,268,269]
+                                    data:seriesDataJson['totoal12']
+                                },
+                                {
+                                    name:legendData[1],
+                                    type:'line',
+                                    //data:[0,0,0,0,0,0,0,0,8,9,9,12,13,13,16,16,16,17]
+                                    data:seriesDataJson['add12']
+                                },
+                                {
+                                    name:legendData[2],
+                                    type:'line',
+                                    yAxisIndex: 1,
+                                    //data:[22,26,67,70,71,76,82,83,136,138,164,189,197,198,226,236,237,237]
+                                    data:seriesDataJson['close12']
+                                },
+                                {
+                                    name:legendData[3],
+                                    type:'line',
+                                    yAxisIndex: 1,
+                                    //data:[0,0,0,0,0,0,0,1,1,1,1,12,2,2,4,4,4,4]
+                                    data:seriesDataJson['regression12']
+                                },
+                                {
+                                    name:legendData[4],
+                                    type:'line',
+                                    yAxisIndex: 1,
+                                    //data:[0,0,0,0,0,1,1,1,5,5,5,6,7,7,11,11,11,11]
+                                    data:seriesDataJson['delay12']
+                                }
+                            ]
+                        };
+
+                        chart = myChart = testHelper.create(echarts, 'AddBugAddAndCloseStatusMapWithProject', {
+                            option: option,
+                            //title: '3）项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；'
                         });
                     });
             }
@@ -670,19 +1173,24 @@
                   form.on('submit(search)', function(data){ // 对应lay-filter
                         startTimeFromForm = document.getElementById('startTime').value;
                         endTimeFromForm =  document.getElementById('endTime').value;
-                        timeDifference =  document.getElementById('timeDifference').value;
+                        //timeDifference =  document.getElementById('timeDifference').value;
+                        timeDifference = $('#selector option:selected') .val();  // 定位id
+
 
                         console.log("开始时间=" + startTimeFromForm);
                         console.log("结束时间=" + endTimeFromForm);
                         console.log("点击了搜索按钮");
+                        console.log("select value===" + timeDifference);
 
                         //渲染table - 每天数据
                         renderTable('tableForDrawMapWithProject', '/getTableForDrawMapWithProject', startTimeFromForm, endTimeFromForm, 'tableForDrawMapWithProjectId');
                         //渲染table - 每天相对昨天 增长/关闭情况
-                        //renderTableForDrawMapWithProjectEverydayNewBugAddAndClose('tableForDrawMapWithProjectEverydayNewBugAddAndClose', '/getTableForDrawMapWithProjectEverydayNewBugAddAndClose', startTimeFromForm, endTimeFromForm, timeDifference, 'tableForDrawMapWithProjectEverydayNewBugAddAndCloseId');
+                        console.log("渲染table - 每天相对昨天 增长/关闭情况");
+                        renderTableForDrawMapWithProjectEverydayNewBugAddAndClose('tableForDrawMapWithProjectEverydayNewBugAddAndClose', '/getTableForDrawMapWithProjectEverydayNewBugAddAndClose', startTimeFromForm, endTimeFromForm, timeDifference, 'tableForDrawMapWithProjectEverydayNewBugAddAndCloseId');
                         //渲染table - 每天累加数据
                         renderTable('tableForDrawMapWithProjectEverydaySum', '/getTableForDrawMapWithProjectEverydaySum', startTimeFromForm, endTimeFromForm, 'tableForDrawMapWithProjectEverydaySumId');
 
+                        /*
                         $.ajax({
                             url: "/getTableForDrawMapWithProjectEverydaySum",
                             method: "get",
@@ -764,6 +1272,55 @@
                                 console.log("获取后台数据失败");
                             }
                         });
+                        */
+                        //1. 画全部bug折线图
+                            //获取全部bug 折线图参数
+                            console.log("画折线图 - all bug 增长/关闭情况");
+                            var allBugJsonStr = getRenderMapWithProjectByTimeAllBugArgs(startTimeFromForm, endTimeFromForm);
+                            console.log("画折线图 - all bug 增长/关闭情况allBugJsonStr= "+ allBugJsonStr);
+                            //转成json格式
+                            var allBugJsonObj = $.parseJSON(allBugJsonStr);
+
+                            var allBugLegendData = allBugJsonObj.legendData;
+                            var allBugXAxisData = allBugJsonObj.xAxisData;
+                            var allBugSeriesDataJson = allBugJsonObj.seriesDataJson;
+                            console.log("allBugLegendData=====" + JSON.stringify(allBugLegendData));
+                            console.log("allBugXAxisData=====" + JSON.stringify(allBugXAxisData));
+                            console.log("allBugSeriesDataJson=====" + JSON.stringify(allBugSeriesDataJson));
+
+                            //renderMapWithProjectByTimeAllBug(allBugLegendData, allBugXAxisData, allBugSeriesDataJson);
+
+                         //2. 画1-2级 bug折线图
+                            //获取1-2级bug 折线图参数
+                            console.log("画折线图 - 1-2级 bug 增长/关闭情况");
+                            var Bug12JsonStr = getRenderMapWithProjectByTime12BugArgs(startTimeFromForm, endTimeFromForm);
+                            console.log("画折线图 - 1-2级 bug 增长/关闭情况1-2级 Bug12JsonStr= "+ Bug12JsonStr);
+                            //转成json格式
+                            var Bug12JsonObj = $.parseJSON(Bug12JsonStr);
+
+                            var Bug12LegendData = Bug12JsonObj.legendData;
+                            var Bug12XAxisData = Bug12JsonObj.xAxisData;
+                            var Bug12SeriesDataJson = Bug12JsonObj.seriesDataJson;
+                            console.log("Bug12LegendData=====" + JSON.stringify(Bug12LegendData));
+                            console.log("Bug12XAxisData=====" + JSON.stringify(Bug12XAxisData));
+                            console.log("Bug12SeriesDataJson=====" + JSON.stringify(Bug12SeriesDataJson));
+                            //renderMapWithProjectByTime12Bug(Bug12LegendData, Bug12XAxisData, Bug12SeriesDataJson);
+
+                         //3. 按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线
+                            //增bug增长曲线和关闭曲线
+                            console.log("画折线图 - 新增bug增长曲线和关闭曲线");
+                            var addAndCloseBugJsonStr = getRenderMapWithProjectByTimeAddBugAddAndCloseArgs(startTimeFromForm, endTimeFromForm);
+                            console.log("画折线图 - 新增bug增长曲线和关闭曲线 Bug12JsonStr= "+ addAndCloseBugJsonStr);
+                            //转成json格式
+                            var addAndCloseBugJsonObj = $.parseJSON(addAndCloseBugJsonStr);
+
+                            var addAndCloseBug12LegendData = addAndCloseBugJsonObj.legendData;
+                            var addAndCloseXAxisData = addAndCloseBugJsonObj.xAxisData;
+                            var addAndCloseSeriesDataJson = addAndCloseBugJsonObj.seriesDataJson;
+                            console.log("addAndCloseBug12LegendData=====" + JSON.stringify(addAndCloseBug12LegendData));
+                            console.log("addAndCloseXAxisData=====" + JSON.stringify(addAndCloseXAxisData));
+                            console.log("addAndCloseSeriesDataJson=====" + JSON.stringify(addAndCloseSeriesDataJson));
+                            renderMapWithProjectByTimeAddBugAddAndClose(addAndCloseBug12LegendData, addAndCloseXAxisData, addAndCloseSeriesDataJson);
 
                         return false;  //页面不跳转
 

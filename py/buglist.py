@@ -1257,7 +1257,7 @@ def get_bugcount_by_developer(startTime, endTime):
 # 获取所有项目的数据，为了画折线图project0 - project13(默认给13个项目，没有值默认不返回数据, ！！ 有几个项目返回几个项目的值)
 def get_allprojectdata_withproject_orderby_date(startTime, endTime):
     print('=================================获取所有项目的数据 start ===================================')
-    print(f'app.py 传的参数{startTime}， {endTime}')
+    print(f'app.py 传的参数startime={startTime}，endtime= {endTime}')
 
     # 初始化返回的数据 [arg1, arg2, arg3, arg4] arg1=状态码（num）arg2=msg(str) arg3= count(num) arg4=tuple
     #json数据
@@ -1265,7 +1265,7 @@ def get_allprojectdata_withproject_orderby_date(startTime, endTime):
     bugcount = []
     #默认定义数据
     code = 500  # 默认失败
-    msg = 'sql语句执行失败'
+    msg = 'sql语句执行失败，此时间范围内无数据'
     count = 0  # sql语句执行结果个数
 
     # 打开数据库连接
@@ -1286,6 +1286,7 @@ def get_allprojectdata_withproject_orderby_date(startTime, endTime):
 
 
         print(f'1. 获取有多少项目==={project_tuple}')
+        """
         print(f'1. 获取 project_tuple type ==={type(project_tuple)}')
         print(f'1. 获取有多少项目 len===', len(project_tuple))
         print(f'1. project_tuplen===> list', list(project_tuple))
@@ -1299,6 +1300,7 @@ def get_allprojectdata_withproject_orderby_date(startTime, endTime):
         print(f'1. project_tuplen===> tuple[0] type str1808 --> 字符串长度（"1808",）', len(str1808)) # 9位
         print(f'1. project_tuplen===> tuple[0] type str1808 --> 截取（"1808",）', str1808[0])  # 9位
         # 0-len(str)-2
+        """
         ppname = str1808[1:len(str1808)-2]
         print(f'1. project_tuplen===> tuple[0] type str1808 --> 截取（"1808",） 1-len(str)-2', ppname)
 
@@ -1480,7 +1482,7 @@ def get_allprojectdata_everyday_sum_withproject_orderby_date(startTime, endTime)
     bugcount = []
     # 默认定义数据
     code = 500  # 默认失败
-    msg = 'sql语句执行失败'
+    msg = 'sql语句执行失败，此时间范围内无数据'
     count = 0  # sql语句执行结果个数
 
     #0. 先获取有多少个项目///////////////////////////////////////////////
@@ -1639,16 +1641,16 @@ def get_allprojectdata_everyday_sum_withproject_orderby_date(startTime, endTime)
 
 
 # 获取所有项目的 获取新增bug(status=1) 今天相对昨天的增长和关闭情况，为了画折线图project0 - project13(默认给13个项目，没有值默认不返回数据, ！！ 有几个项目返回几个项目的值)
-def get_allprojectdata_withproject_everyday_newbug_adddndclose_orderby_date(startTime, endTime, timeDifference):
-    print('=================================获取所有项目 每日累加的数据 start ===================================')
-    print(f'app.py 传的参数{startTime}， {endTime}, {timeDifference}')
+def get_allprojectdata_withproject_everyday_newbug_addandclose_orderby_date(startTime, endTime, timeDifference):
+    print('=================================获取新增bug(status=1) 今天相对昨天的增长和关闭情 start ===================================')
+    print(f'app.py 传的参数{startTime}， {endTime}, {timeDifference}，类型{type(startTime)}， {type(endTime)}, {type(timeDifference)}')
 
     # json数据
     data = {}
     bugcount = []
     # 默认定义数据
     code = 500  # 默认失败
-    msg = 'sql语句执行失败'
+    msg = 'sql语句执行失败，此时间范围内无数据'
     count = 0  # sql语句执行结果个数
 
     #0. 先获取有多少个项目///////////////////////////////////////////////
@@ -1669,6 +1671,104 @@ def get_allprojectdata_withproject_everyday_newbug_adddndclose_orderby_date(star
         #     获取project tuple
         project_tuple = cursor.fetchall()
 
+        # 2.获取有多少时间点 list
+        bug_submit_date_list = utils.get_bug_submit_date_list(startTime, endTime, timeDifference)
+        print('获取时间列表 bug_submit_date_list', bug_submit_date_list)
+        # print('获取时间列表。type bug_submit_date_list.type = ', type(bug_submit_date_list))
+
+        # 3.循环执行sql语句,获取bug_submit_date_list 中时间节点的数据
+
+        # 1. 拼接sql查询语句
+        searchsql_not_complete = "select bug_submit_date, project,count(bug_status = 1 or null) as 'add', " \
+                                 "count(bug_status = 2 or null) as 'close'"
+        searchsql_end = " from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date <= %s )"
+
+        search_sql_middle_about_project = ""
+        # 循环拼接字符串
+        for project in project_tuple:
+            # 当前索引
+            print(f'当前project=={str(project)}')
+            index = project_tuple.index(project)
+            project_name_tuple_to_str = str(project_tuple[index])
+            project_name = project_name_tuple_to_str[1:len(project_name_tuple_to_str) - 2]
+            print('循环中的项目名str==', project_name)
+
+            print(f'当前第{index}项 循环：第{index}项目为', project_name)
+            print('拼接sql语句')
+            # count(project='1808' or null) as 'totalNumByProjectBelongProject0',
+            # 依次为项目1 / 属于项目1的全部bug / 属于项目1的新增bug / 属于项目1的关闭bug
+
+            # project='1808' as project0
+            sql_name_project = ",project=" + project_name + " as project" + str(index)
+            # print('name ==========', sql_name_project)
+            sql_add_num_byproject_belong_project = " ,count(bug_status=1 and project =" + project_name + " or null) as add_num_project" + str(index)
+            sql_close_num_byproject_belong_project = ", count(bug_status=2 and project =" + project_name + " or null) as close_num_project" + str(index)
+
+            print('for 循环拼接的sql == ', sql_name_project + sql_add_num_byproject_belong_project + sql_close_num_byproject_belong_project)
+
+            for_sql = sql_name_project + sql_add_num_byproject_belong_project + sql_close_num_byproject_belong_project
+            # search_sql_middle_about_project 基础上拼接
+            search_sql_middle_about_project += for_sql
+            print('项目相关sql 拼接结果==', search_sql_middle_about_project)
+
+        # for循环拼接sql end
+        search_sql = searchsql_not_complete + search_sql_middle_about_project + searchsql_end
+        print(f'最终查询sql ==={search_sql}')  # 项目名称并不是从sql语句中读出来的，而是单独查询project sql语句中读出
+
+        #  for 执行sql语句,查出结果，循环len(bug_submit_date_list) -1 次,从list取出来直接str设备
+        for i in bug_submit_date_list:
+            index = bug_submit_date_list.index(i)
+            if index == len(bug_submit_date_list) - 1:
+                break
+
+            print(f'绘制新增bug增长曲线和关闭曲线，当前循环{index}, 值{i}, 值类型{type(i)}, str值{str(i)} ')
+            startTime = bug_submit_date_list[index]
+            endTime = bug_submit_date_list[index + 1]
+            print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
+
+            cursor.execute(search_sql, [startTime, endTime])
+            # 提交到数据库执行
+            conn.commit()
+            # 执行语句，返回结果, 包括：时间,项目，新增，关闭，项目0，项目0新增，项目0关闭，项目1。。。。
+            sql_return_result_tuple = cursor.fetchall()
+            print(f'绘制新增bug增长曲线和关闭曲线，返回结果=={sql_return_result_tuple}')
+
+            # 3. 解析结果，加入到bugcount list表中，每次只返回一条数据所以不用for循环了
+
+            bug = dict()
+            print(f'绘制新增bug增长曲线和关闭曲线,tuple[0]', sql_return_result_tuple[0])
+            print(f'绘制新增bug增长曲线和关闭曲线,tuple[0][0]', sql_return_result_tuple[0][0])
+            print(f'绘制新增bug增长曲线和关闭曲线,tuple[0][1]', sql_return_result_tuple[0][1])
+            bug['bug_submit_date'] = str(endTime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
+            bug['project'] = sql_return_result_tuple[0][1]  # 项目名称
+            bug['add'] = sql_return_result_tuple[0][2]  # 新增
+            bug['close'] = sql_return_result_tuple[0][3]  # 关闭
+
+            # 后面是项目相关的 关闭情况，有几个项目循环几次
+            for project in project_tuple:
+
+                # 当前索引
+                print(f'当前 project r=={str(project)}')
+                index = project_tuple.index(project)
+                print(f'当前索引=={index}')
+                print(f'第{index}次循环开始================================================')
+
+                #   str1808[1:len(str1808)-2] 截取字符串 中 project 名字--》'1808'
+                #   str1808[2:len(str1808)-3] 截取字符串 中 project 名字--》1808 (去掉''格式的)
+                bug['project' + str(index)] = str(project)[2:len(str(project))-3]  # 项目名称并不是从sql语句中读出来的，而是单独查询project sql语句中读出
+                bug['add_project' + str(index)] = sql_return_result_tuple[0][4 + 3*index + 1]
+                bug['close_project' + str(index)] = sql_return_result_tuple[0][4 + 3*index + 2]
+
+                print(f'project{index}=', bug['project' + str(index)])  #
+                print(f'add_projectr{index}=', bug['add_project' + str(index)])
+                print(f'close_projectr{index} ==', bug['close_project' + str(index)])
+
+                print(f'第{index}次循环结束================================================')
+
+            print(f'绘制新增bug增长曲线和关闭曲线,bug===={bug}')
+            bugcount.append(bug)
+            # for end
+
     # except Exception:
     except:
         # 如果发生错误则回滚
@@ -1681,102 +1781,6 @@ def get_allprojectdata_withproject_everyday_newbug_adddndclose_orderby_date(star
         # 不管是否异常，都关闭数据库连接
         cursor.close()
         conn.close()
-
-    #1. 先获取每日数据  /////////////////////////////////////////
-    json_str_everyday = get_allprojectdata_withproject_orderby_date(startTime, endTime)
-
-    # 2. 解析data ,获取每个时间颗粒度（timediffrent）最后一天的累加情况
-    print('每日数据==', json_str_everyday)
-    # 先json.loads 转成dict形式
-    json_dict = json.loads(json_str_everyday)
-    print('code==', json_dict['code'])
-    print('msg==', json_dict['msg'])
-    print('count==', json_dict['count'])
-    print('data==', json_dict['data'])
-    print('data.len==', len(json_dict['data']))
-    print('data.type==', type(json_dict['data']))  # list
-
-    print('data.list[0]==', json_dict['data'][0])  # list
-    print('data.list[0] type==', type(json_dict['data'][0]))  # dict
-
-
-    # 定义基础数据
-        # bug_submit_date', title: '时间', sort: true, width: 120}
-        #   'project', title: '项目'
-    addsum = 0
-    closesum = 0
-    regressionsum = 0
-    delaysum = 0
-    add12sum = 0
-    close12sum = 0
-    regression12sum = 0
-    delay12sum =0
-    total12sum = 0
-    bugCloseRatesum = 0
-    ranksum = 0
-    totalNumsum = 0
-
-    # 项目相关变量 先定义13个项目变量用到了就用- 使用字典
-    project_key_value_dict = dict()
-    for project in project_tuple:
-        project_index = project_tuple.index(project)
-        # addsum_project0 = 0
-        project_key_value_dict['addsum_project' + str(project_index)] = 0
-        project_key_value_dict['closesum_project' + str(project_index)] = 0
-        project_key_value_dict['regressionsum_project' + str(project_index)] = 0
-        project_key_value_dict['delaysum_project' + str(project_index)] = 0
-
-
-
-    # 除了时间外全部累加
-    datas_everyday_list = json_dict['data']
-    for r in datas_everyday_list:
-        index = datas_everyday_list.index(r)
-        date = datas_everyday_list[index]['bug_submit_date']
-        print(f'当前 第{index}次时间循环，日期{date}')
-
-        bug = dict()
-        # print('addsum=', addsum)
-        # print('bug[add]', bug['add'])
-
-        addsum += r['add']
-        closesum += r['close']
-        regressionsum += r['regression']
-        delaysum += r['delay']
-        add12sum += r['add12']
-        close12sum += r['close12']
-        regression12sum += r['regression12']
-        delay12sum += r['delay12']
-        total12sum += r['total12']
-        bugCloseRatesum += r['bugCloseRate']
-        ranksum += r['rank']
-        totalNumsum += r['totalNum']
-
-
-        bug['bug_submit_date'] = str(r['bug_submit_date'])  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
-        bug['project'] = r['project']  # 项目名称
-        bug['add'] = addsum  # 新增
-        bug['close'] = closesum  # 关闭
-
-        for project in project_tuple:
-            project_index = project_tuple.index(project)
-
-            # 累加数据--》 赋值给addsum 这种变量         # 项目0-13相关 - 累加
-            project_key_value_dict['addsum_project' + str(project_index)] += r['add_project' + str(project_index)]
-            project_key_value_dict['closesum_project' + str(project_index)] += r['close_project' + str(project_index)]
-
-
-            bug['project' + str(project_index)] = r['project0']  # 项目0名称
-            bug['add_project' + str(project_index)] = project_key_value_dict['addsum_project' + str(project_index)]  # 项目0新增
-            bug['close_project' + str(project_index)] = project_key_value_dict['closesum_project' + str(project_index)]  # 项目0关闭
-
-
-        print('bug==', bug)
-        # 到这里 是每天累加的数量
-        bugcount.append(bug)
-
-    #x轴应该有多少时间
-    bug_submit_date_list = []
 
 
     #     按顺序执行完，就认为成功了
@@ -1793,11 +1797,10 @@ def get_allprojectdata_withproject_everyday_newbug_adddndclose_orderby_date(star
 
     # 转化下查询结果为{},{},{}这种格式======================
     json_str = json.dumps(data, ensure_ascii=False)
-    print('<buglist> 返回结果==jsonStr=====', json_str)
+    print('<buglist> ,获取新增bug(status=1) 今天相对昨天的增长和关闭情返回结果==jsonStr=====', json_str)
 
-    print('=================================获取所有项目 每日累加数据 end ===================================')
+    print('=================================获取新增bug(status=1) 今天相对昨天的增长和关闭情 end ===================================')
     return json_str
-
 
 
 # 获取所有项目的数据，为了画折线图project0 - project13(默认给13个开发，没有值默认不返回数据, ！！ 有几个项目返回几个项目的值)
@@ -1811,7 +1814,7 @@ def get_allprojectdata_withdeveoper_orderby_date(startTime, endTime):
     bugcount = []
     #默认定义数据
     code = 500  # 默认失败
-    msg = 'sql语句执行失败'
+    msg = 'sql语句执行失败，此时间范围内无数据'
     count = 0  # sql语句执行结果个数
 
     # 打开数据库连接

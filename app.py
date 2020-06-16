@@ -722,7 +722,7 @@ def truncateTableBuglist():
     print('<app.py> 清空数据buglist')
 
     json_str = buglist.truncate_table_buglist()
-    print('《app.py》返回json==jsonStr=====', json_str)
+    print('《app.py》truncateTableBuglist 返回jsonStr==', json_str)
     return json_str
 
 #post 编辑bug
@@ -826,18 +826,18 @@ def editBug():
 
         else:
             msg = 'userid为空，不做操作'
-            print('userid为空，不做操作')
+            # print('userid为空，不做操作')
 
     # 什么条件都不符合，返回失败
     data['code'] = code
     data['msg'] = msg
     data['count'] = count
     data['data'] = editbug_sql_return_json_data
-    print('未转化json前的数据， ===', data)
+    # print('未转化json前的数据， ===', data)
 
     # 转化下查询结果为{},{},{}这种格式======================
     json_str = json.dumps(data, ensure_ascii=False)  # ensure_ascii=False传回utf8
-    print('《app.py》返回json==jsonStr=====', json_str)
+    print('《app.py》编辑单个bug 返回jsonStr== ', json_str)
     return json_str
 
 
@@ -852,12 +852,12 @@ def getBugCountByProject():
 
     if request.method == "GET":
         # 获取请求的开始使劲按， 和结束时间
-        print('获取到的前台 参数 startime endTime==', startTime, endTime)
+        print('《app.py》 getBugCountByProject 前台参数 startime endTime==', startTime, endTime)
         json_str = buglist.get_bugcount_by_project(startTime, endTime)
         return json_str
     if request.method == "POST":
         # 获取请求的开始使劲按， 和结束时间
-        print('获取到的前台 参数 startime endTime==', startTime, endTime)
+        print('《app.py》 getBugCountByProject startime endTime==', startTime, endTime)
         json_str = buglist.get_bugcount_by_project(startTime, endTime)
         return json_str
 
@@ -867,14 +867,14 @@ def getBugCountByProject():
 # getBugcountByProjectOrderbyTime
 @app.route('/getBugcountByProjectOrderbyTime', methods=("GET", "POST"))
 def get_bugcount_by_project_orderby_time():
-    print('获取 项目维度 按时间排序的数据 get_bugcount_by_project_orderby_time')
-    print('解析前台传的参数')
+    # print('《app.py》 获取项目bugcount 前台参数  get_bugcount_by_project_orderby_time')
+    # print('解析前台传的参数')
     startTime = request.values.get('startTime')
     endTime = request.values.get('endTime')
 
     if request.method == "POST":
         # 获取请求的开始使劲按， 和结束时间
-        print('获取到的前台 参数 startime endTime==', startTime, endTime)
+        print('《app.py》 获取项目bugcount 前台参数 startime endTime==', startTime, endTime)
         json_str = buglist.get_bugcount_by_project(startTime, endTime)
         return json_str
 
@@ -888,12 +888,12 @@ def getBugCountByDeveloper():
 
     if request.method == "GET":
         # 获取请求的开始使劲按， 和结束时间
-        print('获取到的前台 参数 startime endTime==', startTime, endTime)
+        print('《app.py》 获取开发bugcount 到的前台 参数 startime endTime==', startTime, endTime)
         json_str = buglist.get_bugcount_by_developer(startTime, endTime)
         return json_str
     if request.method == "POST":
         # 获取请求的开始使劲按， 和结束时间
-        print('获取到的前台 参数 startime endTime==', startTime, endTime)
+        print('《app.py》 获取开发bugcount 到的前台 参数 startime endTime==', startTime, endTime)
         json_str = buglist.get_bugcount_by_developer(startTime, endTime)
         return json_str
 
@@ -931,11 +931,11 @@ def uploadBuglist():
     data['msg'] = msg
     data['count'] = count
     data['data'] = jsondata
-    print('未转化json前的数据， ===', data)
+    # print('未转化json前的数据， ===', data)
 
     # 转化下查询结果为{},{},{}这种格式======================
     json_str = json.dumps(data, ensure_ascii=False)  # ensure_ascii=False传回utf8
-    print('《app.py》返回json==jsonStr=====', json_str)
+    print('《app.py》 上传文件，返回json==jsonStr=====', json_str)
     return json_str
 
 
@@ -947,6 +947,29 @@ def importMysqlByExcel():
     print('《app.py》返回json==jsonStr=====', json_str)
     return json_str
 
+# 为了画折线图 获取所有项目的数据 get
+@app.route('/getTableForDrawMapWithProject', methods=['POST', 'GET'])
+def getTableForDrawMapWithProject():
+    # 获取前台传的参数
+    startTime = request.values.get("startTime")
+    endTime = request.values.get("endTime")
+    print(f"《app.py》画折线图 所有项目的数据，前台传的参数{startTime}， {endTime}")
+
+    json_str = ''
+
+    # 默认使用 get 请求
+    if request.method == "GET":
+        print('get请求')
+        json_str = buglist.get_allprojectdata_withproject_orderby_date(startTime, endTime)
+        print('《app.py》画折线图 获取所有项目的数据, 返回json==jsonStr=====', json_str)
+
+    if request.method == "POST":
+        print('get请求')
+        json_str = buglist.get_allprojectdata_withproject_orderby_date(startTime, endTime)
+        print('《app.py》画折线图 获取所有项目的数据, 返回json==jsonStr=====', json_str)
+
+    return json_str
+
 
 # 为了画折线图 获取新增bug(status=1) 今天相对昨天的增长和关闭情况
 @app.route('/getTableForDrawMapWithProjectEverydayNewBugAddAndClose', methods=['POST', 'GET'])
@@ -955,19 +978,19 @@ def getTableForDrawMapWithProjectEverydayNewBugAddAndClose():
     startTime = request.values.get("startTime")
     endTime = request.values.get("endTime")
     timeDifference = request.values.get("timeDifference")
-    print(f"前台传的参数{startTime}， {endTime}, {timeDifference}")
+    print(f"《app.py》新增bug，前台传的参数{startTime}， {endTime}, {timeDifference}")
 
     json_str = ''
 
     # 默认使用 get 请求
     if request.method == "GET":
         print('get请求')
-        json_str = buglist.get_allprojectdata_withproject_everyday_newbug_adddndclose_orderby_date(startTime, endTime, timeDifference)
+        json_str = buglist.get_allprojectdata_withproject_everyday_newbug_addandclose_orderby_date(startTime, endTime, timeDifference)
         print('《app.py》画折线图 获取新增bug(status=1) 今天相对昨天的增长和关闭情况, 返回json==jsonStr=====', json_str)
 
     if request.method == "POST":
         print('get请求')
-        json_str = buglist.get_allprojectdata_withproject_everyday_newbug_adddndclose_orderby_date(startTime, endTime, timeDifference)
+        json_str = buglist.get_allprojectdata_withproject_everyday_newbug_addandclose_orderby_date(startTime, endTime, timeDifference)
         print('《app.py》画折线图 获取新增bug(status=1) 今天相对昨天的增长和关闭情况, 返回json==jsonStr=====', json_str)
 
     return json_str
@@ -1003,7 +1026,7 @@ def getTableForDrawMapWithDeveloper():
     # 获取前台传的参数
     startTime = request.values.get("startTime")
     endTime = request.values.get("endTime")
-    print(f"前台传的参数{startTime}， {endTime}")
+    print(f"《app.py》获取所有 开发的数据，前台传的参数{startTime}， {endTime}")
 
     json_str = ''
 
@@ -1011,7 +1034,7 @@ def getTableForDrawMapWithDeveloper():
     if request.method == "GET":
         print('get请求')
         json_str = buglist.get_allprojectdata_withdeveoper_orderby_date(startTime, endTime)
-        print('《app.py》画折线图 获取所有项目的数据, 返回json==jsonStr=====', json_str)
+        print('《app.py》画折线图 获取所有开发的数据, 返回json==jsonStr=====', json_str)
 
     return json_str
 

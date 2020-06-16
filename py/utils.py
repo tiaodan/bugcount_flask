@@ -31,7 +31,7 @@ def get_dbargs_from_config():
 
     config_dict = dict()
     if config.sections() is not None:
-        print('未读取到配置文件内容')
+        print('读取到配置文件内容')
         config_dict['db_host'] = config.get('db', 'db_host')
         config_dict['db_user'] = config.get('db', 'db_user')
         config_dict['db_passwd'] = config.get('db', 'db_passwd')
@@ -65,15 +65,15 @@ def get_allargs_from_config():
 
 
 #  获取一段时间内的，一定颗粒度（时间差）的日期 集合list
-get_bug_submit_date_list(starttime_str, endtime_str, date_diffrent_int):
+def get_bug_submit_date_list(starttime_str, endtime_str, date_diffrent_str):
 
-    print('开始时间', start_time_str)
-    start_time = datetime.datetime.strptime(start_time_str, '%Y-%m-%d')
-    end_time = datetime.datetime.strptime(end_time_str, '%Y-%m-%d')
+    print('开始时间', starttime_str)
+    start_time = datetime.datetime.strptime(starttime_str, '%Y-%m-%d')
+    end_time = datetime.datetime.strptime(endtime_str, '%Y-%m-%d')
+    date_diffrent_int = int(date_diffrent_str)
+    # delta = datetime.timedelta(days= time_diffrent_int -1) # 时间差 eg.2020-01-01 + 时间差 = 2020-01-07（一周的日期）
 
-    delta = datetime.timedelta(days= time_diffrent_int -1) # 时间差 eg.2020-01-01 + 时间差 = 2020-01-07（一周的日期）
-
-    datesub = (end_time - start_time).days # 起始 终止时间相减
+    datesub = (end_time - start_time).days + 1  # 起始 终止时间相减
     print('时间间隔，=', datesub)
 
     fortimes = datesub // date_diffrent_int
@@ -83,20 +83,23 @@ get_bug_submit_date_list(starttime_str, endtime_str, date_diffrent_int):
     # if datesub % dateDiffrent = 0:
         # pass
     date_submit_date = list()
-    date_submit_date.append(start_time_str)
+    date_submit_date.append(starttime_str)
 
     for i in range(0, fortimes):  # 包左不包右
         # 是起始时间就不 -1
         # 是终止时间就 替换从endtime_x
         print(f'当前第{i}次循环')
 
-        delta = datetime.timedelta(days=dateDiffrent * (i + 1) - 1)
+        delta = datetime.timedelta(days=date_diffrent_int * (i + 1) - 1)
         bug_submit_time_str = datetime.datetime.strftime((start_time + delta), '%Y-%m-%d')
         date_submit_date.append(bug_submit_time_str)
         print(date_submit_date)
 
-    days = list()
-    print('这段时间内的时间应该是', n_days.strftime('%Y-%m-%d'))
+    if datesub % date_diffrent_int >0:
+        date_submit_date.append(endtime_str)
+
+    print('这段时间内的时间应该是', date_submit_date)
+    return date_submit_date  # list
 
 
 
