@@ -12,14 +12,14 @@ db_user = 'root'
 db_passwd = 'sunkaisens'
 db_dbname = 'bugcount'
 """
-print('获取。。。。。。。。。。。。。。。。config文件 start')
+print('<dbutil.py>获取。。。。。。。。。。。。。。。。config文件 start')
 db_config_dict = utils.get_dbargs_from_config()
 
 db_host = db_config_dict['db_host']
 db_user = db_config_dict['db_user']
 db_passwd = db_config_dict['db_passwd']
 db_dbname = db_config_dict['db_dbname']
-print('获取。。。。。。。。。。。。。。。。config文件 end ')
+print('<dbutil.py>获取。。。。。。。。。。。。。。。。config文件 end ')
 
 # 数据库操作
 class DB():

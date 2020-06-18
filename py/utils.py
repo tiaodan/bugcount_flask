@@ -70,7 +70,9 @@ def get_bug_submit_date_list(starttime_str, endtime_str, date_diffrent_str):
     print('开始时间', starttime_str)
     start_time = datetime.datetime.strptime(starttime_str, '%Y-%m-%d')
     end_time = datetime.datetime.strptime(endtime_str, '%Y-%m-%d')
+    print('???????????????????????????????type date-dic==', type(date_diffrent_str))
     date_diffrent_int = int(date_diffrent_str)
+    print('???????????????????????????????type date-dic==', date_diffrent_str)
     # delta = datetime.timedelta(days= time_diffrent_int -1) # 时间差 eg.2020-01-01 + 时间差 = 2020-01-07（一周的日期）
 
     datesub = (end_time - start_time).days + 1  # 起始 终止时间相减

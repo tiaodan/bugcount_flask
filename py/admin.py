@@ -14,7 +14,7 @@ from py import utils
 
 
 # 获取数据库配置
-print('获取。。。。。。。。。。。。。。。。config文件')
+print('<admin.py> 获取。。。。。。。。。。。。。。。。config文件')
 db_config_dict = utils.get_dbargs_from_config()
 
 db_host = db_config_dict['db_host']
@@ -22,7 +22,7 @@ db_user = db_config_dict['db_user']
 db_passwd = db_config_dict['db_passwd']
 db_dbname = db_config_dict['db_dbname']
 
-print('获取。。。。。。。。。。。。。。。。config文件 end ')
+print('<admin.py>获取。。。。。。。。。。。。。。。。config文件 end ')
 
 
 

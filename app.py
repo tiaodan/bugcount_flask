@@ -972,28 +972,30 @@ def getTableForDrawMapWithProject():
 
 
 # 为了画折线图 获取新增bug(status=1) 今天相对昨天的增长和关闭情况
-@app.route('/getTableForDrawMapWithProjectEverydayNewBugAddAndClose', methods=['POST', 'GET'])
-def getTableForDrawMapWithProjectEverydayNewBugAddAndClose():
+@app.route('/getTableForDrawMapWithProjectALongtimeNewBugAddAndClose', methods=['POST', 'GET'])
+def getTableForDrawMapWithProjectALongtimeNewBugAddAndClose():
     # 获取前台传的参数
     startTime = request.values.get("startTime")
     endTime = request.values.get("endTime")
-    timeDifference = request.values.get("timeDifference")
-    print(f"《app.py》新增bug，前台传的参数{startTime}， {endTime}, {timeDifference}")
+    timeDifference = int(request.values.get("timeDifference"))
+    print(f'timeDifference 类型{type(timeDifference)}')  # str
+    print(f"《app.py》新增bug，前台传的参数startime={startTime}， endtime={endTime}, timeDifference={timeDifference}")
 
     json_str = ''
 
     # 默认使用 get 请求
     if request.method == "GET":
         print('get请求')
-        json_str = buglist.get_allprojectdata_withproject_everyday_newbug_addandclose_orderby_date(startTime, endTime, timeDifference)
+        json_str = buglist.get_allprojectdata_withproject_alongtime_newbug_addandclose_orderby_date(startTime, endTime, timeDifference)
         print('《app.py》画折线图 获取新增bug(status=1) 今天相对昨天的增长和关闭情况, 返回json==jsonStr=====', json_str)
 
     if request.method == "POST":
         print('get请求')
-        json_str = buglist.get_allprojectdata_withproject_everyday_newbug_addandclose_orderby_date(startTime, endTime, timeDifference)
+        json_str = buglist.get_allprojectdata_withproject_alongtime_newbug_addandclose_orderby_date(startTime, endTime, timeDifference)
         print('《app.py》画折线图 获取新增bug(status=1) 今天相对昨天的增长和关闭情况, 返回json==jsonStr=====', json_str)
 
     return json_str
+
 
 
 # 为了画折线图 获取所有项目 每日累加的数据 get
@@ -1019,6 +1021,32 @@ def getTableForDrawMapWithProjectEverydaySum():
 
     return json_str
 
+# 为了画折线图 获取全部bug 绘制全部bug增长曲线和关闭； + bug剩余情况
+@app.route('/getTableForDrawMapWithProjectALongtimeAllBug', methods=['POST', 'GET'])
+def getTableForDrawMapWithProjectALongtimeAllBug():
+    # 获取前台传的参数
+    print(request.values)
+    startTime = request.values.get("startTime")
+    endTime = request.values.get("endTime")
+    timeDifference = int(request.values.get("timeDifference"))
+    print(f'timeDifference 类型{type(timeDifference)}')  # str
+    print(f"《app.py》全部bug，前台传的参数startime={startTime}， endtime={endTime}, timeDifference={timeDifference}")
+
+    json_str = ''
+
+    # 默认使用 get 请求
+    if request.method == "GET":
+        print('get请求')
+        json_str = buglist.get_allprojectdata_withproject_alongtime_allbug_orderby_date(startTime, endTime, timeDifference)
+        print('《app.py》画折线图 获取全部bug 一段时间内的的增长和关闭情况, 返回json==jsonStr=====', json_str)
+
+    if request.method == "POST":
+        print('get请求')
+        json_str = buglist.get_allprojectdata_withproject_alongtime_allbug_orderby_date(startTime, endTime, timeDifference)
+        print('《app.py》画折线图 获取全部bug 一段时间内的的增长和关闭情况, 返回json==jsonStr=====', json_str)
+
+    return json_str
+
 
 # 为了画折线图 获取所有 开发的数据 get
 @app.route('/getTableForDrawMapWithDeveloper', methods=['POST', 'GET'])
@@ -1039,8 +1067,43 @@ def getTableForDrawMapWithDeveloper():
     return json_str
 
 
+# #######  开发维度 start########################
+# 获取开发维度 所有bug /1-2级别bug 情况
+@app.route('/getTableWithDeveloper', methods=['POST', 'GET'])
+def getTableWithDeveloper():
+    # 获取前台传的参数
+    print(request.values)
+    startTime = request.values.get("startTime")
+    endTime = request.values.get("endTime")
+    timeDifference = int(request.values.get("timeDifference"))
+    print(f'timeDifference 类型{type(timeDifference)}')  # str
+    print(f"《app.py。开发维度》bug table，前台传的参数startime={startTime}， endtime={endTime}, timeDifference={timeDifference}")
+
+    json_str = ''
+
+    # 默认使用 get 请求
+    if request.method == "GET":
+        print('get请求')
+        json_str = buglist.get_table_withdeveloper_orderby_date(startTime, endTime, timeDifference)
+        print('《app.py。开发维度》bug table, 返回json==jsonStr=====', json_str)
+
+    if request.method == "POST":
+        print('get请求')
+        json_str = buglist.get_table_withdeveloper_orderby_date(startTime, endTime, timeDifference)
+        print('《app.py。开发维度》bug table, 返回json==jsonStr=====', json_str)
+
+    return json_str
+
+
+
+# 为了画折线图 获取所有 开发的数据 get
+
+
+# #######  开发维度 end########################
 
 # #########################  bug操作相关 end ############################################################################
+
+
 # 主函数
 if __name__ == '__main__':
     app.run(debug=True)
