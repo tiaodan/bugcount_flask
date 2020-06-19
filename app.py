@@ -1096,7 +1096,31 @@ def getTableWithDeveloper():
 
 
 
-# 为了画折线图 获取所有 开发的数据 get
+# 为了画折线图 开发维度 获取全部bug 绘制全部bug增长曲线和关闭； + bug剩余情况
+@app.route('/getTableForDrawMapWithDeveloperALongtimeAllBug', methods=['POST', 'GET'])
+def getTableForDrawMapWithDeveloperALongtimeAllBug():
+    # 获取前台传的参数
+    print(request.values)
+    startTime = request.values.get("startTime")
+    endTime = request.values.get("endTime")
+    timeDifference = int(request.values.get("timeDifference"))
+    print(f'timeDifference 类型{type(timeDifference)}')  # str
+    print(f"《app.py，开发维度》全部bug折线图，前台传的参数startime={startTime}， endtime={endTime}, timeDifference={timeDifference}")
+
+    json_str = ''
+
+    # 默认使用 get 请求
+    if request.method == "GET":
+        print('get请求')
+        json_str = buglist.get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, endTime, timeDifference)
+        print('《app.py，开发维度》全部bug折线图,获取全部bug 一段时间内的的增长和关闭情况, 返回json==jsonStr=====', json_str)
+
+    if request.method == "POST":
+        print('post请求')
+        json_str = buglist.get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, endTime, timeDifference)
+        print('《app.py，开发维度》全部bug折线图,获取全部bug 一段时间内的的增长和关闭情况, 返回json==jsonStr=====', json_str)
+
+    return json_str
 
 
 # #######  开发维度 end########################

@@ -1,0 +1,94 @@
+
+一期计划：
+1）项目维度，按时间（时间可自定义）统计新增bug、关闭bug、待回归bug等；√
+2）项目维度，按时间（时间可自定义）统计新增一、二级新增bug、关闭bug、待回归bug等； √
+3）项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；（一个月中，每一周新增多少）增长：每一周增长数量 关闭：这一周关闭了多少√
+4）项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线； + bug剩余情况	 √
+5）开发维度，按时间（时间可自定义）统计新增bug、关闭bug、待回归bug等； √
+6）开发维度，按时间（时间可自定义）统计新增一、二级新增bug、关闭bug、待回归bug等；√
+7）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；
+8）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线 + bug剩余情况 ；
+9）开发维度，按时间（时间可自定义）统计软件自测考量：相比较这段时间产生的所有bug，易bug产生比率；
+10）开发维度，按时间（时间可自定义）统计bug解决的及时性考量：一二级bug一定时间内（可自定义）的解决率，三四级bug一定时间内（可自定义时间）
+11）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线；1/2    月/周/季
+12）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制一二级bug解决及时率曲线和三四级bug解决及时率曲线。
+
+仿照疫情，操作，再加一个bug剩余情况
+做成那种可以切换分页的
+整理日志
+时间是
+重复数据导入问题
+
+
+
+//////////////////////
+问题，多次渲染，清除上一个，只渲染一个
+/////////////////////
+二期计划：
+1）有可视化的界面供操作，可单独生成各项，也可一键生成所有；
+2）按照一定的模板生成一个报告。	
+
+三期计划：
+1）一个简易且适应我们部门bug管理的bug录入系统；
+2）录入可以像在excel里面录入那么趁手；
+3）录入的数据统一化管理；
+4）支持协同录入；
+5）录入的数据支持按项目、按开发个人导出成excel；
+6）支持excel导入；
+7）录入系统对接一期二期的实现。
+
+
+
+
+一、安装python
+第一步：安装Python3环境
+4.安装完毕，创建软连接
+ln -s /usr/local/python3/bin/python3 /usr/bin/python
+# 执行命令
+python -V #将会看到python3的版本
+# 执行命令
+python2 -V #将会看到python2的版本
+
+0. 更新pip
+python -m pip install --upgrade pip
+0.1 pycharm 引入虚拟环境
+setting--> project --> Project Interpreter --> project Interpreter --> 点配置按钮--》add-->
+--> virtualenv Environment --> existing environment --> 找到虚拟环境里的/scripts/python
+
+1. 安装虚拟环境
+pip install virtualenv
+2. 激活虚拟环境
+1） 创建目录  venv_bugcount
+2)   virtualenv -p  python3.8  venv_bugcount
+
+第四步：添加自定义系统服务（很重要）
+# 这样的命令在ssh终端退出后，python进程也会被杀掉
+python xxx.py &
+
+需要创建一个自定义的系统服务，来保证python程序能够在后台运行。
+
+1.创建系统服务
+vim /usr/lib/systemd/system/robot.service
+[Unit]
+Description=robot
+After=network.target
+ 
+[Service]
+Type=forking
+ExecStart=/usr/local/python3/bin/ENV/bin/python /usr/local/python3/bin/ENV/p3.py &
+PrivateTmp=true
+ 
+[Install]
+WantedBy=multi-user.target
+ExecStart为服务启动时执行的命令，不能用相对路径， 一定要全路径。
+这里也可以将命令写到任意的.sh文件中，这里写.sh文件的全路径也是可以的
+
+
+2. 2.启用自定义系统服务
+
+systemctl enable robot
+systemctl start robot
+
+ps aux|grep robot
+
+4. 写一个服务查看python是否启动，
