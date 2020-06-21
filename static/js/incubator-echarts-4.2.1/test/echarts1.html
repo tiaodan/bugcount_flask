@@ -236,6 +236,9 @@
             <blockquote class="layui-elem-quote"><div align="center">4）项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线； + bug剩余情况	；</div></blockquote>
             <div id="allBugStatusMapWithProject"></div>
 
+            <blockquote class="layui-elem-quote"><div align="center">7）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；</div></blockquote>
+            <div id="AddBugAddAndCloseStatusMapWithDeveloper"></div>
+
             <blockquote class="layui-elem-quote"><div align="center">8）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线；</div></blockquote>
             <div id="allBugStatusMapWithDeveloper"></div>
 
@@ -1608,6 +1611,303 @@
             }
 
             ///////////////////////////////////////////////////////////////////////////////////////////开发维度
+             //渲染折线图 7）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；  参数----------------------------------------------------------
+            // 7-1） 7）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线； 获取参数
+            /*
+            参数1： startTimeFromForm             : 开始时间
+            参数2： endTimeFromForm               : 结束时间
+            参数3： timeDifferenceFromForm        : 时间颗粒度-季/月/周/一周/二周/三周
+             */
+            function getRenderMapWithDeveloperByTimeAlongtimeAddBugAddAndCloseArgs(startTimeFromForm, endTimeFromForm, timeDifferenceFromForm){
+                console.log("getRenderMapWithDeveloperByTimeAlongtimeAddBugAddAndCloseArgs，timeDifferenceFromForm参数==", timeDifferenceFromForm);
+                var $ = layui.jquery;
+
+                //创建需要返回的json数据 legendData（表头）, xAxisData（x轴）, seriesDataJson（具体数据）
+                var json_obj = {"legendData":[], xAxisData:[], seriesDataJson:[] };
+
+                console.log("json_obj.lengendData=", json_obj.legendData);
+                console.log("getRenderMapWithDeveloperByTimeAlongtimeAddBugAddAndCloseArgs 进入请求数据方法");
+
+                $.ajax({
+                            url: "/getTableForDrawMapWithDeveloperALongtimeAddBugAddAndClose",
+                            method: "get",
+                            data:{"startTime":startTimeFromForm,"endTime":endTimeFromForm, "timeDifference":timeDifferenceFromForm},
+                            datatype:"json",
+                            async:false,
+                            success:function(josnstr){//jsonstr 格式
+                                console.log("获取后台数据成功，解析数据");
+                                console.log("获取后台数据成功，解析数据datas="+ josnstr);
+                                console.log("获取后台数据成功，解析数据datas.type="+ typeof(josnstr));
+                                console.log("jsonstringfy==" + JSON.stringify(josnstr.field));
+                                returnDataJson = $.parseJSON(josnstr);
+
+                                returnDataJsonData0Num = Object.keys(returnDataJson.data[0]).length;
+                                console.log("有多少个开发json_obj.data 数据 长度= " + returnDataJsonData0Num);
+                                developerNum = (returnDataJsonData0Num -14) / 7;
+                                console.log("有多少个开发,换算后" + developerNum);
+                                    console.log("，returnDataJson==============");
+                                console.log(returnDataJson);
+                                console.log("，returnDataJson.type="+ typeof(returnDataJson));
+
+                                //获取渲染折线图所需数据
+                                    //开发 一段时间-全部bug增长和关闭参数
+                                var xAxisDataWithDeveloperAllBugFromServer = [];
+
+                                var addNumArrWithDeveloperAllBugFromServer = []; //新增
+                                var closeNumArrWithDeveloperAllBugFromServer = []; //关闭
+                                var lastNumArrWithDeveloperAllBugFromServer = []; //剩余
+                                var totalNumArrWithDeveloperAllBugFromServer = []; //总数
+
+                                //定义项目参数键值对
+                                //var developerArgsKeyValue = {"key1":"value1"};
+                                var developerArgsKeyValue = {};
+                                console.log("developerArgsKeyValue == 最初：");
+                                console.log(developerArgsKeyValue);
+                                for(var i=0;i<developerNum;i++){
+                                    developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + i] = new Array();  //项目0 新增
+                                    //console.log("类型" + typeof(developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + i]));
+                                    developerArgsKeyValue['closeNumArrWithDeveloperAllBugFromServerDeveloper' + i] = new Array(); //项目0 关闭
+                                    developerArgsKeyValue['lastNumArrWithDeveloperAllBugFromServerDeveloper' + i] = new Array(); //项目0 剩余
+                                    developerArgsKeyValue['totalNumArrWithDeveloperAllBugFromServerDeveloper' + i] = new Array(); //项目0 总数
+
+                                    console.log("定义项目参数键值对 ");
+                                    console.log(developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + i]);
+                                    console.log(developerArgsKeyValue['closeNumArrWithDeveloperAllBugFromServerDeveloper' + i]);
+                                    console.log(developerArgsKeyValue['lastNumArrWithDeveloperAllBugFromServerDeveloper' + i]);
+                                    console.log(developerArgsKeyValue['totalNumArrWithDeveloperAllBugFromServerDeveloper' + i]);
+                                }
+                                console.log("developerArgsKeyValue == 以下：");
+                                console.log(developerArgsKeyValue);
+
+
+                                //循环获取[{xx,xx}, {xx,xx}] json中的数据 // 按时间循环的
+                                $.each(returnDataJson.data,function (index, item) {
+                                    console.log('i+item=' + index + " "+item);
+                                    console.log(item);
+                                    //项目-新增bug增长和关闭
+                                    console.log("push不能用？？");
+                                    xAxisDataWithDeveloperAllBugFromServer.push(item['bug_submit_date']); //日期
+                                    addNumArrWithDeveloperAllBugFromServer.push(item.add);  //新增
+                                    closeNumArrWithDeveloperAllBugFromServer.push(item.close); //关闭
+                                    lastNumArrWithDeveloperAllBugFromServer.push(item.last); //剩余bug情况
+
+                                    /*
+                                    addNumArrWithDeveloperAllBugFromServerDeveloper0.push(item.add_developer0); //add_developer0
+                                    closeNumArrWithDeveloperAllBugFromServerDeveloper0.push(item.close_developer0); //close_developer0
+                                    lastNumArrWithDeveloperAllBugFromServerDeveloper0.push(item.last_developer0); //last_developer0
+                                     */
+                                    //根据有多少项目来循环
+                                    for(var i=0;i<developerNum;i++){
+                                        console.log("addNumArrWithDeveloperAllBugFromServerDeveloper 前 + add_developer[add_developer + index]==");
+                                        console.log(developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + i]);
+                                        console.log("item.add_developer=====================前");
+                                        console.log(item['add_developer' + i]);
+                                        developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + i].push(item['add_developer' + i]);
+
+                                        console.log("addNumArrWithDeveloperAllBugFromServerDeveloper 后 + add_developer[add_developer + index]==");
+                                        console.log(developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + i]);
+                                        console.log("item.add_developer=====================后");
+                                        console.log(item['add_developer' + i]);
+                                        developerArgsKeyValue['closeNumArrWithDeveloperAllBugFromServerDeveloper' + i].push(item['close_developer' + i]);
+                                        developerArgsKeyValue['lastNumArrWithDeveloperAllBugFromServerDeveloper' + i].push(item['last_developer' + i]);
+                                    }
+
+
+                                });
+                                console.log("developerArgsKeyValue == 赋值完数据后 ，以下：");
+                                console.log(developerArgsKeyValue);
+
+                                //这里未完成，要有项目‘1808’-新增 == add_Developer0 close_Developer0
+                                //var legendDataWithDeveloperAllBug = ["新增","关闭","剩余","add_developer0","close_developer0", "last_developer0"];
+                                var legendDataWithDeveloperAllBug = ["新增","关闭","剩余"];
+                                //循环添加上折线图标签栏
+                                for(var a=0;a<developerNum;a++){
+                                    legendDataWithDeveloperAllBug.push("add_developer" + a);
+                                    legendDataWithDeveloperAllBug.push("close_developer" + a);
+                                    legendDataWithDeveloperAllBug.push("last_developer" + a);
+                                }
+
+                                var xAxisDataWithDeveloperAllBug = xAxisDataWithDeveloperAllBugFromServer;
+
+                                addNumArrWithDeveloperAllBug = addNumArrWithDeveloperAllBugFromServer;
+                                closeNumArrWithDeveloperAllBug = closeNumArrWithDeveloperAllBugFromServer;
+                                lastNumArrWithDeveloperAllBug = lastNumArrWithDeveloperAllBugFromServer;
+                                /*
+                                addNumArrWithDeveloperAllBugDeveloper0 = addNumArrWithDeveloperAllBugFromServerDeveloper0;
+                                closeNumArrWithDeveloperAllBugDeveloper0 = closeNumArrWithDeveloperAllBugFromServerDeveloper0;
+                                lastNumArrWithDeveloperAllBugDeveloper0 = lastNumArrWithDeveloperAllBugFromServerDeveloper0;
+                                 */
+                                //var seriesDataJsonWithDeveloperAllBug = {"add": addNumArrWithDeveloperAllBug, "close": closeNumArrWithDeveloperAllBug, "last":lastNumArrWithDeveloperAllBug, "add_developer0":addNumArrWithDeveloperAllBugDeveloper0, "close_developer0":closeNumArrWithDeveloperAllBugDeveloper0, "last_developer0":lastNumArrWithDeveloperAllBugDeveloper0};
+                                var seriesDataJsonWithDeveloperAllBug = {"add": addNumArrWithDeveloperAllBug, "close": closeNumArrWithDeveloperAllBug, "last":lastNumArrWithDeveloperAllBug};
+
+                                for(var b=0;b<developerNum;b++){
+                                    seriesDataJsonWithDeveloperAllBug['add_developer' + b] = developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + b]; //对应一个数组
+                                    seriesDataJsonWithDeveloperAllBug['close_developer' + b] = developerArgsKeyValue['closeNumArrWithDeveloperAllBugFromServerDeveloper' + b];
+                                    seriesDataJsonWithDeveloperAllBug['last_developer' + b] = developerArgsKeyValue['lastNumArrWithDeveloperAllBugFromServerDeveloper' + b];
+                                }
+
+                                json_obj.legendData = legendDataWithDeveloperAllBug;
+                                json_obj.xAxisData = xAxisDataWithDeveloperAllBug;
+                                json_obj.seriesDataJson = seriesDataJsonWithDeveloperAllBug;
+                                console.log("json_str==" + JSON.stringify(json_obj))
+
+                            },error:function(){
+                                console.log("获取后台数据失败");
+                            }
+                        });
+
+                var json_str = JSON.stringify(json_obj);
+                console.log('开发维度，一段时间内，获取全部bug增长关闭情况,折线图参数，返回的json_str=', json_str);
+                return json_str;
+            }
+
+
+            //7-2）7）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；
+            /*
+            参数1： legendData           : 折线图上方可以控制 是否显示折线的地方
+            参数2： xAxisData            : xAxisData x轴数组
+            参数3： seriesData           : seriesData 对应的具体数组
+            返回值： json_str            : 返回值
+             */
+            function renderMapWithDeveloperByTimeAlongtimeAddBugAddAndClose(legendData, xAxisData, seriesDataJson){
+                    console.log("legendData=，xAxisData，seriesDataJson" +  legendData);
+                    console.log(legendData);
+                    console.log(xAxisData);
+                    console.log(seriesDataJson);
+                    //先清空div中的数据 第一种：
+                    document.getElementById('AddBugAddAndCloseStatusMapWithDeveloper').innerHTML = "";
+                    //第二种：$('#bigDiv').html("");
+
+                    var seriesDataJsonArr = ['add_developer0', 'close_developer0', 'add_developer1', 'close_developer1', 'add_developer2', 'close_developer2', 'add_developer3', 'close_developer3', 'add_developer4', 'close_developer4',
+                                             'add_developer5', 'close_developer5', 'add_developer6', 'close_developer6', 'add_developer7', 'close_developer7', 'add_developer8', 'close_developer8', 'add_developer9', 'close_developer9',
+                                             'add_developer10', 'close_developer10', 'add_developer11', 'close_developer11', 'add_developer12', 'close_developer12', 'add_developer13', 'close_developer13'
+                    ];
+
+                    //设置series变量，有几个 Developer，就加几个{},是一个数组
+                    var addSeriesDataNotComplete = {
+                                    name:legendData[0],
+                                    type:'line',
+                                    data:seriesDataJson['add']
+                                };
+                    var closeSeriesDataNotComplete = {
+                                    name:legendData[1],
+                                    type:'line',
+                                    data:seriesDataJson['close']
+                                };
+                    var lastSeriesDataNotComplete = {
+                                    name:legendData[2],
+                                    type:'line',
+                                    data:seriesDataJson['last']
+                                };
+
+                    var seriesData = []; //最终数据，放在option里的
+                    seriesData.push(addSeriesDataNotComplete);
+                    seriesData.push(closeSeriesDataNotComplete);
+                    seriesData.push(lastSeriesDataNotComplete);
+                    for(var i=0; i< legendData.length/3 -1; i++) {
+                        console.log("legendData.length" + legendData.length);
+                        console.log("renderMapWithDeveloperByTimeAlongtimeAddBugAddAndClose, 获取折线图option,循环=" + i + legendData[i] );
+                        var add_seriesDeveloperN =
+                                {
+                                    name:legendData[i*3+3],  //add_developer0 close_developer0
+                                    type:'line',
+                                    data:seriesDataJson['add_developer' + i]
+                                };
+                        var  close_seriesDeveloperN   =
+                                {
+                                    name:legendData[i*3+4],   //add_developer0 close_developer0
+                                    type:'line',
+                                    data:seriesDataJson['close_developer' + i]
+                                };
+                        var  last_seriesDeveloperN   =
+                                {
+                                    name:legendData[i*3+5],   //add_developer0 close_developer0 last_developer0
+                                    type:'line',
+                                    data:seriesDataJson['last_developer' + i]
+                                };
+
+                        seriesData.push(add_seriesDeveloperN);
+                        seriesData.push(close_seriesDeveloperN);
+                        seriesData.push(last_seriesDeveloperN);
+                    }
+                    console.log("seriesData==================");
+                    console.log(seriesData);
+                    //console.log(seriesDataNotComplete);
+
+                    var chart;
+                    var myChart;
+                    var option;
+
+                    require([
+                        'echarts'/*, 'map/js/china' */
+                    ], function (echarts) {
+
+                        var option = {
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {
+                                    type: 'cross',
+                                    crossStyle: {
+                                        color: '#999'
+                                    }
+                                }
+                            },
+                            toolbox: {
+                                feature: {
+                                    dataView: {show: true, readOnly: false},
+                                    magicType: {show: true, type: ['line', 'bar']},
+                                    restore: {show: true},
+                                    saveAsImage: {show: true}
+                                }
+                            },
+                            legend: {
+                                //data:['1808','LJG','ZG','test']
+                                data: legendData,
+                            },
+                            xAxis: [
+                                {
+                                    type: 'category',
+                                    data: xAxisData,
+                                    axisPointer: {
+                                        type: 'shadow'
+                                    }
+                                }
+                            ],
+                            yAxis: [
+                                {
+                                    type: 'value',
+                                    name: 'bug数量',
+                                    min: 0,
+                                    max: 500,
+                                    interval: 100,
+                                    axisLabel: {
+                                        formatter: '{value} 个'
+                                    }
+                                },
+                                {
+                                    type: 'value',
+                                    name: 'bug数量',
+                                    min: 0,
+                                    max: 500,
+                                    interval: 100,
+                                    axisLabel: {
+                                        formatter: '{value} 个 '
+                                    }
+                                }
+
+                            ],
+                            //series: seriesData
+                            series: seriesData
+                        };
+
+                        chart = myChart = testHelper.create(echarts, 'AddBugAddAndCloseStatusMapWithDeveloper', {
+                            option: option,
+                            //title: '8）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线 + bug剩余情况 ；；'
+                        });
+                    });
+            }
+                               ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
             /* 开发维度，按时间（时间可自定义）统计12级bug / 新增bug、关闭bug、待回归bug等
             参数1： argElem              : 指向table的id
             参数1： argUrl               : url路径
@@ -1786,10 +2086,10 @@
                                 returnDataJson = $.parseJSON(josnstr);
 
                                 returnDataJsonData0Num = Object.keys(returnDataJson.data[0]).length;
+                                console.log("有多少个开发json_obj.data 数据 长度= " + returnDataJsonData0Num);
                                 developerNum = (returnDataJsonData0Num -14) / 7;
-                                console.log("有多少个开发json_obj.data长度= " + developerNum);
-                                console.log("有多少个开发,换算后" + (developerNum - 14) /7);
-                                console.log("，returnDataJson==============");
+                                console.log("有多少个开发,换算后" + developerNum);
+                                    console.log("，returnDataJson==============");
                                 console.log(returnDataJson);
                                 console.log("，returnDataJson.type="+ typeof(returnDataJson));
 
@@ -1803,19 +2103,31 @@
                                 var totalNumArrWithDeveloperAllBugFromServer = []; //总数
 
                                 //定义项目参数键值对
-                                var developerArgsKeyValue = {"key1":"value1"};
+                                //var developerArgsKeyValue = {"key1":"value1"};
+                                var developerArgsKeyValue = {};
+                                console.log("developerArgsKeyValue == 最初：");
+                                console.log(developerArgsKeyValue);
                                 for(var i=0;i<developerNum;i++){
-                                    developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + i] = [];  //项目0 新增
+                                    developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + i] = new Array();  //项目0 新增
                                     //console.log("类型" + typeof(developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + i]));
-                                    developerArgsKeyValue['closeNumArrWithDeveloperAllBugFromServerDeveloper' + i] = []; //项目0 关闭
-                                    developerArgsKeyValue['lastNumArrWithDeveloperAllBugFromServerDeveloper' + i] = []; //项目0 剩余
-                                    developerArgsKeyValue['totalNumArrWithDeveloperAllBugFromServerDeveloper' + i] = []; //项目0 总数
+                                    developerArgsKeyValue['closeNumArrWithDeveloperAllBugFromServerDeveloper' + i] = new Array(); //项目0 关闭
+                                    developerArgsKeyValue['lastNumArrWithDeveloperAllBugFromServerDeveloper' + i] = new Array(); //项目0 剩余
+                                    developerArgsKeyValue['totalNumArrWithDeveloperAllBugFromServerDeveloper' + i] = new Array(); //项目0 总数
+
+                                    console.log("定义项目参数键值对 ");
+                                    console.log(developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + i]);
+                                    console.log(developerArgsKeyValue['closeNumArrWithDeveloperAllBugFromServerDeveloper' + i]);
+                                    console.log(developerArgsKeyValue['lastNumArrWithDeveloperAllBugFromServerDeveloper' + i]);
+                                    console.log(developerArgsKeyValue['totalNumArrWithDeveloperAllBugFromServerDeveloper' + i]);
                                 }
+                                console.log("developerArgsKeyValue == 以下：");
+                                console.log(developerArgsKeyValue);
 
 
-                                //循环获取[{xx,xx}, {xx,xx}] json中的数据
+                                //循环获取[{xx,xx}, {xx,xx}] json中的数据 // 按时间循环的
                                 $.each(returnDataJson.data,function (index, item) {
-                                    console.log('i+item=' + index + " "+item.add);
+                                    console.log('i+item=' + index + " "+item);
+                                    console.log(item);
                                     //项目-新增bug增长和关闭
                                     console.log("push不能用？？");
                                     xAxisDataWithDeveloperAllBugFromServer.push(item['bug_submit_date']); //日期
@@ -1828,11 +2140,26 @@
                                     closeNumArrWithDeveloperAllBugFromServerDeveloper0.push(item.close_developer0); //close_developer0
                                     lastNumArrWithDeveloperAllBugFromServerDeveloper0.push(item.last_developer0); //last_developer0
                                      */
-                                    developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + index].push(item['add_developer' + index]);
-                                    developerArgsKeyValue['closeNumArrWithDeveloperAllBugFromServerDeveloper' + index].push(item['close_developer' + index]);
-                                    developerArgsKeyValue['lastNumArrWithDeveloperAllBugFromServerDeveloper' + index].push(item['last_developer' + index]);
+                                    //根据有多少项目来循环
+                                    for(var i=0;i<developerNum;i++){
+                                        console.log("addNumArrWithDeveloperAllBugFromServerDeveloper 前 + add_developer[add_developer + index]==");
+                                        console.log(developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + i]);
+                                        console.log("item.add_developer=====================前");
+                                        console.log(item['add_developer' + i]);
+                                        developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + i].push(item['add_developer' + i]);
+
+                                        console.log("addNumArrWithDeveloperAllBugFromServerDeveloper 后 + add_developer[add_developer + index]==");
+                                        console.log(developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + i]);
+                                        console.log("item.add_developer=====================后");
+                                        console.log(item['add_developer' + i]);
+                                        developerArgsKeyValue['closeNumArrWithDeveloperAllBugFromServerDeveloper' + i].push(item['close_developer' + i]);
+                                        developerArgsKeyValue['lastNumArrWithDeveloperAllBugFromServerDeveloper' + i].push(item['last_developer' + i]);
+                                    }
+
 
                                 });
+                                console.log("developerArgsKeyValue == 赋值完数据后 ，以下：");
+                                console.log(developerArgsKeyValue);
 
                                 //这里未完成，要有项目‘1808’-新增 == add_Developer0 close_Developer0
                                 //var legendDataWithDeveloperAllBug = ["新增","关闭","剩余","add_developer0","close_developer0", "last_developer0"];
@@ -1858,8 +2185,8 @@
                                 var seriesDataJsonWithDeveloperAllBug = {"add": addNumArrWithDeveloperAllBug, "close": closeNumArrWithDeveloperAllBug, "last":lastNumArrWithDeveloperAllBug};
 
                                 for(var b=0;b<developerNum;b++){
-                                    seriesDataJsonWithDeveloperAllBug['add_developer' + b] = developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + b];
-                                    seriesDataJsonWithDeveloperAllBug['close_developer' + a] = developerArgsKeyValue['closeNumArrWithDeveloperAllBugFromServerDeveloper' + b];
+                                    seriesDataJsonWithDeveloperAllBug['add_developer' + b] = developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + b]; //对应一个数组
+                                    seriesDataJsonWithDeveloperAllBug['close_developer' + b] = developerArgsKeyValue['closeNumArrWithDeveloperAllBugFromServerDeveloper' + b];
                                     seriesDataJsonWithDeveloperAllBug['last_developer' + b] = developerArgsKeyValue['lastNumArrWithDeveloperAllBugFromServerDeveloper' + b];
                                 }
 
@@ -1926,19 +2253,19 @@
                         console.log("renderMapWithDeveloperByTimeAlongtimeAllBug, 获取折线图option,循环=" + i + legendData[i] );
                         var add_seriesDeveloperN =
                                 {
-                                    name:legendData[i+3],  //add_developer0 close_developer0
+                                    name:legendData[i*3+3],  //add_developer0 close_developer0
                                     type:'line',
                                     data:seriesDataJson['add_developer' + i]
                                 };
                         var  close_seriesDeveloperN   =
                                 {
-                                    name:legendData[i+4],   //add_developer0 close_developer0
+                                    name:legendData[i*3+4],   //add_developer0 close_developer0
                                     type:'line',
                                     data:seriesDataJson['close_developer' + i]
                                 };
                         var  last_seriesDeveloperN   =
                                 {
-                                    name:legendData[i+5],   //add_developer0 close_developer0 last_developer0
+                                    name:legendData[i*3+5],   //add_developer0 close_developer0 last_developer0
                                     type:'line',
                                     data:seriesDataJson['last_developer' + i]
                                 };
@@ -2226,11 +2553,13 @@
                             console.log("allBugAlongtimeProjectSeriesDataJson=====" + JSON.stringify(allBugAlongtimeProjectSeriesDataJson));
                             renderMapWithProjectByTimeAlongtimeAllBug(allBugAlongtimeProjectLegendData, allBugAlongtimeProjectXAxisData, allBugAlongtimeProjectSeriesDataJson);
 
-                        //8）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线 + bug剩余情况 ；
+                         //
+                         renderMapWithDeveloperByTimeAlongtimeAddBugAddAndClose
+                         //8）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线 + bug剩余情况 ；
                             console.log("画折线图 - 全部bug增长曲线和关闭曲线");
                             console.log("画折线图 - 全部bug增长曲线和关闭曲线，参数timeDifferenceFromForm" + timeDifferenceFromForm );
                             var allBugAlongtimeDeveloperJsonStr = getRenderMapWithDeveloperByTimeAlongtimeAllBugArgs(startTimeFromForm, endTimeFromForm, timeDifferenceFromForm);
-                            console.log("画折线图 - 全部bug增长曲线和关闭曲线 allBugAlongtimeDeveloperJsonStr= "+ allBugAlongtimeDeveloperJsonStr);
+                            console.log("画折线图 - 开发维度,全部bug增长曲线和关闭曲线 allBugAlongtimeDeveloperJsonStr= "+ allBugAlongtimeDeveloperJsonStr);
                             //转成json格式
                             var allBugAlongtimeDeveloperJsonObj = $.parseJSON(allBugAlongtimeDeveloperJsonStr);
 

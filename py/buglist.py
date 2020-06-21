@@ -2483,11 +2483,11 @@ def get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, 
 
         # 1. 拼接sql查询语句
         searchsql_not_complete = "select bug_submit_date, project," \
-                                 "count((bug_submit_date>=%s and bug_submit_date <=%s) or null) as 'add', " \
+                                 "count(bugid or null) as 'add', " \
                                  "count(bug_status = 2 or null) as 'close'," \
                                  "count(bug_status = 3 or null) as 'regression', " \
                                  "count(bug_status = 4 or null) as 'delay', " \
-                                 "count((bug_submit_date>=%s and bug_submit_date <=%s) and severity_level <= 2 or null) as 'add12', " \
+                                 "count(severity_level <= 2 or null) as 'add12', " \
                                  "count(bug_status = 2 and severity_level <= 2 or null) as 'close12', " \
                                  "count(bug_status = 3 and severity_level <= 2 or null) as 'regression12', " \
                                  "count(bug_status = 4 and severity_level <= 2 or null) as 'delay12', " \
@@ -2516,7 +2516,7 @@ def get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, 
             sql_name_developer = ",developer=" + developer_name + "as developer" + str(index)
             # print('name ==========', sql_name_developer)
 
-            sql_add_num_bydeveloper_belong_developer = ",count((bug_submit_date>=%s and bug_submit_date <=%s) and developer = " + developer_name + "or null) as add_num_developer" + str(index)
+            sql_add_num_bydeveloper_belong_developer = ",count(developer = " + developer_name + "or null) as add_num_developer" + str(index)
             sql_close_num_bydeveloper_belong_developer = ",count(bug_status=2 and developer = " + developer_name + "or null) as close_num_developer" + str(index)
             sql_regression_num_bydeveloper_belong_developer = ",count(bug_status=3 and developer = " + developer_name + "or null) as regression_num_developer" + str(index)
             sql_delay_num_bydeveloper_belong_developer = ",count(bug_status=4 and developer = " + developer_name + "or null) as delay_num_developer" + str(index)
@@ -2532,8 +2532,23 @@ def get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, 
 
         # for循环拼接sql end
         search_sql = searchsql_not_complete + search_sql_middle_about_developer + searchsql_end
-        print(f'最终查询sql ==={search_sql}')  # 开发名称并不是从sql语句中读出来的，而是单独查询developer sql语句中读出
+        print(f'开发维度，查询allbug 最终查询sql ==={search_sql}')  # 开发名称并不是从sql语句中读出来的，而是单独查询developer sql语句中读出
 
+        # 2. 获取数据，定义累加参数
+        closenum_developer = 0  # 开发维度累计关闭
+        lastnum_developer = 0  # 开发维度 累计剩余
+        close12num_developer = 0  # 开发维度 累计12级关闭
+        sum_args_developer_dict = dict()
+        for developer in developer_tuple:
+            # 当前索引
+            index = developer_tuple.index(developer)
+            sum_args_developer_dict['closenum_developer' + str(index)] = 0
+            sum_args_developer_dict['lastnum_developer' + str(index)] = 0  # 定义累计剩余情况
+
+
+        for developer in developer_tuple:
+            # 当前索引
+            print(f'当前 developer r=={str(developer)}')
         #  for 执行sql语句,查出结果，循环len(bug_submit_date_list) -1 次,从list取出来直接str设备
         for i in bug_submit_date_list:
             index = bug_submit_date_list.index(i)
@@ -2542,18 +2557,23 @@ def get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, 
 
             # print(f'绘制新增bug增长曲线和关闭曲线，当前循环{index}, 值{i}, 值类型{type(i)}, str值{str(i)} ')
             startTime = bug_submit_date_list[index]
+            # 绘制累计关闭的开始时间 从最早开始算
+            startTimeSumClose = bug_submit_date_list[0]
             endTime = bug_submit_date_list[index + 1]
             print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
 
             # 新增数 ，其实是查的一段时间内，提交过的bug数量，不是bugstatus=1 的数量
-            # 第一个[startTime, endTime] 给add 用，第2个[startTime, endTime] 给add12 用，第N个[startTime, endTime] 给where参数 用，
-            sqlargs = [startTime, endTime, startTime, endTime, startTime,
-                       endTime]  # list，有几个developer 填几套startTime, endTime
-            for developer in developer_tuple:
-                sqlargs.append(startTime)
-                sqlargs.append(endTime)
+            # # 第一个[startTime, endTime] 给add 用，第2个[startTime, endTime] 给add12 用，第N个[startTime, endTime] 给where参数 用，
+            # sqlargs = [startTime, endTime, startTimeSumClose, endTime]  #不分开发情况下的 add close
+            #
+            # # list，有几个developer 填几套startTime, endTime
+            # for developer in developer_tuple:
+            #     sqlargs.append(startTime)
+            #     sqlargs.append(endTime)
+            # [startTime, endTime]  # 这是最后 一个时间where startTime >= xxx and endTime <= xxx
 
-            cursor.execute(search_sql, sqlargs)
+
+            cursor.execute(search_sql, [startTime, endTime])
             # 提交到数据库执行
             conn.commit()
             # 执行语句，返回结果, 包括：时间,开发，新增，关闭，开发0，开发0新增，开发0关闭，开发1。。。。
@@ -2566,15 +2586,17 @@ def get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, 
             print(f'绘制新增bug增长曲线和关闭曲线,tuple[0]', sql_return_result_tuple[0])
             print(f'绘制新增bug增长曲线和关闭曲线,tuple[0][0]', sql_return_result_tuple[0][0])
             print(f'绘制新增bug增长曲线和关闭曲线,tuple[0][1]', sql_return_result_tuple[0][1])
-            bug['bug_submit_date'] = str(
-                endTime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
+            bug['bug_submit_date'] = str(endTime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
             bug['project'] = sql_return_result_tuple[0][1]  # 项目名称
             bug['add'] = sql_return_result_tuple[0][2]  # 新增
-            bug['close'] = sql_return_result_tuple[0][3]  # 关闭
+            closenum_developer += sql_return_result_tuple[0][3]
+            bug['close'] = closenum_developer  # 累计关闭，目前是查出来 时间颗粒度 这段时间的close
             bug['regression'] = sql_return_result_tuple[0][4]  # 回归
             bug['delay'] = sql_return_result_tuple[0][5]  # 延迟
             bug['add12'] = sql_return_result_tuple[0][6]  # 新增(1-2级)
-            bug['close12'] = sql_return_result_tuple[0][7]  # 关闭(1-2级)
+
+            close12num_developer += sql_return_result_tuple[0][7]
+            bug['close12'] = close12num_developer  # 累计 关闭(1-2级)
             bug['regression12'] = sql_return_result_tuple[0][8]  # 回归(1-2级)
             bug['delay12'] = sql_return_result_tuple[0][9]  # 延迟(1-2级)
             bug['total12'] = sql_return_result_tuple[0][10]  # 总数(1-2级)
@@ -2586,7 +2608,9 @@ def get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, 
 
             # bug['rank'] = sql_return_result_tuple[0][12]  # 排名不是从数据库读出来的，而是自己算出来的
             bug['totalNum'] = sql_return_result_tuple[0][12]  # 总数
-            bug['last'] = int(bug['totalNum']) - int(bug['close'])  # 剩余情况自己算的
+
+            lastnum_developer += int(bug['totalNum']) - int(sql_return_result_tuple[0][3])  # 剩余情况自己算的-算一个累计的情况
+            bug['last'] = lastnum_developer
 
             # 后面是开发相关的 关闭情况，有几个开发循环几次
             for developer in developer_tuple:
@@ -2598,14 +2622,16 @@ def get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, 
 
                 #   str1808[1:len(str1808)-2] 截取字符串 中 developer 名字--》'1808'
                 #   str1808[2:len(str1808)-3] 截取字符串 中 developer 名字--》1808 (去掉''格式的)
-                bug['developer' + str(index)] = str(developer)[2:len(
-                    str(developer)) - 3]  # 开发名称并不是从sql语句中读出来的，而是单独查询developer sql语句中读出
+                bug['developer' + str(index)] = str(developer)[2:len(str(developer)) - 3]  # 开发名称并不是从sql语句中读出来的，而是单独查询developer sql语句中读出
                 bug['add_developer' + str(index)] = sql_return_result_tuple[0][13 + 6 * index + 1]
-                bug['close_developer' + str(index)] = sql_return_result_tuple[0][13 + 6 * index + 2]
+
+                sum_args_developer_dict['closenum_developer' + str(index)] += sql_return_result_tuple[0][13 + 6 * index + 2]
+                bug['close_developer' + str(index)] = sum_args_developer_dict['closenum_developer' + str(index)]  # 累计关闭
                 bug['regression_developer' + str(index)] = sql_return_result_tuple[0][13 + 6 * index + 3]
                 bug['delay_developer' + str(index)] = sql_return_result_tuple[0][13 + 6 * index + 4]
                 bug['total_developer' + str(index)] = sql_return_result_tuple[0][13 + 6 * index + 5]
-                bug['last_developer' + str(index)] = int(bug['total_developer' + str(index)]) - int(bug['close_developer' + str(index)])
+                sum_args_developer_dict['lastnum_developer' + str(index)] += int(bug['total_developer' + str(index)]) - int(sql_return_result_tuple[0][13 + 6 * index + 2])
+                bug['last_developer' + str(index)] = sum_args_developer_dict['lastnum_developer' + str(index)]
 
                 # print(f'developer{index}=', bug['developer' + str(index)])  #
                 # print(f'add_developerr{index}=', bug['add_developer' + str(index)])

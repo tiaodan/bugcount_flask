@@ -1,4 +1,4 @@
-//v1正确查询到 按时间排序 的 所有数据
+﻿//v1正确查询到 按时间排序 的 所有数据
 select bug_submit_date, project,count(bug_status = 1 or null) as 'add', count(bug_status = 2 or null) as 'close',count(bug_status = 3 or null) as 'regression', count(bug_status = 4 or null) as 'delay', count(bug_status = 1 and severity_level <= 2 or null) as 'add12', count(bug_status = 2 and severity_level <= 2 or null) as 'close12', count(bug_status = 3 and severity_level <= 2 or null) as 'regression12', count(bug_status = 4 and severity_level <= 2 or null) as 'delay12', count(severity_level <= 2 or null) as 'total12', convert( count(bug_status = 2 or null)/count(bugid or null),decimal(10,2) ) as 'bugCloseRate', count(bugid or null) as 'totalNum' ,project='1808'as project0,count(bug_status=1 and project = '1808'or null) as add_num_project0,count(bug_status=2 and project = '1808'or null) as close_num_project0,count(bug_status=3 and project = '1808'or null) as regression_num_project0,count(bug_status=4 and project = '1808'or null) as delay_num_project0,project='1809'as project1,count(bug_status=1 and project = '1809'or null) as add_num_project1,count(bug_status=2 and project = '1809'or null) as close_num_project1,count(bug_status=3 and project = '1809'or null) as regression_num_project1,count(bug_status=4 and project = '1809'or null) as delay_num_project1 from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date <= %s ) group by bug_submit_date order by bug_submit_date
 
 
@@ -24,6 +24,12 @@ wow_siw
 
 MjpvcmlnaW46YWV
 /////////////////////////////
+/.project
+.idea/
+node_modules/
+build/
+上传ignore
+//////////////////////////
 学习路由
 熟悉自己写的脚本，背过
 1. 测试form里ajax为什么会刷新界面 √ 

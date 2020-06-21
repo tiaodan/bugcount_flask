@@ -1,4 +1,5 @@
-a = 3 // 4
-b = 4 // 3
-print(a)
-print(b)
+index = 1
+bug = dict()
+bug['test' + str(index)] = 0
+print(bug['test' + str(index)])
+# print(str(bug['test' + str(index)]))

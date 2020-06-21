@@ -1096,7 +1096,7 @@ def getTableWithDeveloper():
 
 
 
-# 为了画折线图 开发维度 获取全部bug 绘制全部bug增长曲线和关闭； + bug剩余情况
+# 为了画折线图 开发维度 获取全部bug 绘制全部bug增长曲线和关闭； + bug剩余情况 （增长是一周增长，关闭是累计关闭，剩余是累计剩余）
 @app.route('/getTableForDrawMapWithDeveloperALongtimeAllBug', methods=['POST', 'GET'])
 def getTableForDrawMapWithDeveloperALongtimeAllBug():
     # 获取前台传的参数
