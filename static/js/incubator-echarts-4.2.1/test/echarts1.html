@@ -2863,6 +2863,137 @@
 
             }
 
+            // 12-1）开发维度，获取参数，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制一二级bug解决及时率曲线和三四级bug解决及时率曲线。
+            /*
+            参数1： startTimeFromForm             : 开始时间
+            参数2： endTimeFromForm               : 结束时间
+            参数3： timeDifferenceFromForm        : 时间颗粒度-季/月/周/一周/二周/三周
+             */
+            function getRenderMapWithDeveloperByTimeAlongtimeBugSolveRateArgs(startTimeFromForm, endTimeFromForm, timeDifferenceFromForm){
+                console.log("getRenderMapWithDeveloperByTimeAlongtimeBugSolveRateArgs，timeDifferenceFromForm参数==", timeDifferenceFromForm);
+                var $ = layui.jquery;
+
+                //创建需要返回的json数据 legendData（表头）, xAxisData（x轴）, seriesDataJson（具体数据）
+                var json_obj = {"legendData":[], xAxisData:[], seriesDataJson:[] };
+
+                console.log("json_obj.lengendData=", json_obj.legendData);
+                console.log("进入请求数据方法");
+
+                $.ajax({
+                            url: "/getBugSolveRateTableForDrawMapALongtimeWithDeveloper",
+                            method: "get",
+                            data:{"startTime":startTimeFromForm,"endTime":endTimeFromForm, "timeDifference":timeDifferenceFromForm},
+                            datatype:"json",
+                            async:false,
+                            success:function(josnstr){//jsonstr 格式
+                                console.log("获取后台数据成功，解析数据");
+                                console.log("获取后台数据成功，解析数据datas="+ josnstr);
+                                console.log("获取后台数据成功，解析数据datas.type="+ typeof(josnstr));
+                                console.log("jsonstringfy==" + JSON.stringify(josnstr.field));
+                                returnDataJson = $.parseJSON(josnstr);
+
+                                returnDataJsonData0Num = Object.keys(returnDataJson.data[0]).length;
+                                console.log("有多少个开发json_obj.data 数据 长度= " + returnDataJsonData0Num);
+                                developerNum = (returnDataJsonData0Num -3) / 2;
+                                console.log("有多少个开发,换算后" + developerNum);
+                                    console.log("，returnDataJson==============");
+                                console.log(returnDataJson);
+                                console.log("，returnDataJson.type="+ typeof(returnDataJson));
+
+                                //获取渲染折线图所需数据
+                                    //开发 一段时间-全部bug增长和关闭参数
+                                var xAxisDataWithDeveloperAllBugFromServer = [];
+
+                                var easyBugRateNumArrWithDeveloperAllBugFromServer = []; //易bug比率
+
+                                //定义项目参数键值对
+                                //var developerArgsKeyValue = {"key1":"value1"};
+                                var developerArgsKeyValue = {};
+                                console.log("developerArgsKeyValue == 最初：");
+                                console.log(developerArgsKeyValue);
+                                for(var i=0;i<developerNum;i++){
+                                    developerArgsKeyValue['bugSolveRateNumArrWithDeveloperAllBugFromServerDeveloper' + i] = new Array();  //开发0 bug解决率
+                                    //console.log("类型" + typeof(developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + i]));
+
+                                    console.log("定义项目参数键值对 ");
+                                    console.log(developerArgsKeyValue['bugSolveRateNumArrWithDeveloperAllBugFromServerDeveloper' + i]);  //开发0 bug解决率
+                                }
+                                console.log("developerArgsKeyValue == 以下：");
+                                console.log(developerArgsKeyValue);
+
+
+                                //循环获取[{xx,xx}, {xx,xx}] json中的数据 // 按时间循环的
+                                $.each(returnDataJson.data,function (index, item) {
+                                    console.log('i+item=' + index + " "+item);
+                                    console.log(item);
+                                    //项目-新增bug增长和关闭
+                                    console.log("push不能用？？");
+                                    xAxisDataWithDeveloperAllBugFromServer.push(item['bug_submit_date']); //日期
+                                    easyBugRateNumArrWithDeveloperAllBugFromServer.push(item.easy_bug_rate);  // 易bug比率
+
+                                    /*
+                                    addNumArrWithDeveloperAllBugFromServerDeveloper0.push(item.add_developer0); //add_developer0
+                                    closeNumArrWithDeveloperAllBugFromServerDeveloper0.push(item.close_developer0); //close_developer0
+                                    lastNumArrWithDeveloperAllBugFromServerDeveloper0.push(item.last_developer0); //last_developer0
+                                     */
+                                    //根据有多少项目来循环
+                                    for(var i=0;i<developerNum;i++){
+                                        console.log("easyBugRateNumArrWithDeveloperAllBugFromServerDeveloper 前 + easy_bug_rate_developer[easy_bug_rate_developer + index]==");
+                                        console.log(developerArgsKeyValue['easyBugRateNumArrWithDeveloperAllBugFromServerDeveloper' + i]);
+                                        console.log("item.easy_bug_rate_developer=====================前");
+                                        console.log(item['easy_bug_rate_developer' + i]);
+                                        developerArgsKeyValue['easyBugRateNumArrWithDeveloperAllBugFromServerDeveloper' + i].push(item['easy_bug_rate_developer' + i]);
+
+                                        console.log("easyBugRateNumArrWithDeveloperAllBugFromServerDeveloper 后 + easy_bug_rate_developer[easy_bug_rate_developer + index]==");
+                                        console.log(developerArgsKeyValue['easyBugRateNumArrWithDeveloperAllBugFromServerDeveloper' + i]);
+                                        console.log("item.easy_bug_rate_developer=====================后");
+                                        console.log(item['easy_bug_rate_developer' + i]);
+                                    }
+
+
+                                });
+                                console.log("developerArgsKeyValue == 赋值完数据后 ，以下：");
+                                console.log(developerArgsKeyValue);
+
+                                //这里未完成，要有项目‘1808’-新增 == add_Developer0 close_Developer0
+                                //var legendDataWithDeveloperAllBug = ["新增","关闭","剩余","add_developer0","close_developer0", "last_developer0"];
+                                var legendDataWithDeveloperAllBug = ["易bug率"];
+                                //循环添加上折线图标签栏
+                                for(var a=0;a<developerNum;a++){
+                                    legendDataWithDeveloperAllBug.push("easy_bug_rate_developer" + a);
+                                }
+
+                                var xAxisDataWithDeveloperAllBug = xAxisDataWithDeveloperAllBugFromServer;
+
+                                easyBugRateNumArrWithDeveloperAllBug = easyBugRateNumArrWithDeveloperAllBugFromServer;
+                                /*
+                                addNumArrWithDeveloperAllBugDeveloper0 = addNumArrWithDeveloperAllBugFromServerDeveloper0;
+                                closeNumArrWithDeveloperAllBugDeveloper0 = closeNumArrWithDeveloperAllBugFromServerDeveloper0;
+                                lastNumArrWithDeveloperAllBugDeveloper0 = lastNumArrWithDeveloperAllBugFromServerDeveloper0;
+                                 */
+                                //var seriesDataJsonWithDeveloperAllBug = {"add": addNumArrWithDeveloperAllBug, "close": closeNumArrWithDeveloperAllBug, "last":lastNumArrWithDeveloperAllBug, "add_developer0":addNumArrWithDeveloperAllBugDeveloper0, "close_developer0":closeNumArrWithDeveloperAllBugDeveloper0, "last_developer0":lastNumArrWithDeveloperAllBugDeveloper0};
+                                var seriesDataJsonWithDeveloperAllBug = {"easy_bug_rate": easyBugRateNumArrWithDeveloperAllBug};
+
+                                for(var b=0;b<developerNum;b++){
+                                    seriesDataJsonWithDeveloperAllBug['easy_bug_rate_developer' + b] = developerArgsKeyValue['easyBugRateNumArrWithDeveloperAllBugFromServerDeveloper' + b]; //对应一个数组
+                                }
+
+                                json_obj.legendData = legendDataWithDeveloperAllBug;
+                                json_obj.xAxisData = xAxisDataWithDeveloperAllBug;
+                                json_obj.seriesDataJson = seriesDataJsonWithDeveloperAllBug;
+                                console.log("json_str==" + JSON.stringify(json_obj))
+
+                            },error:function(){
+                                console.log("获取后台数据失败");
+                            }
+                        });
+
+                var json_str = JSON.stringify(json_obj);
+                console.log('11）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线；1/2    月/周/季，返回的json_str=', json_str);
+                return json_str;
+            }
+            // 12-2）开发维度，画图，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制一二级bug解决及时率曲线和三四级bug解决及时率曲线。
+
 
 
 
