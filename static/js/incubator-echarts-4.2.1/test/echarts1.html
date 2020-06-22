@@ -194,7 +194,8 @@
                                 <div class="layui-tab layui-tab-brief">
                                       <ul class="layui-tab-title">
                                             <li class="layui-this">bug数据</li>
-                                            <li class="layui-this">易bug产生比率</li>
+                                            <li>易bug产生比率</li>
+                                            <li>bug解决率</li>
                                       </ul>
                                       <div class="layui-tab-content">
                                             <div class="layui-tab-item layui-show">
@@ -208,6 +209,13 @@
                                                     <blockquote class="layui-elem-quote" hidden><div align="center">易bug产生比率</div></blockquote>
                                                     <div class="layui-row">
                                                         <table class="layui-hide" id="easyBugTableWithDeveloper" lay-filter="easyBugTableWithDeveloper"></table>
+                                                    </div>
+                                            </div>
+
+                                            <div class="layui-tab-item layui-show">
+                                                    <blockquote class="layui-elem-quote" hidden><div align="center">bug解决率</div></blockquote>
+                                                    <div class="layui-row">
+                                                        <table class="layui-hide" id="bugSolveRateTableWithDeveloper" lay-filter="bugSolveRateTableWithDeveloper"></table>
                                                     </div>
                                             </div>
 
@@ -248,6 +256,9 @@
 
             <blockquote class="layui-elem-quote"><div align="center">8）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线；</div></blockquote>
             <div id="allBugStatusMapWithDeveloper"></div>
+
+            <blockquote class="layui-elem-quote"><div align="center">11）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线；1/2    月/周/季；</div></blockquote>
+            <div id="easyBugStatusMapWithDeveloper"></div>
 
 
         </div>
@@ -2367,7 +2378,7 @@
             参数1： argTableRenderId     : 给渲染制定一个id,共其他监听调用
             id easyBugTableWithDeveloper
              */
-            function renderTableEasyBugDeveloper(argElem, argUrl, argStartTime, argEndTime, argTableRenderId){
+            function renderTableEasyBugDeveloper(argElem, argUrl, argStartTime, argEndTime, argTableRenderId)   {
                     layui.use('table',function () {
                         var table = layui.table;
                         console.log("renderTableEasyBugDeveloper==参数（ argStartTime, argEndTime）==" +  argStartTime + argEndTime);
@@ -2385,9 +2396,9 @@
                             , cols: [[
                             {type: 'numbers', fixed: 'left'}//, fixed: true
                             , {checkbox: true, fixed: true}  //{type: 'checkbox'}
-                            , {field: 'bug_submit_date', title: '时间', sort: true, width: 120}
+                            , {field: 'bug_submit_date', title: '时间', sort: true, width: 150}
                             , {field: 'project', title: '项目', sort: true, width: 80, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'easy_bug_rate', title: '易bug比率', sort: true, width: 80}
+                            , {field: 'easy_bug_rate', title: '易bug比率', sort: true, width: 120}
 
                             , {field: 'developer0', title: '开发0名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
                             , {field: 'easy_bug_rate_developer0', title: '开发0易bug', sort: true, width: 120}
@@ -2438,6 +2449,421 @@
                 });
 
             }
+
+            // 11）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线；1/2    月/周/季
+            /*
+            参数1： argElem              : 指向table的id
+            参数1： argUrl               : url路径
+            参数1： argStartTime         : 开始时间
+            参数1： argEndTime           : 结束时间
+            参数1： argTableRenderId     : 给渲染制定一个id,共其他监听调用
+            id easyBugTableWithDeveloper
+             */
+            function renderTableEasyBugALongtimeDeveloper(argElem, argUrl, argStartTime, argEndTime, argTimeDifference, argTableRenderId)   {
+                    layui.use('table',function () {
+                        var table = layui.table;
+                        console.log("renderTableEasyBugDeveloper==参数（ argStartTime, argEndTime,argTimeDifference）==" +  argStartTime + argEndTime + argTimeDifference);
+
+                        table.render(   {
+                            elem: '#' + argElem //指向table的id
+                            , url: argUrl
+                            , method: 'get'
+                            , toolbar: true //显示工具栏
+                            , loading: true //是否显示加载条（默认：true）
+                            , where: {startTime: argStartTime, endTime: argEndTime, timeDifference: argTimeDifference}
+                            , response: {
+                                statusCode: 200
+                            }
+                            , cols: [[
+                            {type: 'numbers', fixed: 'left'}//, fixed: true
+                            , {checkbox: true, fixed: true}  //{type: 'checkbox'}
+                            , {field: 'bug_submit_date', title: '时间', sort: true, width: 150}
+                            , {field: 'project', title: '项目', sort: true, width: 80, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'easy_bug_rate', title: '易bug比率', sort: true, width: 120}
+
+                            , {field: 'developer0', title: '开发0名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'easy_bug_rate_developer0', title: '开发0易bug', sort: true, width: 120}
+
+                            , {field: 'developer1', title: '开发1名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'easy_bug_rate_developer1', title: '开发1易bug', sort: true, width: 120}
+
+                            , {field: 'developer2', title: '开发2名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'easy_bug_rate_developer2', title: '开发2易bug', sort: true, width: 120}
+
+                            , {field: 'developer3', title: '开发3名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'easy_bug_rate_developer3', title: '开发3易bug', sort: true, width: 120}
+
+                            , {field: 'developer4', title: '开发4名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'easy_bug_rate_developer4', title: '开发4易bug', sort: true, width: 120}
+
+                            , {field: 'developer5', title: '开发5名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'easy_bug_rate_developer5', title: '开发5易bug', sort: true, width: 120}
+
+                            , {field: 'developer6', title: '开发6名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'easy_bug_rate_developer6', title: '开发6易bug', sort: true, width: 120}
+
+                            , {field: 'developer7', title: '开发7名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'easy_bug_rate_developer7', title: '开发7易bug', sort: true, width: 120}
+
+                            , {field: 'developer8', title: '开发8名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'easy_bug_rate_developer8', title: '开发8易bug', sort: true, width: 120}
+
+                            , {field: 'developer9', title: '开发9名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'easy_bug_rate_developer9', title: '开发9易bug', sort: true, width: 120}
+
+                            , {field: 'developer10', title: '开发10名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'easy_bug_rate_developer10', title: '开发10易bug', sort: true, width: 120}
+
+                            , {field: 'developer11', title: '开发11名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'easy_bug_rate_developer11', title: '开发11易bug', sort: true, width: 120}
+
+                            , {field: 'developer12', title: '开发12名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'easy_bug_rate_developer12', title: '开发12易bug', sort: true, width: 120}
+
+                            , {field: 'developer13', title: '开发13名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'easy_bug_rate_developer13', title: '开发13易bug', sort: true, width: 120}
+                        ]]
+                            , id: argTableRenderId //给渲染制定一个id,共其他监听调用
+                            , page: false
+                            , height: 400
+                        });
+                });
+
+            }
+
+            /*11-1) 参数，折线图，开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线；1/2    月/周/季
+            参数1： startTimeFromForm             : 开始时间
+            参数2： endTimeFromForm               : 结束时间
+            参数3： timeDifferenceFromForm        : 时间颗粒度-季/月/周/一周/二周/三周
+             */
+            function getRenderMapWithDeveloperByTimeAlongtimeEasyBugArgs(startTimeFromForm, endTimeFromForm, timeDifferenceFromForm){
+                console.log("getRenderMapWithDeveloperByTimeAlongtimeEasyBugArgs，timeDifferenceFromForm参数==", timeDifferenceFromForm);
+                var $ = layui.jquery;
+
+                //创建需要返回的json数据 legendData（表头）, xAxisData（x轴）, seriesDataJson（具体数据）
+                var json_obj = {"legendData":[], xAxisData:[], seriesDataJson:[] };
+
+                console.log("json_obj.lengendData=", json_obj.legendData);
+                console.log("进入请求数据方法");
+
+                $.ajax({
+                            url: "/getEasyBugTableForDrawMapWithDeveloper",
+                            method: "get",
+                            data:{"startTime":startTimeFromForm,"endTime":endTimeFromForm, "timeDifference":timeDifferenceFromForm},
+                            datatype:"json",
+                            async:false,
+                            success:function(josnstr){//jsonstr 格式
+                                console.log("获取后台数据成功，解析数据");
+                                console.log("获取后台数据成功，解析数据datas="+ josnstr);
+                                console.log("获取后台数据成功，解析数据datas.type="+ typeof(josnstr));
+                                console.log("jsonstringfy==" + JSON.stringify(josnstr.field));
+                                returnDataJson = $.parseJSON(josnstr);
+
+                                returnDataJsonData0Num = Object.keys(returnDataJson.data[0]).length;
+                                console.log("有多少个开发json_obj.data 数据 长度= " + returnDataJsonData0Num);
+                                developerNum = (returnDataJsonData0Num -3) / 2;
+                                console.log("有多少个开发,换算后" + developerNum);
+                                    console.log("，returnDataJson==============");
+                                console.log(returnDataJson);
+                                console.log("，returnDataJson.type="+ typeof(returnDataJson));
+
+                                //获取渲染折线图所需数据
+                                    //开发 一段时间-全部bug增长和关闭参数
+                                var xAxisDataWithDeveloperAllBugFromServer = [];
+
+                                var easyBugRateNumArrWithDeveloperAllBugFromServer = []; //易bug比率
+
+                                //定义项目参数键值对
+                                //var developerArgsKeyValue = {"key1":"value1"};
+                                var developerArgsKeyValue = {};
+                                console.log("developerArgsKeyValue == 最初：");
+                                console.log(developerArgsKeyValue);
+                                for(var i=0;i<developerNum;i++){
+                                    developerArgsKeyValue['easyBugRateNumArrWithDeveloperAllBugFromServerDeveloper' + i] = new Array();  //开发0 易bug比率
+                                    //console.log("类型" + typeof(developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + i]));
+
+                                    console.log("定义项目参数键值对 ");
+                                    console.log(developerArgsKeyValue['easyBugRateNumArrWithDeveloperAllBugFromServerDeveloper' + i]);  //开发0 易bug比率
+                                }
+                                console.log("developerArgsKeyValue == 以下：");
+                                console.log(developerArgsKeyValue);
+
+
+                                //循环获取[{xx,xx}, {xx,xx}] json中的数据 // 按时间循环的
+                                $.each(returnDataJson.data,function (index, item) {
+                                    console.log('i+item=' + index + " "+item);
+                                    console.log(item);
+                                    //项目-新增bug增长和关闭
+                                    console.log("push不能用？？");
+                                    xAxisDataWithDeveloperAllBugFromServer.push(item['bug_submit_date']); //日期
+                                    easyBugRateNumArrWithDeveloperAllBugFromServer.push(item.easy_bug_rate);  // 易bug比率
+
+                                    /*
+                                    addNumArrWithDeveloperAllBugFromServerDeveloper0.push(item.add_developer0); //add_developer0
+                                    closeNumArrWithDeveloperAllBugFromServerDeveloper0.push(item.close_developer0); //close_developer0
+                                    lastNumArrWithDeveloperAllBugFromServerDeveloper0.push(item.last_developer0); //last_developer0
+                                     */
+                                    //根据有多少项目来循环
+                                    for(var i=0;i<developerNum;i++){
+                                        console.log("easyBugRateNumArrWithDeveloperAllBugFromServerDeveloper 前 + easy_bug_rate_developer[easy_bug_rate_developer + index]==");
+                                        console.log(developerArgsKeyValue['easyBugRateNumArrWithDeveloperAllBugFromServerDeveloper' + i]);
+                                        console.log("item.easy_bug_rate_developer=====================前");
+                                        console.log(item['easy_bug_rate_developer' + i]);
+                                        developerArgsKeyValue['easyBugRateNumArrWithDeveloperAllBugFromServerDeveloper' + i].push(item['easy_bug_rate_developer' + i]);
+
+                                        console.log("easyBugRateNumArrWithDeveloperAllBugFromServerDeveloper 后 + easy_bug_rate_developer[easy_bug_rate_developer + index]==");
+                                        console.log(developerArgsKeyValue['easyBugRateNumArrWithDeveloperAllBugFromServerDeveloper' + i]);
+                                        console.log("item.easy_bug_rate_developer=====================后");
+                                        console.log(item['easy_bug_rate_developer' + i]);
+                                    }
+
+
+                                });
+                                console.log("developerArgsKeyValue == 赋值完数据后 ，以下：");
+                                console.log(developerArgsKeyValue);
+
+                                //这里未完成，要有项目‘1808’-新增 == add_Developer0 close_Developer0
+                                //var legendDataWithDeveloperAllBug = ["新增","关闭","剩余","add_developer0","close_developer0", "last_developer0"];
+                                var legendDataWithDeveloperAllBug = ["易bug率"];
+                                //循环添加上折线图标签栏
+                                for(var a=0;a<developerNum;a++){
+                                    legendDataWithDeveloperAllBug.push("easy_bug_rate_developer" + a);
+                                }
+
+                                var xAxisDataWithDeveloperAllBug = xAxisDataWithDeveloperAllBugFromServer;
+
+                                easyBugRateNumArrWithDeveloperAllBug = easyBugRateNumArrWithDeveloperAllBugFromServer;
+                                /*
+                                addNumArrWithDeveloperAllBugDeveloper0 = addNumArrWithDeveloperAllBugFromServerDeveloper0;
+                                closeNumArrWithDeveloperAllBugDeveloper0 = closeNumArrWithDeveloperAllBugFromServerDeveloper0;
+                                lastNumArrWithDeveloperAllBugDeveloper0 = lastNumArrWithDeveloperAllBugFromServerDeveloper0;
+                                 */
+                                //var seriesDataJsonWithDeveloperAllBug = {"add": addNumArrWithDeveloperAllBug, "close": closeNumArrWithDeveloperAllBug, "last":lastNumArrWithDeveloperAllBug, "add_developer0":addNumArrWithDeveloperAllBugDeveloper0, "close_developer0":closeNumArrWithDeveloperAllBugDeveloper0, "last_developer0":lastNumArrWithDeveloperAllBugDeveloper0};
+                                var seriesDataJsonWithDeveloperAllBug = {"easy_bug_rate": easyBugRateNumArrWithDeveloperAllBug};
+
+                                for(var b=0;b<developerNum;b++){
+                                    seriesDataJsonWithDeveloperAllBug['easy_bug_rate_developer' + b] = developerArgsKeyValue['easyBugRateNumArrWithDeveloperAllBugFromServerDeveloper' + b]; //对应一个数组
+                                }
+
+                                json_obj.legendData = legendDataWithDeveloperAllBug;
+                                json_obj.xAxisData = xAxisDataWithDeveloperAllBug;
+                                json_obj.seriesDataJson = seriesDataJsonWithDeveloperAllBug;
+                                console.log("json_str==" + JSON.stringify(json_obj))
+
+                            },error:function(){
+                                console.log("获取后台数据失败");
+                            }
+                        });
+
+                var json_str = JSON.stringify(json_obj);
+                console.log('11）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线；1/2    月/周/季，返回的json_str=', json_str);
+                return json_str;
+            }
+
+
+            // easyBugStatusMapWithDeveloper
+            /*11-2) 折线图，开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线；1/2    月/周/季
+            参数1： legendData           : 折线图上方可以控制 是否显示折线的地方
+            参数2： xAxisData            : xAxisData x轴数组
+            参数3： seriesData           : seriesData 对应的具体数组
+            返回值： json_str            : 返回值
+            div id == easyBugStatusMapWithDeveloper
+             */
+            function renderMapWithDeveloperByTimeAlongtimeEasyBug(legendData, xAxisData, seriesDataJson){
+                    console.log("legendData=，xAxisData，seriesDataJson" +  legendData);
+                    console.log(legendData);
+                    console.log(xAxisData);
+                    console.log(seriesDataJson);
+                    //先清空div中的数据 第一种：
+                    document.getElementById('easyBugStatusMapWithDeveloper').innerHTML = "";
+                    //第二种：$('#bigDiv').html("");
+
+                    var seriesDataJsonArr = ['add_developer0', 'close_developer0', 'add_developer1', 'close_developer1', 'add_developer2', 'close_developer2', 'add_developer3', 'close_developer3', 'add_developer4', 'close_developer4',
+                                             'add_developer5', 'close_developer5', 'add_developer6', 'close_developer6', 'add_developer7', 'close_developer7', 'add_developer8', 'close_developer8', 'add_developer9', 'close_developer9',
+                                             'add_developer10', 'close_developer10', 'add_developer11', 'close_developer11', 'add_developer12', 'close_developer12', 'add_developer13', 'close_developer13'
+                    ];
+
+                    //设置series变量，有几个 Developer，就加几个{},是一个数组
+                    var easyBugRateSeriesDataNotComplete = {
+                                    name:legendData[0],
+                                    type:'line',
+                                    data:seriesDataJson['easy_bug_rate']
+                                };
+
+                    var seriesData = []; //最终数据，放在option里的
+                    seriesData.push(easyBugRateSeriesDataNotComplete);
+
+                    for(var i=0; i< legendData.length -1; i++) {
+                        console.log("legendData.length" + legendData.length);
+                        console.log("renderMapWithDeveloperByTimeAlongtimeEasyBug, 获取折线图option,循环=" + i + legendData[i] );
+                        var easyBugRate_seriesDeveloperN =
+                                {
+                                    name:legendData[i+1],  //add_developer0 close_developer0
+                                    type:'line',
+                                    data:seriesDataJson['easy_bug_rate_developer' + i]
+                                };
+
+                        seriesData.push(easyBugRate_seriesDeveloperN);
+                    }
+                    console.log("seriesData==================");
+                    console.log(seriesData);
+                    //console.log(seriesDataNotComplete);
+
+                    var chart;
+                    var myChart;
+                    var option;
+
+                    require([
+                        'echarts'/*, 'map/js/china' */
+                    ], function (echarts) {
+
+                        var option = {
+                            tooltip: {
+                                trigger: 'axis',
+                                axisPointer: {
+                                    type: 'cross',
+                                    crossStyle: {
+                                        color: '#999'
+                                    }
+                                }
+                            },
+                            toolbox: {
+                                feature: {
+                                    dataView: {show: true, readOnly: false},
+                                    magicType: {show: true, type: ['line', 'bar']},
+                                    restore: {show: true},
+                                    saveAsImage: {show: true}
+                                }
+                            },
+                            legend: {
+                                //data:['1808','LJG','ZG','test']
+                                data: legendData,
+                            },
+                            xAxis: [
+                                {
+                                    type: 'category',
+                                    data: xAxisData,
+                                    axisPointer: {
+                                        type: 'shadow'
+                                    }
+                                }
+                            ],
+                            yAxis: [
+                                {
+                                    type: 'value',
+                                    name: '易bug率',
+                                    min: 0,
+                                    max: 100,
+                                    interval: 10,
+                                    axisLabel: {
+                                        formatter: '{value} %'
+                                    }
+                                },
+                                {
+                                    type: 'value',
+                                    name: '易bug率',
+                                    min: 0,
+                                    max: 100,
+                                    interval: 10,
+                                    axisLabel: {
+                                        formatter: '{value} % '
+                                    }
+                                }
+
+                            ],
+                            //series: seriesData
+                            series: seriesData
+                        };
+
+                        chart = myChart = testHelper.create(echarts, 'easyBugStatusMapWithDeveloper', {
+                            option: option,
+                            //title: 11）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线；1/2    月/周/季；'
+                        });
+                    });
+            }
+
+            // 10）开发维度，按时间（时间可自定义）统计bug解决的及时性考量：一二级bug一定时间内（可自定义）的解决率，三四级bug一定时间内（可自定义时间）
+            /*
+            参数1： argElem              : 指向table的id
+            参数2： argUrl               : url路径
+            参数3： argStartTime         : 开始时间
+            参数4： argEndTime           : 结束时间
+            参数5： argTableRenderId     : 给渲染制定一个id,共其他监听调用
+            id
+             */
+            function renderTableBugSolveRateALongtimeDeveloper(argElem, argUrl, argStartTime, argEndTime, argTimeDifference, argTableRenderId)   {
+                    layui.use('table',function () {
+                        var table = layui.table;
+                        console.log("renderTableBugSolveRateALongtimeDeveloper==参数（ argStartTime, argEndTime,argTimeDifference）==" +  argStartTime + argEndTime + argTimeDifference);
+
+                        table.render(   {
+                            elem: '#' + argElem //指向table的id
+                            , url: argUrl
+                            , method: 'get'
+                            , toolbar: true //显示工具栏
+                            , loading: true //是否显示加载条（默认：true）
+                            , where: {startTime: argStartTime, endTime: argEndTime, timeDifference: argTimeDifference}
+                            , response: {
+                                statusCode: 200
+                            }
+                            , cols: [[
+                            {type: 'numbers', fixed: 'left'}//, fixed: true
+                            , {checkbox: true, fixed: true}  //{type: 'checkbox'}
+                            , {field: 'bug_submit_date', title: '时间', sort: true, width: 150}
+                            , {field: 'project', title: '项目', sort: true, width: 80, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'bug_solve_rate', title: 'bug解决率', sort: true, width: 120}
+
+                            , {field: 'developer0', title: '开发0名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'bug_solve_rate_developer0', title: '开发0bug解决率', sort: true, width: 120}
+
+                            , {field: 'developer1', title: '开发1名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'bug_solve_rate_developer1', title: '开发1bug解决率', sort: true, width: 120}
+
+                            , {field: 'developer2', title: '开发2名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'bug_solve_rate_developer2', title: '开发2bug解决率', sort: true, width: 120}
+
+                            , {field: 'developer3', title: '开发3名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'bug_solve_rate_developer3', title: '开发3bug解决率', sort: true, width: 120}
+
+                            , {field: 'developer4', title: '开发4名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'bug_solve_rate_developer4', title: '开发4bug解决率', sort: true, width: 120}
+
+                            , {field: 'developer5', title: '开发5名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'bug_solve_rate_developer5', title: '开发5bug解决率', sort: true, width: 120}
+
+                            , {field: 'developer6', title: '开发6名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'bug_solve_rate_developer6', title: '开发6bug解决率', sort: true, width: 120}
+
+                            , {field: 'developer7', title: '开发7名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'bug_solve_rate_developer7', title: '开发7bug解决率', sort: true, width: 120}
+
+                            , {field: 'developer8', title: '开发8名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'bug_solve_rate_developer8', title: '开发8bug解决率', sort: true, width: 120}
+
+                            , {field: 'developer9', title: '开发9名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'bug_solve_rate_developer9', title: '开发9bug解决率', sort: true, width: 120}
+
+                            , {field: 'developer10', title: '开发10名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'bug_solve_rate_developer10', title: '开发10bug解决率', sort: true, width: 120}
+
+                            , {field: 'developer11', title: '开发11名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'bug_solve_rate_developer11', title: '开发11bug解决率', sort: true, width: 120}
+
+                            , {field: 'developer12', title: '开发12名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'bug_solve_rate_developer12', title: '开发12bug解决率', sort: true, width: 120}
+
+                            , {field: 'developer13', title: '开发13名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'bug_solve_rate_developer13', title: '开发13bug解决率', sort: true, width: 120}
+                        ]]
+                            , id: argTableRenderId //给渲染制定一个id,共其他监听调用
+                            , page: false
+                            , height: 400
+                        });
+                });
+
+            }
+
+
 
 
 
@@ -2492,7 +2918,11 @@
                         renderTableAllBugDeveloper('tableWithDeveloper', '/getTableWithDeveloper', startTimeFromForm, endTimeFromForm, timeDifferenceFromForm,'tableWithDeveloperId');
 
                         // 9）开发维度，按时间（时间可自定义）统计软件自测考量：相比较这段时间产生的所有bug，易bug产生比率；
-                        renderTableEasyBugDeveloper('easyBugTableWithDeveloper', '/getEasyBugTableWithDeveloper', startTimeFromForm, endTimeFromForm, 'easyBugTableWithDeveloperId');
+                        // renderTableEasyBugDeveloper('easyBugTableWithDeveloper', '/getEasyBugTableWithDeveloper', startTimeFromForm, endTimeFromForm, 'easyBugTableWithDeveloperId');
+                        renderTableEasyBugALongtimeDeveloper('easyBugTableWithDeveloper', '/getEasyBugTableForDrawMapWithDeveloper', startTimeFromForm, endTimeFromForm, timeDifferenceFromForm, 'easyBugTableWithDeveloperId');
+
+                        // 10）开发维度，按时间（时间可自定义）统计bug解决的及时性考量：一二级bug一定时间内（可自定义）的解决率，三四级bug一定时间内（可自定义时间）
+                        renderTableBugSolveRateALongtimeDeveloper('bugSolveRateTableWithDeveloper', '/getBugSolveRateTableForDrawMapALongtimeWithDeveloper', startTimeFromForm, endTimeFromForm, timeDifferenceFromForm, 'bugSolveRateTableWithDeveloperId');
 
 
 
@@ -2676,6 +3106,22 @@
                             console.log("allBugAlongtimeDeveloperXAxisData=====" + JSON.stringify(allBugAlongtimeDeveloperXAxisData));
                             console.log("allBugAlongtimeDeveloperSeriesDataJson=====" + JSON.stringify(allBugAlongtimeDeveloperSeriesDataJson));
                             renderMapWithDeveloperByTimeAlongtimeAllBug(allBugAlongtimeDeveloperLegendData, allBugAlongtimeDeveloperXAxisData, allBugAlongtimeDeveloperSeriesDataJson);
+
+                         //11）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线；1/2    月/周/季
+                            console.log("画折线图 - 开发维度,一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线");
+                            console.log("画折线图 - 开发维度,一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线，参数timeDifferenceFromForm" + timeDifferenceFromForm );
+                            var easyBugAlongtimeDeveloperJsonStr = getRenderMapWithDeveloperByTimeAlongtimeEasyBugArgs(startTimeFromForm, endTimeFromForm, timeDifferenceFromForm);
+                            console.log("画折线图 - 开发维度,一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线 easyBugAlongtimeDeveloperJsonStr= "+ easyBugAlongtimeDeveloperJsonStr);
+                            //转成json格式
+                            var easyBugAlongtimeDeveloperJsonObj = $.parseJSON(easyBugAlongtimeDeveloperJsonStr);
+
+                            var easyBugAlongtimeDeveloperLegendData = easyBugAlongtimeDeveloperJsonObj.legendData;
+                            var easyBugAlongtimeDeveloperXAxisData = easyBugAlongtimeDeveloperJsonObj.xAxisData;
+                            var easyBugAlongtimeDeveloperSeriesDataJson = easyBugAlongtimeDeveloperJsonObj.seriesDataJson;
+                            console.log("allBugAlongtimeDeveloperLegendData=====" + JSON.stringify(easyBugAlongtimeDeveloperLegendData));
+                            console.log("allBugAlongtimeDeveloperXAxisData=====" + JSON.stringify(easyBugAlongtimeDeveloperXAxisData));
+                            console.log("allBugAlongtimeDeveloperSeriesDataJson=====" + JSON.stringify(easyBugAlongtimeDeveloperSeriesDataJson));
+                            renderMapWithDeveloperByTimeAlongtimeEasyBug(easyBugAlongtimeDeveloperLegendData, easyBugAlongtimeDeveloperXAxisData, easyBugAlongtimeDeveloperSeriesDataJson);
 
                         return false;  //页面不跳转
 

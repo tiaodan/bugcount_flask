@@ -1175,6 +1175,58 @@ def getEasyBugTableWithDeveloper():
     return json_str
 
 
+# 11）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线；1/2    月/周/季
+@app.route('/getEasyBugTableForDrawMapWithDeveloper', methods=['POST', 'GET'])
+def getEasyBugTableForDrawMapWithDeveloper():
+    # 获取前台传的参数
+    print(request.values)
+    startTime = request.values.get("startTime")
+    endTime = request.values.get("endTime")
+    timeDifference = request.values.get("timeDifference")
+    print(f"《app.py。开发维度》易bug table，前台传的参数startime={startTime}， endtime={endTime}")
+
+    json_str = ''
+
+    # 默认使用 get 请求
+    if request.method == "GET":
+        print('get请求')
+        json_str = buglist.get_easybug_table_fordrawmap_withdeveloper_orderby_date(startTime, endTime, timeDifference)
+        print('《app.py。开发维度》一定时间颗粒度,易bug 产生比率曲线, 返回json==jsonStr=====', json_str)
+
+    if request.method == "POST":
+        print('get请求')
+        json_str = buglist.get_easybug_table_fordrawmap_withdeveloper_orderby_date(startTime, endTime, timeDifference)
+        print('《app.py。开发维度》一定时间颗粒度,易bug 产生比率曲线, 返回json==jsonStr=====', json_str)
+
+    return json_str
+
+
+# 10）开发维度，按时间（时间可自定义）统计bug解决的及时性考量：一二级bug一定时间内（可自定义）的解决率，三四级bug一定时间内（可自定义时间）
+@app.route('/getBugSolveRateTableForDrawMapALongtimeWithDeveloper', methods=['POST', 'GET'])
+def getBugSolveRateTableForDrawMapALongtimeWithDeveloper():
+    # 获取前台传的参数
+    print(request.values)
+    startTime = request.values.get("startTime")
+    endTime = request.values.get("endTime")
+    timeDifference = request.values.get("timeDifference")
+    print(f"《app.py。开发维度》一定时间颗粒度，bug解决率（12级 34级） table，前台传的参数startime={startTime}， endtime={endTime}")
+
+    json_str = ''
+
+    # 默认使用 get 请求
+    if request.method == "GET":
+        print('get请求')
+        json_str = buglist.get_bugsolverate_table_fordrawmap_withdeveloper_orderby_date(startTime, endTime, timeDifference)
+        print('《app.py。开发维度》一定时间颗粒度，bug解决率（12级 34级）, 返回json==jsonStr=====', json_str)
+
+    if request.method == "POST":
+        print('get请求')
+        json_str = buglist.get_bugsolverate_table_fordrawmap_withdeveloper_orderby_date(startTime, endTime, timeDifference)
+        print('《app.py。开发维度》一定时间颗粒度，bug解决率（12级 34级）, 返回json==jsonStr=====', json_str)
+
+    return json_str
+
+
 # #######  开发维度 end########################
 
 # #########################  bug操作相关 end ############################################################################

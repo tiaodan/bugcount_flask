@@ -11,6 +11,7 @@ import json
 import traceback
 from py import utils
 import datetime
+import time
 
 # 数据库配置
 db_config_dict = utils.get_dbargs_from_config()
@@ -3009,7 +3010,12 @@ def get_easybug_table_withdeveloper_orderby_date(startTime, endTime):
             bug['bug_submit_date'] = str(startTime + ' - ' + endTime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
             print('========================bug_submit_date', bug['bug_submit_date'])
             bug['project'] = r[1]  # 项目名称
-            bug['easy_bug_rate'] = str((float(r[2]) * 100)) + '%'  # 易bug比率
+            # bug解决率有可能出现none的情况
+            if r[2] is None:
+                bug['easy_bug_rate'] = str((float(0) * 100)) + '%'  # 易bug比率
+            else:
+                bug['easy_bug_rate'] = str((float(r[2]) * 100)) + '%'  # 易bug比率
+            # bug['easy_bug_rate'] = str((float(r[2]) * 100)) + '%'  # 易bug比率
 
             # 后面是项目相关的 ，有几个项目循环几次
             for developer in developer_tuple:
@@ -3022,7 +3028,12 @@ def get_easybug_table_withdeveloper_orderby_date(startTime, endTime):
                 #   str1808[1:len(str1808)-2] 截取字符串 中developer名字--》'1808'
                 #   str1808[2:len(str1808)-3] 截取字符串 中developer名字--》1808 (去掉''格式的)
                 bug['developer' + str(index)] = str(developer)[2:len(str(developer)) - 3]  # 项目名称并不是从sql语句中读出来的，developer sql语句中读出
-                bug['easy_bug_rate_developer' + str(index)] = str((float(r[3 + index]) * 100)) + '%'
+                # bug解决率有可能出现none的情况
+                if r[3 + index] is None:
+                    bug['easy_bug_rate'] = str((float(0) * 100)) + '%'  # 易bug比率
+                else:
+                    bug['easy_bug_rate'] = str((float(r[3 + index]) * 100)) + '%'  # 易bug比率
+                # bug['easy_bug_rate_developer' + str(index)] = str((float(r[3 + index]) * 100)) + '%'
 
                 # print(f'developer{index}=', bug['developer' + str(index)])  #
                 # print(f'add_developer{index}=', bug['add_developer' + str(index)])
@@ -3073,3 +3084,391 @@ def get_easybug_table_withdeveloper_orderby_date(startTime, endTime):
     # 这些只是从数据库中，查出来的每天的数据，前端需要求和处理
     return json_str
 
+
+# 11）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线；1/2    月/周/季
+def get_easybug_table_fordrawmap_withdeveloper_orderby_date(startTime, endTime, timeDifference):
+    print('=================================获取所有 开发维度,一定时间颗粒度,易bug产生比率 的数据 start ===================================')
+    print(f'app.py 传的参数timeDifference {startTime}， {endTime}, {timeDifference}')
+
+    # 初始化返回的数据 [arg1, arg2, arg3, arg4] arg1=状态码（num）arg2=msg(str) arg3= count(num) arg4=tuple
+    # json数据
+    data = {}
+    bugcount = []
+    # 默认定义数据
+    code = 500  # 默认失败
+    msg = 'sql语句执行失败，此时间范围内无数据'
+    count = 0  # sql语句执行结果个数
+
+    # 打开数据库连接
+    conn = pymysql.connect(db_host, db_user, db_passwd, db_dbname)
+    # 使用 cursor() 方法创建一个游标对象 cursor
+    cursor = conn.cursor()
+
+    # 使用 execute()  方法执行 SQL 查询
+    try:
+        # 拿到各种想要的参数
+
+        # 1. 获取有几个 developer
+        get_developer_sql = 'select developer from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date <= %s ) group by developer'
+        cursor.execute(get_developer_sql, [startTime, endTime])
+        conn.commit()
+        #     获取 developer tuple
+        developer_tuple = cursor.fetchall()
+
+        # 2.获取有多少时间点 list
+        bug_submit_date_list = utils.get_bug_submit_date_list(startTime, endTime, timeDifference)
+        print('获取时间列表 bug_submit_date_list', bug_submit_date_list)
+        # print('获取时间列表。type bug_submit_date_list.type = ', type(bug_submit_date_list))
+
+        # 1. 拼接sql查询语句
+        searchsql_not_complete = "select bug_submit_date, project," \
+                                 "convert( count(bug_difficulty = 2 or null)/count(bugid or null),decimal(10,2) ) as 'easybug_rate' " \
+
+        searchsql_end = " from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date <= %s )"
+        # 初始化 sqlc查询参数 total_roject0 add_project0 close_project0
+        search_sql_args = list()
+        # print('未拼接好的字符串==', searchsql_not_complete + searchsql_end)
+
+        search_sql_middle_about_developer = ""
+        # 循环拼接字符串
+        for developer in developer_tuple:
+            # 当前索引
+            # print(f'当前 developer =={str(developer)}')
+            index = developer_tuple.index(developer)
+            developer_name_tuple_to_str = str(developer_tuple[index])
+            developer_name = developer_name_tuple_to_str[1:len(developer_name_tuple_to_str) - 2]
+            # print('循环中的 developer 名str==', developer_name)
+
+            # print(f'当前第{index}项 循环：第{index}项目为', developer_name)
+            # print('拼接sql语句')
+            # count(project='1808' or null) as 'totalNumByProjectBelongProject0',
+            # 依次为开发1 / 属于开发1的全部bug / 属于开发1的新增bug / 属于开发1的关闭bug
+
+            # project='1808' as project0
+            sql_name_developer = ",developer=" + developer_name + " as developer" + str(index)
+            # print('name ==========', sql_name_developer)
+            # 执行到这没问题
+
+            # sql_easybug_rate_belong_developer = ", count(bug_difficulty = 2 and developer = " + developer_name + " or null) as easybug_rate_developer" + str(index)
+            sql_easybug_rate_belong_developer = ", convert( count(bug_difficulty = 2 and developer = " + developer_name + " or null)/count(bugid or null),decimal(10,2) ) as easybug_rate_developer" + str(index)
+            print('for 循环拼接的sql == ', sql_easybug_rate_belong_developer)
+
+            for_sql = sql_easybug_rate_belong_developer
+            # search_sql_middle_about_developer 基础上拼接
+            search_sql_middle_about_developer += for_sql
+            print('开发相关sql 拼接结果==', search_sql_middle_about_developer)
+
+        # for循环拼接sql end
+        search_sql = searchsql_not_complete + search_sql_middle_about_developer + searchsql_end
+        print('最终sql ==', search_sql)
+
+
+
+        rank = 1  # 排名
+        # 3. 整理返回给前端的值,相当于按时间循环
+        # 返回数据 第几行 第几列xx数据
+        for r in bug_submit_date_list:
+            # print('=======================r=', r)
+            index = bug_submit_date_list.index(r)
+            if index == len(bug_submit_date_list) - 1:
+                break
+
+            # print(f'按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线，当前循环{index}, 值{i}, 值类型{type(i)}, str值{str(i)} ')
+            startTime = bug_submit_date_list[index]
+            endTime = bug_submit_date_list[index + 1]
+            print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
+
+            # 2. 执行sql语句
+            cursor.execute(search_sql, [startTime, endTime])
+            # 提交到数据库执行
+            conn.commit()
+            # 执行语句，返回结果
+            sql_return_result_tuple = cursor.fetchall()
+
+            # 转换查询结果为[{},{},{}]这种格式的
+            # print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
+            # print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
+            # print("执行语句返回结果(类型)==", type(sql_return_result_tuple))
+            # print("sql语句执行成功")
+
+            bug = dict()
+            # bug['bug_submit_date'] = str(startTime + ' - ' + endTime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable （xx -xx 这种格式）
+            bug['bug_submit_date'] = str(endTime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
+            print('========================bug_submit_date', bug['bug_submit_date'])
+            bug['project'] = r[1]  # 项目名称
+            # bug解决率有可能出现none的情况
+            if sql_return_result_tuple[0][2] is None:
+                # bug['easy_bug_rate'] = str((float(0) * 100)) + '%'  # 易bug比率
+                bug['easy_bug_rate'] = float(0)  # 易bug比率
+            else:
+                bug['easy_bug_rate'] = float(sql_return_result_tuple[0][2]) * 100 # 易bug比率
+
+            # bug['easy_bug_rate'] = str((float(sql_return_result_tuple[0][2]) * 100)) + '%'  # 易bug比率
+
+            # 后面是项目相关的 ，有几个项目循环几次
+            for developer in developer_tuple:
+                # 当前索引
+                print(f'当前developer=={str(developer)}')
+                index = developer_tuple.index(developer)
+                print(f'当前索引=={index}')
+                print(f'第{index}次循环开始================================================')
+
+                #   str1808[1:len(str1808)-2] 截取字符串 中developer名字--》'1808'
+                #   str1808[2:len(str1808)-3] 截取字符串 中developer名字--》1808 (去掉''格式的)
+                bug['developer' + str(index)] = str(developer)[2:len(str(developer)) - 3]  # 项目名称并不是从sql语句中读出来的，developer sql语句中读出
+                # bug解决率有可能出现none的情况
+                if sql_return_result_tuple[0][3 + index] is None:
+                    # bug['easy_bug_rate_developer' + str(index)] = str((float(0) * 100)) + '%'  # 易bug比率
+                    bug['easy_bug_rate_developer' + str(index)] = float(0) * 100  # 易bug比率
+                else:
+                    # bug['easy_bug_rate_developer' + str(index)] = str((float(sql_return_result_tuple[0][3 + index]) * 100)) + '%'  # 易bug比率
+                    bug['easy_bug_rate_developer' + str(index)] = float(sql_return_result_tuple[0][3 + index]) * 100  # 易bug比率
+                # bug['easy_bug_rate_developer' + str(index)] = str((float(sql_return_result_tuple[0][3 + index]) * 100)) + '%'
+
+                # print(f'developer{index}=', bug['developer' + str(index)])  #
+                # print(f'add_developer{index}=', bug['add_developer' + str(index)])
+                # print(f'close_developer{index} ==', bug['close_developer' + str(index)])
+                # print(f'regression_developer{index}  ===', bug['regression_developer' + str(index)])
+                # print(f'delay_developer{index}  ===', bug['delay_developer' + str(index)])
+                #
+                # print(f'第{index}次循环结束================================================')
+
+            # 循环完1次 累加
+            bugcount.append(bug)
+            # for end
+
+        # 拼接返回数据,返回列表
+        count = len(sql_return_result_tuple)  # sql语句结果个数
+
+        # 判断是否 查询成功
+        if count > 0:
+            code = 200  # 成功
+            msg = '查询语句执行成功'
+
+    # except Exception:
+    except:
+        # 如果发生错误则回滚
+        # 输出异常信息
+        traceback.print_exc()
+        print('出现异常，sql语句执行失败')
+        # print('出现异常，sql语句执行失败', Exception)
+        conn.rollback()
+    finally:
+        # 不管是否异常，都关闭数据库连接
+        cursor.close()
+        conn.close()
+
+    #  返回json格式的数据
+    data['code'] = code
+    data['msg'] = msg
+    data['count'] = count
+    data['data'] = bugcount
+    # 转化下查询结果为{},{},{}这种格式======================
+    print('<admin.py> 搜索易bug产生比率 type(data)== ', type(data))
+    print('<admin.py> 搜索易bug产生比率 type== ', data)
+    # json.dumps()用于将dict类型的数据转成str .json.loads():用于将str类型的数据转成dict
+    json_str = json.dumps(data, ensure_ascii=False)
+    print('<buglist> get_easybug_table_withdeveloper_orderby_date,返回结果==jsonStr=====', json_str)
+
+    print('=================================获取所有 开发维度,一定时间颗粒度,易bug产生比率 的数据 的数据 end ===================================')
+    # 这些只是从数据库中，查出来的每天的数据，前端需要求和处理
+    return json_str
+
+
+# 10）开发维度，按时间（时间可自定义）统计bug解决的及时性考量：一二级bug一定时间内（可自定义）的解决率，三四级bug一定时间内（可自定义时间）
+def get_bugsolverate_table_fordrawmap_withdeveloper_orderby_date(startTime, endTime, timeDifference):
+    print('=================================获取所有 开发维度,一定时间颗粒度,bug解决率(12 -34) 的数据 start ===================================')
+    print(f'app.py 传的参数timeDifference {startTime}， {endTime}, {timeDifference}')
+
+    # 初始化返回的数据 [arg1, arg2, arg3, arg4] arg1=状态码（num）arg2=msg(str) arg3= count(num) arg4=tuple
+    # json数据
+    data = {}
+    bugcount = []
+    # 默认定义数据
+    code = 500  # 默认失败
+    msg = 'sql语句执行失败，此时间范围内无数据'
+    count = 0  # sql语句执行结果个数
+
+    # 打开数据库连接
+    conn = pymysql.connect(db_host, db_user, db_passwd, db_dbname)
+    # 使用 cursor() 方法创建一个游标对象 cursor
+    cursor = conn.cursor()
+
+    # 使用 execute()  方法执行 SQL 查询
+    try:
+        # 拿到各种想要的参数
+
+        # 1. 获取有几个 developer
+        get_developer_sql = 'select developer from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date <= %s ) group by developer'
+        cursor.execute(get_developer_sql, [startTime, endTime])
+        conn.commit()
+        #     获取 developer tuple
+        developer_tuple = cursor.fetchall()
+
+        # 2.获取有多少时间点 list
+        bug_submit_date_list = utils.get_bug_submit_date_list(startTime, endTime, timeDifference)
+        print('获取时间列表 bug_submit_date_list', bug_submit_date_list)
+        # print('获取时间列表。type bug_submit_date_list.type = ', type(bug_submit_date_list))
+
+        # 1. 拼接sql查询语句 --比如一周，bug应该关闭时间在endtime 之前的
+        """
+        searchsql_not_complete = "select bug_submit_date, project," \
+                                 "convert( count(bug_status = 2 and (bug_submit_date +7 ) <= endTime  or null)/count(severity_level <=2 or null),decimal(10,2) ) as 'bug_solve_rate' "
+        """
+        searchsql_not_complete = "select bug_submit_date, project," \
+                                 "convert( (count(bugstatus = 2 and date_add(bug_submit_date, interval %s day) between %s and %s or null))/(count(date_add(bug_submit_date, interval %s day) between %s and %s or null)),decimal(10,2) ) as 'bug_solve_rate' "
+
+        # date_add(bug_submit_date, interval 7 day) <=%s <= endTime(最后一个时间)
+        searchsql_end = " from bugcount.buglist where (bug_submit_date >= %s and bug_submit_date <= %s )"
+
+        # 初始化 sqlc查询参数 total_roject0 add_project0 close_project0
+        # "convert( count(date_add(bug_submit_date, interval 7 day) <= '2020-01-17' or null)/count(severity_level <=2 or null),decimal(10,2) ) as 'bug_solve_rate' "
+        search_sql_args = list()
+        # print('未拼接好的字符串==', searchsql_not_complete + searchsql_end)
+
+        search_sql_middle_about_developer = ""
+        # 循环拼接字符串
+        for developer in developer_tuple:
+            # 当前索引
+            # print(f'当前 developer =={str(developer)}')
+            index = developer_tuple.index(developer)
+            developer_name_tuple_to_str = str(developer_tuple[index])
+            developer_name = developer_name_tuple_to_str[1:len(developer_name_tuple_to_str) - 2]
+            # print('循环中的 developer 名str==', developer_name)
+
+            # print(f'当前第{index}项 循环：第{index}项目为', developer_name)
+            # print('拼接sql语句')
+            # count(project='1808' or null) as 'totalNumByProjectBelongProject0',
+            # 依次为开发1 / 属于开发1的全部bug / 属于开发1的新增bug / 属于开发1的关闭bug
+
+            # project='1808' as project0
+            sql_name_developer = ",developer=" + developer_name + " as developer" + str(index)
+            # print('name ==========', sql_name_developer)
+            # 执行到这没问题
+
+            # sql_easybug_rate_belong_developer = ", count(bug_difficulty = 2 and developer = " + developer_name + " or null) as easybug_rate_developer" + str(index)
+            sql_bug_solve_rate_belong_developer = ", convert( count(bug_difficulty = 2 and developer = " + developer_name + " or null)/count(bugid or null),decimal(10,2) ) as easybug_rate_developer" + str(index)
+            print('for 循环拼接的sql == ', sql_bug_solve_rate_belong_developer)
+
+            for_sql = sql_bug_solve_rate_belong_developer
+            # search_sql_middle_about_developer 基础上拼接
+            search_sql_middle_about_developer += for_sql
+            print('开发相关sql 拼接结果==', search_sql_middle_about_developer)
+
+        # for循环拼接sql end
+        search_sql = searchsql_not_complete + search_sql_middle_about_developer + searchsql_end
+        print('最终sql ==', search_sql)
+
+
+
+        rank = 1  # 排名
+        # 3. 整理返回给前端的值,相当于按时间循环
+        # 返回数据 第几行 第几列xx数据
+        for r in bug_submit_date_list:
+            # print('=======================r=', r)
+            index = bug_submit_date_list.index(r)
+            if index == len(bug_submit_date_list) - 1:
+                break
+
+            # print(f'按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线，当前循环{index}, 值{i}, 值类型{type(i)}, str值{str(i)} ')
+            startTime = bug_submit_date_list[index]
+            endTime = bug_submit_date_list[index + 1]
+            print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
+
+            # 2. 执行sql语句
+            # https://blog.csdn.net/suibianshen2012/article/details/73512898
+            startTimeAddTimeFiffrence = str(time.strftime(startTime, ""%Y%m%d"") )
+            sql_args = [7, startTime+7, endTime, 7, startTime+7, endTime, +7, startTime, endTime]
+            cursor.execute(search_sql, [startTime, endTime])
+            # 提交到数据库执行
+            conn.commit()
+            # 执行语句，返回结果
+            sql_return_result_tuple = cursor.fetchall()
+
+            # 转换查询结果为[{},{},{}]这种格式的
+            # print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
+            # print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
+            # print("执行语句返回结果(类型)==", type(sql_return_result_tuple))
+            # print("sql语句执行成功")
+
+            bug = dict()
+            # bug['bug_submit_date'] = str(startTime + ' - ' + endTime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable （xx -xx 这种格式）
+            bug['bug_submit_date'] = str(endTime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
+            print('========================bug_submit_date', bug['bug_submit_date'])
+            bug['project'] = r[1]  # 项目名称
+            # bug解决率有可能出现none的情况
+            if sql_return_result_tuple[0][2] is None:
+                bug['bug_solve_rate'] = float(0)  # 易bug比率
+            else:
+                bug['bug_solve_rate'] = float(sql_return_result_tuple[0][2]) * 100  # 易bug比率
+
+            # bug['easy_bug_rate'] = str((float(sql_return_result_tuple[0][2]) * 100)) + '%'  # 易bug比率,str echarts无法显示
+
+            # 后面是项目相关的 ，有几个项目循环几次
+            for developer in developer_tuple:
+                # 当前索引
+                print(f'当前developer=={str(developer)}')
+                index = developer_tuple.index(developer)
+                print(f'当前索引=={index}')
+                print(f'第{index}次循环开始================================================')
+
+                #   str1808[1:len(str1808)-2] 截取字符串 中developer名字--》'1808'
+                #   str1808[2:len(str1808)-3] 截取字符串 中developer名字--》1808 (去掉''格式的)
+                bug['developer' + str(index)] = str(developer)[2:len(str(developer)) - 3]  # 项目名称并不是从sql语句中读出来的，developer sql语句中读出
+                # bug解决率有可能出现none的情况
+                if sql_return_result_tuple[0][3 + index] is None:
+                    # bug['easy_bug_rate_developer' + str(index)] = str((float(0) * 100)) + '%'  # 易bug比率
+                    bug['easy_bug_rate_developer' + str(index)] = float(0) * 100  # 易bug比率
+                else:
+                    # bug['easy_bug_rate_developer' + str(index)] = str((float(sql_return_result_tuple[0][3 + index]) * 100)) + '%'  # 易bug比率
+                    bug['easy_bug_rate_developer' + str(index)] = float(sql_return_result_tuple[0][3 + index]) * 100  # 易bug比率
+                # bug['easy_bug_rate_developer' + str(index)] = str((float(sql_return_result_tuple[0][3 + index]) * 100)) + '%'
+
+                # print(f'developer{index}=', bug['developer' + str(index)])  #
+                # print(f'add_developer{index}=', bug['add_developer' + str(index)])
+                # print(f'close_developer{index} ==', bug['close_developer' + str(index)])
+                # print(f'regression_developer{index}  ===', bug['regression_developer' + str(index)])
+                # print(f'delay_developer{index}  ===', bug['delay_developer' + str(index)])
+                #
+                # print(f'第{index}次循环结束================================================')
+
+            # 循环完1次 累加
+            bugcount.append(bug)
+            # for end
+
+        # 拼接返回数据,返回列表
+        count = len(sql_return_result_tuple)  # sql语句结果个数
+
+        # 判断是否 查询成功
+        if count > 0:
+            code = 200  # 成功
+            msg = '查询语句执行成功'
+
+    # except Exception:
+    except:
+        # 如果发生错误则回滚
+        # 输出异常信息
+        traceback.print_exc()
+        print('出现异常，sql语句执行失败')
+        # print('出现异常，sql语句执行失败', Exception)
+        conn.rollback()
+    finally:
+        # 不管是否异常，都关闭数据库连接
+        cursor.close()
+        conn.close()
+
+    #  返回json格式的数据
+    data['code'] = code
+    data['msg'] = msg
+    data['count'] = count
+    data['data'] = bugcount
+    # 转化下查询结果为{},{},{}这种格式======================
+    print('<admin.py> 搜索易bug产生比率 type(data)== ', type(data))
+    print('<admin.py> 搜索易bug产生比率 type== ', data)
+    # json.dumps()用于将dict类型的数据转成str .json.loads():用于将str类型的数据转成dict
+    json_str = json.dumps(data, ensure_ascii=False)
+    print('<buglist> get_easybug_table_withdeveloper_orderby_date,返回结果==jsonStr=====', json_str)
+
+    print('=================================获取所有 开发维度,一定时间颗粒度,易bug产生比率 的数据 的数据 end ===================================')
+    # 这些只是从数据库中，查出来的每天的数据，前端需要求和处理
+    return json_str
