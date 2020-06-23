@@ -4,10 +4,7 @@
     待优化项：
     1. 所有折线图放到一个标签页里去
     2. 折线图的标题栏，如果多的话，会把其它功能项挡住
-    3. 折线图的标题栏 改成对应的project / developer
-
-    在待优化的基础上，编辑
-
+    3. 折线图的标题栏 改成对应的project / developer 
 -->
 <!doctype html>
 <html lang="en">
@@ -126,40 +123,65 @@
 
                                 <!--  标签页 显示统计数据-->
                                 <!-- 项目数据表格，用来查看画图数据的 start layui-tab-brief layui-tab-card-->
+                                <div class="layui-tab layui-tab-brief">
+                                      <ul class="layui-tab-title">
+                                            <li class="layui-this">每日数据</li>
+                                            <li>每日新增/关闭数据</li>
+                                            <li>每日累计数据</li>
+                                            <li>全部bug数据</li>
+                                            <li>全部bug趋势图</li>
+                                            <li>12级别bug趋势图</li>
+                                      </ul>
+                                      <div class="layui-tab-content">
+                                            <div class="layui-tab-item layui-show">
+                                                    <blockquote class="layui-elem-quote" hidden><div align="center">每日数据</div></blockquote>
+                                                    <div class="layui-row">
+                                                        <!-- 测试表格，x == bug数量(新增，关闭，回归，延迟)-->
+                                                        <!-- 测试表格，y == 项目每天数据   -->
+                                                        <table class="layui-hide" id="tableForDrawMapWithProject" lay-filter="tableForDrawMapWithProject"></table>
+                                                    </div>
+                                            </div>
+
+                                            <div class="layui-tab-item">新增bug 增长/关闭数据(今天相对昨天)
+                                                    <blockquote class="layui-elem-quote" hidden><div align="center">每日新增/关闭数据</div></blockquote>
+                                                    <table class="layui-hide" id="tableForDrawMapWithProjectALongtimeNewBugAddAndClose" lay-filter="tableForDrawMapWithProjectALongtimeNewBugAddAndClose"></table>
+                                            </div>
+
+                                            <div class="layui-tab-item">
+                                                    <blockquote class="layui-elem-quote" hidden><div align="center">每日累计数据</div></blockquote>
+                                                    <div class="layui-row">
+                                                        <!-- 测试表格，x == bug数量(新增，关闭，回归，延迟)-->
+                                                        <!-- 测试表格，y == 项目每天数据   -->
+                                                        <table class="layui-hide" id="tableForDrawMapWithProjectEverydaySum" lay-filter="tableForDrawMapWithProjectEverydaySum"></table>
+                                                    </div>
+                                            </div>
+
+                                            <div class="layui-tab-item">
+                                                    <blockquote class="layui-elem-quote" hidden><div align="center">全部bug数据</div></blockquote>
+                                                    <div class="layui-row">
+                                                        <!-- 测试表格，x == bug数量(新增，关闭，回归，延迟)-->
+                                                        <!-- 测试表格，y == 项目每天数据   -->
+                                                        <table class="layui-hide" id="tableForDrawMapWithProjectALongtimeAllBug" lay-filter="tableForDrawMapWithProjectALongtimeAllBug"></table>
+                                            </div>
 
 
-                                <div class="layui-tab layui-tab-brief" lay-filter="docDemoTabBrief">
-                                  <ul class="layui-tab-title">
-                                        <li class="layui-this" title="1）项目维度，按时间（时间可自定义）统计所有bug(新增 / 12级)bug、关闭bug、待回归bug等；">每日数据</li>
-                                        <li title="3）项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；">新增bug增长关闭曲线</li>
-                                        <li title="4）项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线； + bug剩余情况">全部bug增长关闭曲线</li>
-                                        <li>商品管理</li>
-                                        <li>订单管理</li>
-                                        <li>test</li>
-                                        <li>特色t</li>
-                                  </ul>
-                                  <div class="layui-tab-content"> <!--style="height: 100px;"-->
-                                        <div class="layui-tab-item layui-show">
-                                            <!--1）项目维度，按时间（时间可自定义）统计新增bug、关闭bug、待回归bug等；-->
-                                            <!-- 测试表格，x == bug数量(新增，关闭，回归，延迟)-->
-                                            <!-- 测试表格，y == 项目每天数据   -->
-                                            <table class="layui-hide" id="tableForDrawMapWithProject" lay-filter="tableForDrawMapWithProject"></table>
-                                        </div>
-                                        <div class="layui-tab-item">
-                                            <!--3) 项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；-->
-                                            <div id="AddBugAddAndCloseStatusMapWithProject"></div>
-                                        </div>
-                                        <div class="layui-tab-item">
-                                            <!--4）项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线； + bug剩余情况	；-->
-                                            <div id="allBugStatusMapWithProject" style="width: 1000px, height:500px"></div>
-                                        </div>
-                                        <div class="layui-tab-item">内容4</div>
-                                        <div class="layui-tab-item">内容5</div>
-                                        <div class="layui-tab-item">test</div>
-                                        <div class="layui-tab-item">特色t</div>
+                                            <div class="layui-tab-item">
+                                                <!-- 折线图 start-->
+                                                <blockquote class="layui-elem-quote"><div align="center">1）项目维度，按时间（时间可自定义）统计新增bug、关闭bug、待回归bug等</div></blockquote>
+                                                <div id="allBugMap1"></div> <!--  所有bug end-->
+                                            </div>
+
+                                            <div class="layui-tab-item">
+                                                <!--  12bug start-->
+                                                <blockquote class="layui-elem-quote"><div align="center">2）项目维度，按时间（时间可自定义）统计新增一、二级新增bug、关闭bug、待回归bug等</div></blockquote>
+                                                <div id="Bug12Map1"></div>
+                                                <!--  12bug end-->
+                                            </div>
+
                                       </div>
-                                </div>
+                                 </div>
                                 <!-- 项目数据表格，用来查看画图数据的 end-->
+                        </div>
                   </div>
                  <!--  项目维度的数据都放在这个div end-->
 
@@ -218,19 +240,20 @@
 
 
 
-             <!--折线图 start-->
+            <!-- 折线图 start-->
             <blockquote class="layui-elem-quote"><div align="center">1）项目维度，按时间（时间可自定义）统计新增bug、关闭bug、待回归bug等</div></blockquote>
-            <div id="allBugMapWithProject" ></div>
-            <!--所有bug end-->
+            <div id="allBugMapWithProject"></div> <!--  所有bug end-->
 
-              <!--12bug start-->
+            <!--  12bug start-->
             <blockquote class="layui-elem-quote"><div align="center">2）项目维度，按时间（时间可自定义）统计新增一、二级新增bug、关闭bug、待回归bug等</div></blockquote>
             <div id="Bug12MapWithProject"></div>
-              <!--12bug end-->
+            <!--  12bug end-->
 
+            <blockquote class="layui-elem-quote"><div align="center">3) 项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；</div></blockquote>
+            <div id="AddBugAddAndCloseStatusMapWithProject"></div>
 
-
-
+            <blockquote class="layui-elem-quote"><div align="center">4）项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线； + bug剩余情况	；</div></blockquote>
+            <div id="allBugStatusMapWithProject"></div>
 
             <blockquote class="layui-elem-quote"><div align="center">7）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；</div></blockquote>
             <div id="AddBugAddAndCloseStatusMapWithDeveloper"></div>
@@ -1371,11 +1394,6 @@
                             option: option,
                             //title: '3）项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；'
                         });
-
-                        //假设实例的名字是myChart,宽度自适应在echats配置完实例以后,配置下面几行代码即可
-                        window.onresize = function () {
-                            myChart.resize();
-                        }
                     });
             }
 
@@ -1609,23 +1627,10 @@
                             series: seriesData
                         };
 
-
-                        /*var width = $("#allBugStatusMapWithProject").width();
-                        var height = $("#allBugStatusMapWithProject").height();
-                        $("#allBugStatusMapWithProject").css("width", width).css("height", height);*/
-
-
-                        //修改首次进入时图的宽度
-
-                         chart = myChart = testHelper.create(echarts, 'allBugStatusMapWithProject', {
-                                option: option,
-                                //title: '3）项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；'
-                            });
-
-                        //假设实例的名字是myChart,宽度自适应在echats配置完实例以后,配置下面几行代码即可
-                        window.onresize = function () {
-                            myChart.resize();
-                        }
+                        chart = myChart = testHelper.create(echarts, 'allBugStatusMapWithProject', {
+                            option: option,
+                            //title: '3）项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；'
+                        });
                     });
             }
 
