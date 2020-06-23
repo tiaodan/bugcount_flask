@@ -3313,12 +3313,13 @@ def get_bugsolverate_table_fordrawmap_withdeveloper_orderby_date(startTime, endT
         # 1. 拼接sql查询语句 --比如一周，bug应该关闭时间在endtime 之前的
         """
         searchsql_not_complete = "select bug_submit_date, project," \
-                                 "convert( count(bug_status = 2 and (bug_submit_date +7 ) <= endTime  or null)/count(severity_level <=2 or null),decimal(10,2) ) as 'bug_solve_rate' "
-        """
-        searchsql_not_complete = "select bug_submit_date, project," \
                                  " convert( (count(bug_status = 2 and date_add(bug_submit_date, interval %s day) between %s and %s or null))/(count(date_add(bug_submit_date, interval %s day) between %s and %s or null)),decimal(10,2) ) as 'bug_solve_rate' "
+        """
+        searchsql_not_complete = "select bug_submit_date, project, " \
+                                 " convert( (count(severity_level <= 2 and bug_status = 2 and date_add(bug_submit_date, interval %s day) between %s and %s or null))/(count(severity_level <= 2 and  date_add(bug_submit_date, interval %s day) between %s and %s or null)),decimal(10,2) ) as 'bug_solve_rate' " \
+                                 ", convert( (count(severity_level > 2 and bug_status = 2 and date_add(bug_submit_date, interval %s day) between %s and %s or null))/(count(severity_level > 2 and  date_add(bug_submit_date, interval %s day) between %s and %s or null)),decimal(10,2) ) as 'bug_solve_rate' "
 
-        # date_add(bug_submit_date, interval 7 day) <=%s <= endTime(最后一个时间)
+        # date_add(bug_submit_date, interval 7 day) <=%s <= endTime(最后一个时间) severity_level
         searchsql_end = " from bugcount.buglist where (bug_submit_date >= %s and bug_submit_date <= %s )"
 
         # 初始化 sqlc查询参数 total_roject0 add_project0 close_project0
@@ -3347,7 +3348,9 @@ def get_bugsolverate_table_fordrawmap_withdeveloper_orderby_date(startTime, endT
             # 执行到这没问题
 
             # sql_bug_solve_rate_belong_developer = ", convert( count(bug_difficulty = 2 and developer = " + developer_name + " or null)/count(bugid or null),decimal(10,2) ) as easybug_rate_developer" + str(index)
-            sql_bug_solve_rate_belong_developer = ", convert( (count(bug_status = 2 and date_add(bug_submit_date, interval %s day) between %s and %s and developer = " + developer_name + " or null))/(count(date_add(bug_submit_date, interval %s day) between %s and %s or null)),decimal(10,2) ) as bug_solve_rate_developer" + str(index)
+            sql_bug12_solve_rate_belong_developer = ", convert( (count(severity_level <= 2 and bug_status = 2 and date_add(bug_submit_date, interval %s day) between %s and %s and developer = " + developer_name + " or null))/(count(severity_level <= 2 and  date_add(bug_submit_date, interval %s day) between %s and %s or null)),decimal(10,2) ) as bug12_solve_rate_developer" + str(index)
+            sql_bug34_solve_rate_belong_developer = ", convert( (count(severity_level > 2 and bug_status = 2 and date_add(bug_submit_date, interval %s day) between %s and %s and developer = " + developer_name + " or null))/(count(severity_level > 2 and  date_add(bug_submit_date, interval %s day) between %s and %s or null)),decimal(10,2) ) as bug34_solve_rate_developer" + str(index)
+            sql_bug_solve_rate_belong_developer = sql_bug12_solve_rate_belong_developer + sql_bug34_solve_rate_belong_developer
             print('for 循环拼接的sql == ', sql_bug_solve_rate_belong_developer)
 
             for_sql = sql_bug_solve_rate_belong_developer
@@ -3383,15 +3386,24 @@ def get_bugsolverate_table_fordrawmap_withdeveloper_orderby_date(startTime, endT
             
             start_time_add_timediffrence_str = datetime.datetime.strftime((start_time_add_timediffrence_date + delta), '%Y-%m-%d')
             end_time_add_timediffrence_str = datetime.datetime.strftime((end_time_add_timediffrence_date + delta), '%Y-%m-%d') # startTime+7/14/21/30
-            sql_args = [timeDifference_int, start_time_add_timediffrence_str, end_time_add_timediffrence_str, timeDifference_int, start_time_add_timediffrence_str, end_time_add_timediffrence_str]  #
+            sql_args = [timeDifference_int, start_time_add_timediffrence_str, end_time_add_timediffrence_str, timeDifference_int, start_time_add_timediffrence_str, end_time_add_timediffrence_str,
+                        timeDifference_int, start_time_add_timediffrence_str, end_time_add_timediffrence_str, timeDifference_int, start_time_add_timediffrence_str, end_time_add_timediffrence_str]  # 第一行12级bug参数 第二行34级bug参数
             # 有几个developer就加几对参数
             for developer in developer_tuple:
+                # 12级bug参数
                 sql_args.append(timeDifference_int)
                 sql_args.append(start_time_add_timediffrence_str)
                 sql_args.append(end_time_add_timediffrence_str)  # 除数
                 sql_args.append(timeDifference_int)
                 sql_args.append(start_time_add_timediffrence_str)
                 sql_args.append(end_time_add_timediffrence_str)   # 被除数
+                # 34级bug参数
+                sql_args.append(timeDifference_int)
+                sql_args.append(start_time_add_timediffrence_str)
+                sql_args.append(end_time_add_timediffrence_str)  # 除数
+                sql_args.append(timeDifference_int)
+                sql_args.append(start_time_add_timediffrence_str)
+                sql_args.append(end_time_add_timediffrence_str)  # 被除数
             sql_args.append(startTime)  # 加最后时间
             sql_args.append(endTime)  # 加最后时间
 
@@ -3414,11 +3426,16 @@ def get_bugsolverate_table_fordrawmap_withdeveloper_orderby_date(startTime, endT
             bug['project'] = r[1]  # 项目名称
             # bug解决率有可能出现none的情况
             if sql_return_result_tuple[0][2] is None:
-                bug['bug_solve_rate'] = float(0)  # bug解决率
+                bug['bug12_solve_rate'] = float(0)  # bug12解决率
             else:
-                bug['bug_solve_rate'] = float(sql_return_result_tuple[0][2]) * 100  # bug解决率
+                bug['bug12_solve_rate'] = float(sql_return_result_tuple[0][2]) * 100  # bug12解决率
 
-            # bug['easy_bug_rate'] = str((float(sql_return_result_tuple[0][2]) * 100)) + '%'  # 易bug比率,str echarts无法显示
+            if sql_return_result_tuple[0][3] is None:
+                bug['bug34_solve_rate'] = float(0)  # bug34解决率
+            else:
+                bug['bug34_solve_rate'] = float(sql_return_result_tuple[0][3]) * 100  # bug34解决率
+
+            # bug['easy_bug_rate'] = str((float(sql_return_result_tuple[0][3]) * 100)) + '%'  # 易bug比率,str echarts无法显示
 
             # 后面是项目相关的 ，有几个项目循环几次
             for developer in developer_tuple:
@@ -3432,13 +3449,17 @@ def get_bugsolverate_table_fordrawmap_withdeveloper_orderby_date(startTime, endT
                 #   str1808[2:len(str1808)-3] 截取字符串 中developer名字--》1808 (去掉''格式的)
                 bug['developer' + str(index)] = str(developer)[2:len(str(developer)) - 3]  # 项目名称并不是从sql语句中读出来的，developer sql语句中读出
                 # bug解决率有可能出现none的情况
-                if sql_return_result_tuple[0][3 + index] is None:
-                    # bug['easy_bug_rate_developer' + str(index)] = str((float(0) * 100)) + '%'  # 易bug比率
-                    bug['bug_solve_rate_developer' + str(index)] = float(0) * 100  # bug及时率
+                if sql_return_result_tuple[0][4 + index*2] is None:
+                    # bug['easy_bug_rate_developer' + str(index)] = str((float(0) * 100)) + '%'  # bug12解决率
+                    bug['bug12_solve_rate_developer' + str(index)] = float(0) * 100  # bug及时率
                 else:
-                    # bug['easy_bug_rate_developer' + str(index)] = str((float(sql_return_result_tuple[0][3 + index]) * 100)) + '%'  # 易bug比率
-                    bug['bug_solve_rate_developer' + str(index)] = float(sql_return_result_tuple[0][3 + index]) * 100  # 易bug比率
-                # bug['easy_bug_rate_developer' + str(index)] = str((float(sql_return_result_tuple[0][3 + index]) * 100)) + '%'
+                    bug['bug12_solve_rate_developer' + str(index)] = float(sql_return_result_tuple[0][4 + index*2]) * 100  # bug12解决率
+
+                if sql_return_result_tuple[0][4 + index*2 + 1] is None:
+                    # bug['easy_bug_rate_developer' + str(index)] = str((float(0) * 100)) + '%'  # bug12解决率
+                    bug['bug34_solve_rate_developer' + str(index)] = float(0) * 100  # bug及时率
+                else:
+                    bug['bug34_solve_rate_developer' + str(index)] = float(sql_return_result_tuple[0][4 + index*2 + 1]) * 100  # bug12解决率
 
                 # print(f'developer{index}=', bug['developer' + str(index)])  #
                 # print(f'add_developer{index}=', bug['add_developer' + str(index)])
