@@ -133,12 +133,11 @@
                                         <li class="layui-this" title="1）项目维度，按时间（时间可自定义）统计所有bug(新增 / 12级)bug、关闭bug、待回归bug等；">每日数据</li>
                                         <li title="3）项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；">新增bug增长关闭曲线</li>
                                         <li title="4）项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线； + bug剩余情况">全部bug增长关闭曲线</li>
-                                        <li>商品管理</li>
-                                        <li>订单管理</li>
-                                        <li>test</li>
-                                        <li>特色t</li>
+                                        <!--<li title="1）项目维度，按时间（时间可自定义）统计新增bug、关闭bug、待回归bug等" > 每日全部bug情况(自己看)</li>-->
+                                        <!--<li title="2）项目维度，按时间（时间可自定义）统计新增一、二级新增bug、关闭bug、待回归bug等；- 曲线)"> 每日12级bug情况(自己看)</li>-->
+
                                   </ul>
-                                  <div class="layui-tab-content"> <!--style="height: 100px;"-->
+                                  <div class="layui-tab-content" id="mapFather"> <!--style="height: 100px;"-->
                                         <div class="layui-tab-item layui-show">
                                             <!--1）项目维度，按时间（时间可自定义）统计新增bug、关闭bug、待回归bug等；-->
                                             <!-- 测试表格，x == bug数量(新增，关闭，回归，延迟)-->
@@ -147,16 +146,24 @@
                                         </div>
                                         <div class="layui-tab-item">
                                             <!--3) 项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；-->
-                                            <div id="AddBugAddAndCloseStatusMapWithProject"></div>
+<!--                                            <div id="AddBugAddAndCloseStatusMapWithProject" style="height: 400px;width: 1590px;"></div>-->
+                                            <div id="AddBugAddAndCloseStatusMapWithProject" style="height: 400px;width: 1590px;"></div>
                                         </div>
                                         <div class="layui-tab-item">
                                             <!--4）项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线； + bug剩余情况	；-->
-                                            <div id="allBugStatusMapWithProject" style="width: 1000px, height:500px"></div>
+                                             <div id="allBugStatusMapWithProject" style="width: 1590px; height:400px;"></div>
                                         </div>
-                                        <div class="layui-tab-item">内容4</div>
-                                        <div class="layui-tab-item">内容5</div>
-                                        <div class="layui-tab-item">test</div>
-                                        <div class="layui-tab-item">特色t</div>
+
+                                        <!--<div class="layui-tab-item" hidden>
+                                            &lt;!&ndash;1）项目维度，按时间（时间可自定义）统计新增bug、关闭bug、待回归bug等 - (自己看)	；&ndash;&gt;
+                                             <div id="allBugMapWithProject" style="width: 1590px; height:400px;"></div>
+                                        </div>-->
+
+                                        <!--<div class="layui-tab-item" hidden>
+                                            &lt;!&ndash;2）项目维度，按时间（时间可自定义）统计新增一、二级新增bug、关闭bug、待回归bug等；- 曲线)"> 每日12级bug情况(自己看)；&ndash;&gt;
+                                             <div id="Bug12MapWithProject" style="width: 1590px; height:400px;"></div>
+                                        </div>-->
+
                                       </div>
                                 </div>
                                 <!-- 项目数据表格，用来查看画图数据的 end-->
@@ -175,27 +182,51 @@
                                 <!-- 项目数据表格，用来查看画图数据的 start layui-tab-brief layui-tab-card-->
                                 <div class="layui-tab layui-tab-brief">
                                       <ul class="layui-tab-title">
-                                            <li class="layui-this">bug数据</li>
-                                            <li>易bug产生比率</li>
-                                            <li>bug解决率</li>
+                                            <li class="layui-this" title="5）开发维度，按时间（时间可自定义）统计所有bug(新增 / 12级)bug、关闭bug、待回归bug等">每日数据</li>
+                                            <li title="7）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线">新增bug增长关闭曲线</li>
+                                            <li title="8）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线 + bug剩余情况(累计)">全部bug增长关闭曲线</li>
+                                            <li title="11）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线">易bug产生比率趋势图</li>
+                                            <li title="12）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制一二级bug解决及时率曲线和三四级bug解决及时率曲线。">bug解决率趋势图</li>
+                                            <li>易bug产生比率数据</li>
+                                            <li>bug解决率数据</li>
                                       </ul>
                                       <div class="layui-tab-content">
                                             <div class="layui-tab-item layui-show">
-                                                    <blockquote class="layui-elem-quote" hidden><div align="center">bug数据</div></blockquote>
+                                                    <blockquote class="layui-elem-quote" hidden><div align="center">每日数据</div></blockquote>
                                                     <div class="layui-row">
                                                         <table class="layui-hide" id="tableWithDeveloper" lay-filter="tableWithDeveloper"></table>
                                                     </div>
                                             </div>
 
+                                            <div class="layui-tab-item">
+                                                   <!-- 7）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；-->
+                                                    <div id="AddBugAddAndCloseStatusMapWithDeveloper" style="height: 400px;width: 1590px;"></div>
+                                            </div>
+
+                                            <div class="layui-tab-item">
+                                                   <!-- 8）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线 + bug剩余情况(累计)-->
+                                                    <div id="allBugStatusMapWithDeveloper" style="height: 400px;width: 1590px;"></div>
+                                            </div>
+
+                                            <div class="layui-tab-item">
+                                                   <!--11）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线-->
+                                                    <div id="easyBugStatusMapWithDeveloper" style="height: 400px;width: 1590px;"></div>
+                                            </div>
+
+                                            <div class="layui-tab-item">
+                                                   <!--12）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制一二级bug解决及时率曲线和三四级bug解决及时率曲线-->
+                                                    <div id="bugSolveRateStatusMapWithDeveloper" style="height: 400px;width: 1590px;"></div>
+                                            </div>
+
                                             <div class="layui-tab-item layui-show">
-                                                    <blockquote class="layui-elem-quote" hidden><div align="center">易bug产生比率</div></blockquote>
+                                                    <blockquote class="layui-elem-quote" hidden><div align="center">易bug产生比率数据</div></blockquote>
                                                     <div class="layui-row">
                                                         <table class="layui-hide" id="easyBugTableWithDeveloper" lay-filter="easyBugTableWithDeveloper"></table>
                                                     </div>
                                             </div>
 
                                             <div class="layui-tab-item layui-show">
-                                                    <blockquote class="layui-elem-quote" hidden><div align="center">bug解决率</div></blockquote>
+                                                    <blockquote class="layui-elem-quote" hidden><div align="center">bug解决率数据</div></blockquote>
                                                     <div class="layui-row">
                                                         <table class="layui-hide" id="bugSolveRateTableWithDeveloper" lay-filter="bugSolveRateTableWithDeveloper"></table>
                                                     </div>
@@ -215,34 +246,6 @@
 
             </div>
             <!--  项目和开发维度的选项卡 end-->
-
-
-
-             <!--折线图 start-->
-            <blockquote class="layui-elem-quote"><div align="center">1）项目维度，按时间（时间可自定义）统计新增bug、关闭bug、待回归bug等</div></blockquote>
-            <div id="allBugMapWithProject" ></div>
-            <!--所有bug end-->
-
-              <!--12bug start-->
-            <blockquote class="layui-elem-quote"><div align="center">2）项目维度，按时间（时间可自定义）统计新增一、二级新增bug、关闭bug、待回归bug等</div></blockquote>
-            <div id="Bug12MapWithProject"></div>
-              <!--12bug end-->
-
-
-
-
-
-            <blockquote class="layui-elem-quote"><div align="center">7）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；</div></blockquote>
-            <div id="AddBugAddAndCloseStatusMapWithDeveloper"></div>
-
-            <blockquote class="layui-elem-quote"><div align="center">8）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线；</div></blockquote>
-            <div id="allBugStatusMapWithDeveloper"></div>
-
-            <blockquote class="layui-elem-quote"><div align="center">11）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线；1/2    月/周/季；</div></blockquote>
-            <div id="easyBugStatusMapWithDeveloper"></div>
-
-            <blockquote class="layui-elem-quote"><div align="center">12）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制一二级bug解决及时率曲线和三四级bug解决及时率曲线。</div></blockquote>
-            <div id="bugSolveRateStatusMapWithDeveloper"></div>
 
 
         </div>
@@ -944,11 +947,29 @@
                             ]
                         };
 
-                        chart = myChart = testHelper.create(echarts, 'allBugMapWithProject', {
+                        /*chart = myChart = testHelper.create(echarts, 'allBugMapWithProject', {
                             option: option,
                             lazyUpdate: false
                             //title: '1）项目维度，按时间（时间可自定义）统计新增bug、关闭bug、待回归bug等；'
+                        });*/
+                        echarts.init(document.getElementById('allBugMapWithProject')).dispose(); // 销毁实例
+                        myChart = echarts.init(document.getElementById('allBugMapWithProject'));
+                        myChart.setOption(option);
+                        //假设实例的名字是myChart,宽度自适应在echats配置完实例以后,配置下面几行代码即可 - window.onresize 只针对一个图表生效
+                        /*window.onresize = function () {
+                            layer.msg("窗口改变，echarts应对应改变");
+                            var div=document.getElementById("allBugMapWithProject");
+                            div.style.width = 100 + "%";
+                            myChart.resize();
+                        };  */
+                        // addEventListener绑定，就可以两次都执行
+                        window.addEventListener("resize", function(){
+                            // layer.msg("窗口改变，echarts应对应改变");
+                            var div=document.getElementById("allBugMapWithProject");
+                            div.style.width = 100 + "%";
+                            myChart.resize();
                         });
+
                     });
 
 
@@ -1142,10 +1163,28 @@
                             ]
                         };
 
-                        chart = myChart = testHelper.create(echarts, 'Bug12MapWithProject', {
+                        /*chart = myChart = testHelper.create(echarts, 'Bug12MapWithProject', {
                             option: option,
                             //title: '2）项目维度，按时间（时间可自定义）统计新增一、二级新增bug、关闭bug、待回归bug等；'
+                        });*/
+                        echarts.init(document.getElementById('Bug12MapWithProject')).dispose(); // 销毁实例
+                        myChart = echarts.init(document.getElementById('Bug12MapWithProject'));
+                        myChart.setOption(option);
+                        //假设实例的名字是myChart,宽度自适应在echats配置完实例以后,配置下面几行代码即可 - window.onresize 只针对一个图表生效
+                        /*window.onresize = function () {
+                            layer.msg("窗口改变，echarts应对应改变");
+                            var div=document.getElementById("Bug12MapWithProject");
+                            div.style.width = 100 + "%";
+                            myChart.resize();
+                        };  */
+                        // addEventListener绑定，就可以两次都执行
+                        window.addEventListener("resize", function(){
+                            // layer.msg("窗口改变，echarts应对应改变");
+                            var div=document.getElementById("Bug12MapWithProject");
+                            div.style.width = 100 + "%";
+                            myChart.resize();
                         });
+
                     });
             }
 
@@ -1193,6 +1232,11 @@
                                 var closeNumArrWithProjectNewAndCloseBugFromServerProject0 = [];
 
 
+                                //这里未完成，要有项目‘1808’-新增 == add_project0 close_project0, 有几个项目显示几个标题，对应项目名称，而不是add_project0
+                                var legendDataWithProjectNewAndCloseBug = ["新增","关闭"];
+                                //查看有多少项目：？？？？？？？？？？？？？？？？？？
+                                //,"add_project0","close_project0"
+
                                 //循环获取[{xx,xx}, {xx,xx}] json中的数据
                                 $.each(returnDataJson.data,function (index, item) {
                                     console.log('i+item=' + index + " "+item.add);
@@ -1203,10 +1247,14 @@
                                     addNumArrWithProjectNewAndCloseBugFromServerProject0.push(item.add_project0); //add_project0
                                     closeNumArrWithProjectNewAndCloseBugFromServerProject0.push(item.close_project0); //close_project0
 
-                                });
+                                    //折线图标题 arr添加数据
+                                    legendDataWithProjectNewAndCloseBug.push(item['project' + index] + "新增");//项目名称新增
+                                    legendDataWithProjectNewAndCloseBug.push(item['project' + index] + "关闭");//项目名称新增
 
-                                //这里未完成，要有项目‘1808’-新增 == add_project0 close_project0
-                                var legendDataWithProjectNewAndCloseBug = ["新增","关闭","add_project0","close_project0"];
+                                });
+                                console.log("legendDataWithProjectNewAndCloseBug???????????????????????????????????????????????????????=");
+                                console.log(legendDataWithProjectNewAndCloseBug);
+
                                 var xAxisDataWithProjectNewAndCloseBug = xAxisDataWithProjectNewAndCloseBugFromServer;
 
                                 addNumArrWithProjectNewAndCloseBug = addNumArrWithProjectNewAndCloseBugFromServer;
@@ -1236,6 +1284,7 @@
 
             //3-1）3）按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线
             function renderMapWithProjectByTimeAddBugAddAndClose(legendData, xAxisData, seriesDataJson){
+                    var layer = layui.layer;
                     //先清空div中的数据 第一种：
                     document.getElementById('AddBugAddAndCloseStatusMapWithProject').innerHTML = "";
                     //第二种：$('#bigDiv').html("");
@@ -1367,15 +1416,44 @@
                             series: seriesData
                         };
 
-                        chart = myChart = testHelper.create(echarts, 'AddBugAddAndCloseStatusMapWithProject', {
+                        //获取已经存在的dom 并销毁
+
+                        echarts.init(document.getElementById('AddBugAddAndCloseStatusMapWithProject')).dispose(); // 销毁实例
+                        var myChart = echarts.init(document.getElementById('AddBugAddAndCloseStatusMapWithProject'));
+                        myChart.setOption(option);
+
+                        /*chart = myChart = testHelper.create(echarts, 'AddBugAddAndCloseStatusMapWithProject', {
                             option: option,
                             //title: '3）项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；'
+                        });*/
+
+                        //先给div设置一个固定宽度，以便echarts调用
+                        /*var div=document.getElementById("AddBugAddAndCloseStatusMapWithProject");
+                        div.style.width = 1590 + "px";
+
+                        var width = $("#AddBugAddAndCloseStatusMapWithProject").width();
+                        var height = $("#AddBugAddAndCloseStatusMapWithProject").height();
+                        // layer.msg("div width====" + width);
+                        // layer.msg("div height====" + height);*/
+
+
+
+                        //假设实例的名字是myChart,宽度自适应在echats配置完实例以后,配置下面几行代码即可 - window.onresize 只针对一个图表生效
+                        /*window.onresize = function () {
+                            layer.msg("窗口改变，echarts应对应改变");
+                            var div=document.getElementById("AddBugAddAndCloseStatusMapWithProject");
+                            div.style.width = 100 + "%";
+                            myChart.resize();
+                        };  */
+                        // addEventListener绑定，就可以两次都执行
+                        window.addEventListener("resize", function(){
+                            // layer.msg("窗口改变，echarts应对应改变");
+                            var div=document.getElementById("AddBugAddAndCloseStatusMapWithProject");
+                            div.style.width = 100 + "%";
+                            myChart.resize();
+                            // div.resize();
                         });
 
-                        //假设实例的名字是myChart,宽度自适应在echats配置完实例以后,配置下面几行代码即可
-                        window.onresize = function () {
-                            myChart.resize();
-                        }
                     });
             }
 
@@ -1477,6 +1555,7 @@
 
             //4-1）4）项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线； + bug剩余情况
             function renderMapWithProjectByTimeAlongtimeAllBug(legendData, xAxisData, seriesDataJson){
+                    var layer = layui.layer;
                     console.log("legendData=，xAxisData，seriesDataJson" +  legendData);
                     console.log(legendData);
                     console.log(xAxisData);
@@ -1614,18 +1693,42 @@
                         var height = $("#allBugStatusMapWithProject").height();
                         $("#allBugStatusMapWithProject").css("width", width).css("height", height);*/
 
+                        var width = $("#allBugStatusMapWithProject").width();
+                        var height = $("#allBugStatusMapWithProject").height();
+                        // layer.msg("div width====" + width);  //1590
+                        // layer.msg("div height====" + height); //0??
 
-                        //修改首次进入时图的宽度
 
-                         chart = myChart = testHelper.create(echarts, 'allBugStatusMapWithProject', {
+                         /*chart = myChart = testHelper.create(echarts, 'allBugStatusMapWithProject', {
                                 option: option,
                                 //title: '3）项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；'
-                            });
+                            });*/
+                         //先给div设置一个固定宽度，以便echarts调用
+                        /*var div=document.getElementById("allBugStatusMapWithProject");
+                        div.style.width = 1590 + "px";
 
-                        //假设实例的名字是myChart,宽度自适应在echats配置完实例以后,配置下面几行代码即可
-                        window.onresize = function () {
+                        var width = $("#allBugStatusMapWithProject").width();
+                        var height = $("#allBugStatusMapWithProject").height();
+                        // layer.msg("div allBug width====" + width);
+                        // layer.msg("div height====" + height);*/
+
+                        echarts.init(document.getElementById('allBugStatusMapWithProject')).dispose(); // 销毁实例
+                        myChart = echarts.init(document.getElementById('allBugStatusMapWithProject'));
+                        myChart.setOption(option);
+                        //假设实例的名字是myChart,宽度自适应在echats配置完实例以后,配置下面几行代码即可 window.onresize 只生效一个
+                        /*window.onresize = function () {
+                            layer.msg("窗口改变，allBugStatusMapWithProject echarts应对应改变");
+                            var div=document.getElementById("allBugStatusMapWithProject");
+                            div.style.width = 100 + "%";
                             myChart.resize();
-                        }
+                        };*/
+                        window.addEventListener("resize", function(){
+                            // layer.msg("窗口改变，allBugStatusMapWithProject echarts应对应改变");
+                            var div=document.getElementById("allBugStatusMapWithProject");
+                            div.style.width = 100 + "%";
+                            myChart.resize();
+                        });
+
                     });
             }
 
@@ -1919,10 +2022,24 @@
                             series: seriesData
                         };
 
-                        chart = myChart = testHelper.create(echarts, 'AddBugAddAndCloseStatusMapWithDeveloper', {
+                        /*chart = myChart = testHelper.create(echarts, 'AddBugAddAndCloseStatusMapWithDeveloper', {
                             option: option,
                             //title: '8）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线 + bug剩余情况 ；；'
+                        });*/
+                        //先给div设置一个固定宽度，以便echarts调用
+
+                        echarts.init(document.getElementById('AddBugAddAndCloseStatusMapWithDeveloper')).dispose(); // 销毁实例
+                        myChart = echarts.init(document.getElementById('AddBugAddAndCloseStatusMapWithDeveloper'));
+                        myChart.setOption(option);
+                        // addEventListener绑定，就可以两次都执行
+                        window.addEventListener("resize", function(){
+                            // layer.msg("窗口改变，echarts应对应改变");
+                            var div=document.getElementById("AddBugAddAndCloseStatusMapWithDeveloper");
+                            div.style.width = 100 + "%";
+                            myChart.resize();
                         });
+
+
                     });
             }
                                ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -2363,10 +2480,28 @@
                             series: seriesData
                         };
 
-                        chart = myChart = testHelper.create(echarts, 'allBugStatusMapWithDeveloper', {
+                        /*chart = myChart = testHelper.create(echarts, 'allBugStatusMapWithDeveloper', {
                             option: option,
                             //title: '8）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线 + bug剩余情况 ；；'
+                        });*/
+                        echarts.init(document.getElementById('allBugStatusMapWithDeveloper')).dispose(); // 销毁实例
+                        myChart = echarts.init(document.getElementById('allBugStatusMapWithDeveloper'));
+                        myChart.setOption(option);
+                        //假设实例的名字是myChart,宽度自适应在echats配置完实例以后,配置下面几行代码即可 - window.onresize 只针对一个图表生效
+                        /*window.onresize = function () {
+                            layer.msg("窗口改变，echarts应对应改变");
+                            var div=document.getElementById("allBugStatusMapWithDeveloper");
+                            div.style.width = 100 + "%";
+                            myChart.resize();
+                        };  */
+                        // addEventListener绑定，就可以两次都执行
+                        window.addEventListener("resize", function(){
+                            // layer.msg("窗口改变，echarts应对应改变");
+                            var div=document.getElementById("allBugStatusMapWithDeveloper");
+                            div.style.width = 100 + "%";
+                            myChart.resize();
                         });
+
                     });
             }
 
@@ -2777,10 +2912,28 @@
                             series: seriesData
                         };
 
-                        chart = myChart = testHelper.create(echarts, 'easyBugStatusMapWithDeveloper', {
+                        /*chart = myChart = testHelper.create(echarts, 'easyBugStatusMapWithDeveloper', {
                             option: option,
                             //title: 11）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线；1/2    月/周/季；'
+                        });*/
+                        echarts.init(document.getElementById('easyBugStatusMapWithDeveloper')).dispose(); // 销毁实例
+                        myChart = echarts.init(document.getElementById('easyBugStatusMapWithDeveloper'));
+                        myChart.setOption(option);
+                        //假设实例的名字是myChart,宽度自适应在echats配置完实例以后,配置下面几行代码即可 - window.onresize 只针对一个图表生效
+                        /*window.onresize = function () {
+                            layer.msg("窗口改变，echarts应对应改变");
+                            var div=document.getElementById("easyBugStatusMapWithDeveloper");
+                            div.style.width = 100 + "%";
+                            myChart.resize();
+                        };  */
+                        // addEventListener绑定，就可以两次都执行
+                        window.addEventListener("resize", function(){
+                            // layer.msg("窗口改变，echarts应对应改变");
+                            var div=document.getElementById("easyBugStatusMapWithDeveloper");
+                            div.style.width = 100 + "%";
+                            myChart.resize();
                         });
+
                     });
             }
 
@@ -3026,6 +3179,7 @@
             div id == bugSolveRateStatusMapWithDeveloper
              */
             function renderMapWithDeveloperByTimeAlongtimeBugSolveRate(legendData, xAxisData, seriesDataJson){
+                    var layer = layui.layer;
                     console.log("legendData=，xAxisData，seriesDataJson" +  legendData);
                     console.log(legendData);
                     console.log(xAxisData);
@@ -3144,10 +3298,29 @@
                             series: seriesData
                         };
 
-                        chart = myChart = testHelper.create(echarts, 'bugSolveRateStatusMapWithDeveloper', {
+
+                        /*chart = myChart = testHelper.create(echarts, 'bugSolveRateStatusMapWithDeveloper', {
                             option: option,
                             //title: 11）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线；1/2    月/周/季；'
+                        });*/
+                        echarts.init(document.getElementById('bugSolveRateStatusMapWithDeveloper')).dispose(); // 销毁实例
+                        myChart = echarts.init(document.getElementById('bugSolveRateStatusMapWithDeveloper'));
+                        myChart.setOption(option);
+                        //假设实例的名字是myChart,宽度自适应在echats配置完实例以后,配置下面几行代码即可 - window.onresize 只针对一个图表生效
+                        /*window.onresize = function () {
+                            layer.msg("窗口改变，echarts应对应改变");
+                            var div=document.getElementById("bugSolveRateStatusMapWithDeveloper");
+                            div.style.width = 100 + "%";
+                            myChart.resize();
+                        };  */
+                        // addEventListener绑定，就可以两次都执行
+                        window.addEventListener("resize", function(){
+                            // layer.msg("窗口改变，echarts应对应改变");
+                            var div=document.getElementById("bugSolveRateStatusMapWithDeveloper");
+                            div.style.width = 100 + "%";
+                            myChart.resize();
                         });
+
                     });
             }
 
@@ -3297,8 +3470,8 @@
                         });
                         */
                         //1. 画全部bug折线图
-                            //获取全部bug 折线图参数
-                            console.log("画折线图 - all bug 增长/关闭情况");
+                            //获取全部bug 折线图参数 - 暂时不用
+                            /*console.log("画折线图 - all bug 增长/关闭情况");
                             var allBugJsonStr = getRenderMapWithProjectByTimeAllBugArgs(startTimeFromForm, endTimeFromForm);
                             console.log("画折线图 - all bug 增长/关闭情况allBugJsonStr= "+ allBugJsonStr);
                             //转成json格式
@@ -3311,11 +3484,11 @@
                             console.log("allBugXAxisData=====" + JSON.stringify(allBugXAxisData));
                             console.log("allBugSeriesDataJson=====" + JSON.stringify(allBugSeriesDataJson));
 
-                            renderMapWithProjectByTimeAllBug(allBugLegendData, allBugXAxisData, allBugSeriesDataJson);
+                            renderMapWithProjectByTimeAllBug(allBugLegendData, allBugXAxisData, allBugSeriesDataJson);*/
 
                          //2. 画1-2级 bug折线图
-                            //获取1-2级bug 折线图参数
-                            console.log("画折线图 - 1-2级 bug 增长/关闭情况");
+                            //获取1-2级bug 折线图参数 -暂时不用
+                            /*console.log("画折线图 - 1-2级 bug 增长/关闭情况");
                             var Bug12JsonStr = getRenderMapWithProjectByTime12BugArgs(startTimeFromForm, endTimeFromForm);
                             console.log("画折线图 - 1-2级 bug 增长/关闭情况1-2级 Bug12JsonStr= "+ Bug12JsonStr);
                             //转成json格式
@@ -3327,7 +3500,7 @@
                             console.log("Bug12LegendData=====" + JSON.stringify(Bug12LegendData));
                             console.log("Bug12XAxisData=====" + JSON.stringify(Bug12XAxisData));
                             console.log("Bug12SeriesDataJson=====" + JSON.stringify(Bug12SeriesDataJson));
-                            renderMapWithProjectByTime12Bug(Bug12LegendData, Bug12XAxisData, Bug12SeriesDataJson);
+                            renderMapWithProjectByTime12Bug(Bug12LegendData, Bug12XAxisData, Bug12SeriesDataJson);*/
 
                          //3. 按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线
                             //增bug增长曲线和关闭曲线
