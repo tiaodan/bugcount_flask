@@ -11,7 +11,7 @@
 				"id": 12,
 				"name": "bug列表",
 				"icon": "",
-				"url": "./pages/buglist/list.html"
+				"url": "../pages/buglist/list.html"
 			}]
 		},
 		{
@@ -36,18 +36,6 @@
 				"name": "bug统计图",
 				"icon": "",
 				"url": "./static/js/incubator-echarts-4.2.1/test/echarts1.html"
-			}]
-		},
-		{
-			"id": 15,
-			"name": "测试数据1808&K",
-			"icon": "&#xe6ce;",
-			"url": "",
-			"children": [{
-				"id": 15,
-				"name": "bug测试",
-				"icon": "",
-				"url": "./pages/echarts/test_1808k.html"
 			}]
 		}
 	]

@@ -1222,6 +1222,14 @@
                                 console.log("，returnDataJson==============");
                                 console.log(returnDataJson);
                                 console.log("，returnDataJson.type="+ typeof(returnDataJson));
+                                console.log("，returnDataJson.data 长度？？？？？？？？？？？？？？？？？？？？？="+ returnDataJson.data);
+                                console.log(returnDataJson.data.length);
+                                console.log("，returnDataJson.data 类型？？？？？？？？？？？？？？？？？？？？？="+ typeof(returnDataJson.data));
+                                console.log(typeof(returnDataJson.data));
+                                console.log("，returnDataJson.data[0] 长度？？？？？？？？？？？？？？？？？？？？？="+ returnDataJson.data[0]);
+                                console.log(Object.keys(returnDataJson.data[0]).length);
+                                console.log("，returnDataJson.data[0] 类型？？？？？？？？？？？？？？？？？？？？？="+ typeof(returnDataJson.data[0]));
+                                console.log(typeof(returnDataJson.data[0]));
 
                                 //获取渲染折线图所需数据
                                     //项目-新增bug增长和关闭参数
@@ -1234,8 +1242,15 @@
 
                                 //这里未完成，要有项目‘1808’-新增 == add_project0 close_project0, 有几个项目显示几个标题，对应项目名称，而不是add_project0
                                 var legendDataWithProjectNewAndCloseBug = ["新增","关闭"];
-                                //查看有多少项目：？？？？？？？？？？？？？？？？？？
-                                //,"add_project0","close_project0"
+                                //查看有多少项目：？？？？？？？？？？？？？？？？？？ -4 /3
+                                //,"add_project0","close_project0
+                                var projectNum =  (Object.keys(returnDataJson.data[0]).length -4)/3;
+                                for(var i=0;i<projectNum;i++){
+                                    //折线图标题 arr添加数据
+
+                                    legendDataWithProjectNewAndCloseBug.push(returnDataJson.data[0]['project' + i] + "新增");//项目名称新增
+                                    legendDataWithProjectNewAndCloseBug.push(returnDataJson.data[0]['project' + i] + "关闭");//项目名称新增
+                                }
 
                                 //循环获取[{xx,xx}, {xx,xx}] json中的数据
                                 $.each(returnDataJson.data,function (index, item) {
@@ -1246,10 +1261,6 @@
                                     closeNumArrWithProjectNewAndCloseBugFromServer.push(item.close); //关闭
                                     addNumArrWithProjectNewAndCloseBugFromServerProject0.push(item.add_project0); //add_project0
                                     closeNumArrWithProjectNewAndCloseBugFromServerProject0.push(item.close_project0); //close_project0
-
-                                    //折线图标题 arr添加数据
-                                    legendDataWithProjectNewAndCloseBug.push(item['project' + index] + "新增");//项目名称新增
-                                    legendDataWithProjectNewAndCloseBug.push(item['project' + index] + "关闭");//项目名称新增
 
                                 });
                                 console.log("legendDataWithProjectNewAndCloseBug???????????????????????????????????????????????????????=");
@@ -1484,7 +1495,7 @@
                             async:false,
                             success:function(josnstr){//jsonstr 格式
                                 console.log("获取后台数据成功，解析数据");
-                                console.log("获取后台数据成功，解析数据datas="+ josnstr);
+                                console.log("获取后台数据成功，getRenderMapWithProjectByTimeAlongtimeAllBugArgs解析数据datas="+ josnstr);
                                 console.log("获取后台数据成功，解析数据datas.type="+ typeof(josnstr));
                                 console.log("jsonstringfy==" + JSON.stringify(josnstr.field));
                                 returnDataJson = $.parseJSON(josnstr);
@@ -1523,7 +1534,21 @@
                                 });
 
                                 //这里未完成，要有项目‘1808’-新增 == add_project0 close_project0
-                                var legendDataWithProjectAllBug = ["新增","关闭","剩余","add_project0","close_project0", "last_project0"];
+                                var legendDataWithProjectAllBug = ["新增","关闭","剩余"];
+                                //查看有多少项目：？？？？？？？？？？？？？？？？？？ -14 /7 (为什么除以4 项目名 + add_project0 + close_project0 + last_project0)
+
+                                //,"add_project0","close_project0
+                                var projectNum =  (Object.keys(returnDataJson.data[0]).length -14)/7;  //看打印
+                                console.log("getRenderMapWithProjectByTimeAlongtimeAllBugArgs data总个数==" + Object.keys(returnDataJson.data[0]).length );
+                                console.log("getRenderMapWithProjectByTimeAlongtimeAllBugArgs projectNum==" + projectNum );
+                                for(var i=0;i<projectNum;i++){
+                                    //折线图标题 arr添加数据
+
+                                    legendDataWithProjectAllBug.push(returnDataJson.data[0]['project' + i] + "新增");//项目名称新增
+                                    legendDataWithProjectAllBug.push(returnDataJson.data[0]['project' + i] + "关闭");//项目名称新增
+                                    legendDataWithProjectAllBug.push(returnDataJson.data[0]['project' + i] + "剩余");//项目名称新增
+                                }
+
                                 var xAxisDataWithProjectAllBug = xAxisDataWithProjectAllBugFromServer;
 
                                 addNumArrWithProjectAllBug = addNumArrWithProjectAllBugFromServer;
@@ -1758,7 +1783,7 @@
                             async:false,
                             success:function(josnstr){//jsonstr 格式
                                 console.log("获取后台数据成功，解析数据");
-                                console.log("获取后台数据成功，解析数据datas="+ josnstr);
+                                console.log("获取后台数据成功，getRenderMapWithDeveloperByTimeAlongtimeAddBugAddAndCloseArgs, 解析数据datas="+ josnstr);
                                 console.log("获取后台数据成功，解析数据datas.type="+ typeof(josnstr));
                                 console.log("jsonstringfy==" + JSON.stringify(josnstr.field));
                                 returnDataJson = $.parseJSON(josnstr);
@@ -1843,10 +1868,10 @@
                                 //var legendDataWithDeveloperAllBug = ["新增","关闭","剩余","add_developer0","close_developer0", "last_developer0"];
                                 var legendDataWithDeveloperAllBug = ["新增","关闭","剩余"];
                                 //循环添加上折线图标签栏
-                                for(var a=0;a<developerNum;a++){
-                                    legendDataWithDeveloperAllBug.push("add_developer" + a);
-                                    legendDataWithDeveloperAllBug.push("close_developer" + a);
-                                    legendDataWithDeveloperAllBug.push("last_developer" + a);
+                                for(var a=0;a<developerNum;a++) {
+                                    legendDataWithDeveloperAllBug.push(returnDataJson.data[0]['developer' + a] + "新增");
+                                    legendDataWithDeveloperAllBug.push(returnDataJson.data[0]['developer' + a] + "关闭");
+                                    legendDataWithDeveloperAllBug.push(returnDataJson.data[0]['developer' + a] + "剩余");
                                 }
 
                                 var xAxisDataWithDeveloperAllBug = xAxisDataWithDeveloperAllBugFromServer;
@@ -2216,7 +2241,7 @@
                             async:false,
                             success:function(josnstr){//jsonstr 格式
                                 console.log("获取后台数据成功，解析数据");
-                                console.log("获取后台数据成功，解析数据datas="+ josnstr);
+                                console.log("获取后台数据成功，getRenderMapWithDeveloperByTimeAlongtimeAllBugArgs，解析数据datas="+ josnstr);
                                 console.log("获取后台数据成功，解析数据datas.type="+ typeof(josnstr));
                                 console.log("jsonstringfy==" + JSON.stringify(josnstr.field));
                                 returnDataJson = $.parseJSON(josnstr);
@@ -2302,9 +2327,9 @@
                                 var legendDataWithDeveloperAllBug = ["新增","关闭","剩余"];
                                 //循环添加上折线图标签栏
                                 for(var a=0;a<developerNum;a++){
-                                    legendDataWithDeveloperAllBug.push("add_developer" + a);
-                                    legendDataWithDeveloperAllBug.push("close_developer" + a);
-                                    legendDataWithDeveloperAllBug.push("last_developer" + a);
+                                    legendDataWithDeveloperAllBug.push(returnDataJson.data[0]['developer' + a] + "新增");
+                                    legendDataWithDeveloperAllBug.push(returnDataJson.data[0]['developer' + a] + "关闭");
+                                    legendDataWithDeveloperAllBug.push(returnDataJson.data[0]['developer' + a] + "剩余");
                                 }
 
                                 var xAxisDataWithDeveloperAllBug = xAxisDataWithDeveloperAllBugFromServer;
@@ -2691,7 +2716,7 @@
                             async:false,
                             success:function(josnstr){//jsonstr 格式
                                 console.log("获取后台数据成功，解析数据");
-                                console.log("获取后台数据成功，解析数据datas="+ josnstr);
+                                console.log("获取后台数据成功，getRenderMapWithDeveloperByTimeAlongtimeEasyBugArgs，解析数据datas="+ josnstr);
                                 console.log("获取后台数据成功，解析数据datas.type="+ typeof(josnstr));
                                 console.log("jsonstringfy==" + JSON.stringify(josnstr.field));
                                 returnDataJson = $.parseJSON(josnstr);
@@ -2764,7 +2789,7 @@
                                 var legendDataWithDeveloperAllBug = ["易bug率"];
                                 //循环添加上折线图标签栏
                                 for(var a=0;a<developerNum;a++){
-                                    legendDataWithDeveloperAllBug.push("easy_bug_rate_developer" + a);
+                                    legendDataWithDeveloperAllBug.push(returnDataJson.data[0]['developer' + a] + "易bug率");
                                 }
 
                                 var xAxisDataWithDeveloperAllBug = xAxisDataWithDeveloperAllBugFromServer;
@@ -3057,14 +3082,14 @@
                             async:false,
                             success:function(josnstr){//jsonstr 格式
                                 console.log("获取后台数据成功，解析数据");
-                                console.log("获取后台数据成功，解析数据datas="+ josnstr);
+                                console.log("获取后台数据成功，getRenderMapWithDeveloperByTimeAlongtimeBugSolveRateArgs，解析数据datas="+ josnstr);
                                 console.log("获取后台数据成功，解析数据datas.type="+ typeof(josnstr));
                                 console.log("jsonstringfy==" + JSON.stringify(josnstr.field));
                                 returnDataJson = $.parseJSON(josnstr);
 
                                 returnDataJsonData0Num = Object.keys(returnDataJson.data[0]).length;
                                 console.log("有多少个开发json_obj.data 数据 长度= " + returnDataJsonData0Num);
-                                developerNum = (returnDataJsonData0Num -3) / 2;
+                                developerNum = (returnDataJsonData0Num -4) / 3;
                                 console.log("有多少个开发,换算后" + developerNum);
                                     console.log("，returnDataJson==============");
                                 console.log(returnDataJson);
@@ -3102,8 +3127,8 @@
                                     //开发-bug解决率
                                     console.log("push不能用？？");
                                     xAxisDataWithDeveloperAllBugFromServer.push(item['bug_submit_date']); //日期
-                                    bug12SolveRateNumArrWithDeveloperAllBugFromServer.push(item.bug12_solve_rate);  // bug解决率
-                                    bug34SolveRateNumArrWithDeveloperAllBugFromServer.push(item.bug34_solve_rate);  // bug解决率
+                                    bug12SolveRateNumArrWithDeveloperAllBugFromServer.push(item.bug12_solve_rate);  // bug12解决率
+                                    bug34SolveRateNumArrWithDeveloperAllBugFromServer.push(item.bug34_solve_rate);  // bug34解决率
 
                                     /*
                                     addNumArrWithDeveloperAllBugFromServerDeveloper0.push(item.add_developer0); //add_developer0
@@ -3135,8 +3160,8 @@
                                 var legendDataWithDeveloperAllBug = ["12级bug解决率", "34级bug解决率"];
                                 //循环添加上折线图标签栏
                                 for(var a=0;a<developerNum;a++){
-                                    legendDataWithDeveloperAllBug.push("bug12_solve_rate_developer" + a);
-                                    legendDataWithDeveloperAllBug.push("bug34_solve_rate_developer" + a);
+                                    legendDataWithDeveloperAllBug.push(returnDataJson.data[0]['developer' + a] + "12级bug解决率");
+                                    legendDataWithDeveloperAllBug.push(returnDataJson.data[0]['developer' + a] + "34级bug解决率");
                                 }
 
                                 var xAxisDataWithDeveloperAllBug = xAxisDataWithDeveloperAllBugFromServer;
@@ -3352,6 +3377,7 @@
 
                 //监听提交
                   form.on('submit(search)', function(data){ // 对应lay-filter
+                        var loadingMap = layer.load(1); //添加laoding,0-2两种方式 加载动画
                         startTimeFromForm = document.getElementById('startTime').value;
                         endTimeFromForm =  document.getElementById('endTime').value;
                         //timeDifference =  document.getElementById('timeDifference').value;
@@ -3362,6 +3388,7 @@
                         console.log("结束时间=" + endTimeFromForm);
                         console.log("点击了搜索按钮");
                         console.log("stimeDifferenceFromForme===" + timeDifferenceFromForm);
+
 
                         //渲染table - 每天数据
                         renderTable('tableForDrawMapWithProject', '/getTableForDrawMapWithProject', startTimeFromForm, endTimeFromForm, 'tableForDrawMapWithProjectId');
@@ -3598,6 +3625,8 @@
                             console.log("bugSolveRateAlongtimeDeveloperXAxisData=====" + JSON.stringify(bugSolveRateAlongtimeDeveloperXAxisData));
                             console.log("bugSolveRateAlongtimeDeveloperSeriesDataJson=====" + JSON.stringify(bugSolveRateAlongtimeDeveloperSeriesDataJson));
                             renderMapWithDeveloperByTimeAlongtimeBugSolveRate(bugSolveRateAlongtimeDeveloperLegendData, bugSolveRateAlongtimeDeveloperXAxisData, bugSolveRateAlongtimeDeveloperSeriesDataJson);
+
+                            layer.close(loadingMap);
 
                         return false;  //页面不跳转
 

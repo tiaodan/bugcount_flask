@@ -1,0 +1,20 @@
+Mysql报错：Specified key was too long; max key length is 767 bytes
+参考 :https://blog.csdn.net/li66934791/article/details/85296551?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase
+1、先检查一下数据库被限制了索引的大小
+SHOW variables like ‘innodb_large_prefix’;
+如果查询的值是off的话,执行下面的命令
+SET GLOBAL INNODB_LARGE_PREFIX = ON;
+2、执行完了,还需要查看当前innodb_file_format引擎格式类型是不是BARRACUDA
+SHOW variables like ‘innodb_file_format’;
+如果不是的话则需要修改
+SET GLOBAL innodb_file_format = BARRACUDA;
+///////////////
+
+pyinstaller -F -w (-i icofile) filename
+https://blog.csdn.net/qq_30801257/article/details/89711742  打包
+在terminal中执行命令：pip freeze > requirements.txt 。生成当前项目的依赖配置文件，此文件中的内容包含了整个项目的依赖，我们只需要保留非系统的依赖即可，例如我的项目依赖了REDIS，requirements.txt 文件内容如下
+使用命令>pip download -d packages/ -r requirements.txt 将系统外的依赖下载到packages目录，执行完毕目录如下：
+执行打包命令python setup.py sdist，执行完毕后，生成的文件所在位置。忘记描述，所有的命令执行，直接在Pycharm的terminal中执行即可，免得打开命令提示符。
+将生成的data_process-4.0.zip拷贝到文件系统，然后解压，将packages,requirements.txt 放入解压后的文件夹，此文件夹内容如下：
+执行项目，由于我的电脑已经将redis的额外依赖安装了，是可以直接执行python main.py的，否则将会报错，说缺少redis,那么此时，你就需要在当前文件夹下执行命令：pip install --no-index --find-links=packages/ -r requirements.txt将依赖安装到系统。
+若你的系统缺少pip命令，那么你需要去下载pip-19.1.tar.gz，下载地址https://pypi.org/project/pip/#files此处找到，此tar文件针对linux；若你是在WIn上，可以执行python get-pip.py，安装pip,此文件的下载也在刚才的地址，演示就不提供了。

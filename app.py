@@ -536,6 +536,19 @@ def getBugList():
         # 获取请求的页码， 和每页个数
         json_str = buglist.search_buglist(page, limit)
         return json_str
+    if request.method == "POST":
+        # 获取后台筛选数据
+        print('getBugList 获取后台筛选条件 数据')
+        request
+        columns = request.args.get('columns')
+        print('columns.type==', type(columns))
+        # page = int(request.args.get('page'))
+        # limit = int(request.args.get('limit'))
+        # 获取请求的页码， 和每页个数
+        # json_str = buglist.search_buglist_filter_args(page, limit, columns)
+        json_str = '{"project": ["1801"],"bug_description": ["调度台无法强插"]}'
+        return json_str
+
 
 
 
@@ -922,6 +935,12 @@ def uploadBuglist():
         basepath = os.path.dirname(__file__)  # 当前文件所在路径
         # upload_path = os.path.join(basepath, 'excel_upload',secure_filename(f.filename))  #注意：没有的文件夹一定要先创建，不然会提示没有该路径
         upload_path = os.path.join(basepath, 'excel_upload', f.filename)  #注意：没有的文件夹一定要先创建，不然会提示没有该路径
+        print('上传文件目录==', upload_path)
+        # 如果存在着重名文件，先删除
+        if os.path.exists(upload_path):
+            print('删除同名文件')
+            os.remove(upload_path)
+
         f.save(upload_path)
         code = 200
         msg = '文件上传成功'

@@ -17,6 +17,9 @@
 	      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
 	    <![endif]-->
 
+        <!-- 引入 layui-soul-table-->
+        <link rel="stylesheet" href="../../static/soulTable/soulTable.css">
+
 
 	</head>
 
@@ -61,7 +64,7 @@
                     <input type="text" class="layui-input" id="endTime" placeholder="结束时间：yyyy-MM-dd">
                   </span>
 
-                      <span class="layui-input-inline">
+                      <!--<span class="layui-input-inline">
                             <select name="contrller">
                                 <option>支付状态</option>
                                 <option>已支付</option>
@@ -86,7 +89,7 @@
                                 <option value="4">已完成</option>
                                 <option value="5">已作废</option>
                             </select>
-                        </span>
+                        </span>-->
 
 
                   <div class="layui-inline">
@@ -96,7 +99,7 @@
                   <button id="truncateTableBuglist" class="layui-btn layui-btn-danger">清空数据库</button>
                   <button id="uploadBuglist" class="layui-btn">上传数据</button>
                   <!--<button id="downloadBuglistTemplate" class="layui-btn "><a href="../../excel_upload/template.xlsx"  target="_blank">下载模板</a></button> -->
-                  <a href="../../excel_upload/template.xlsx"  target="_blank"><button id="downloadBuglistTemplate" class="layui-btn ">下载模板</button></a>
+                  <a href="../../excel_upload/template/template.xlsx"  target="_blank"><button id="downloadBuglistTemplate" class="layui-btn ">下载模板</button></a>
             </div>
             <!--  表格搜索框 end-->
 
@@ -111,11 +114,22 @@
             </blockquote>
             </div>
              <!-- table上提示信息-->
-
-            <!-- 用来进行添加操作的table -->
-            <table class="layui-hide" id="tableBugAdd" lay-filter="tableBugAdd"></table>
-            <!-- 用来进行 查询的的table -->
-            <table class="layui-hide" id="tableBug" lay-filter="tableBug"></table>
+            <div class="layui-collapse" lay-filter="test">
+              <div class="layui-colla-item">
+                <h2 class="layui-colla-title">添加bug</h2>
+                <div class="layui-colla-content">
+                    <!-- 用来进行添加操作的table -->
+                    <table class="layui-hide" id="tableBugAdd" lay-filter="tableBugAdd"></table>
+                </div>
+              </div>
+              <div class="layui-colla-item">
+                <h2 class="layui-colla-title">bug列表</h2>
+                <div class="layui-colla-content">
+                    <!-- 用来进行 查询的的table -->
+                    <table class="layui-hide" id="tableBug" lay-filter="tableBug"></table>
+                </div>
+              </div>
+            </div>
 
             <!-- 自定义的 start-->
             <div id="bugAddRowBar" hidden>
@@ -138,18 +152,36 @@
             <!-- 自定义的 end-->
 
             <!-- dody div end-->
+        <!-- 以下为脚本：：：===================================================================================== -->
+        <script>
+
+        </script>
 
         <!--  渲染table estart-->
              <script>
+                /* layui模块入口文件*/
+                // 自定义模块，这里只需要开放soulTable即可
+                layui.config({
+                    base: 'static/soulTable/',   // 第三方模块所在目录
+                    version: 'v2.5.6' // 插件版本号
+                }).extend({
+                    soulTable: 'soulTable',
+                    tableChild: 'tableChild',
+                    tableMerge: 'tableMerge',
+                    tableFilter: 'tableFilter',
+                    excel: 'excel',
+                });
+
                 layui.use('table', function(){
                   var table = layui.table;
+                  var soulTable = layui.soulTable;
 
                   //渲染添加的 table
                   table.render({
                       elem: '#tableBugAdd',
                       id: 'tableAddRenderReloadId',
                       url: '../../json/test_buglist.json',
-                      height: 100,
+                      height: 400,
                       cols: [[
                       {type:'numbers',fixed: 'left' }//, fixed: true
                       ,{checkbox: true, fixed: true}  //{type: 'checkbox'}
@@ -182,7 +214,7 @@
                       ,{title:'操作', toolbar: '#bugAddRowBar', width: '8%', fixed:'right'}
                       //,{title:'操作', toolbar: '#rowBar', fixed:'right'} //没有左右框
                     ]],
-                    response: {
+                      response: {
                         statusCode: 200
                       }
                   });
@@ -206,7 +238,7 @@
                       ,{checkbox: true, fixed: true}  //{type: 'checkbox'}
                       ,{field:'bugid', title: 'bugid', sort: true, width: 80}
                       ,{field:'bug_submit_date', title: '提交时间',sort: true, edit: 'text', width: 120}
-                      ,{field:'project', title: '项目', sort:true, edit: 'text', width: 80, style:'background-color: #009688; color: #fff;'}
+                      ,{field:'project', title: '项目', edit: 'text', width: 80, style:'background-color: #009688; color: #fff;', filter:true}
                       ,{field:'software', title: '软件类', edit: 'text', width: 80}
                       ,{field:'test_version', title: '测试版本', edit: 'text', width: 170 }
                       ,{field:'bug_description', title: '描述', edit: 'text', width: 200} //暂时先200
@@ -239,6 +271,7 @@
                     ,limits: [1,10,15,20,25,30,100,200,500,1000]  //每页条数的选择项，默认：[10,20,30,40,50,60,70,80,90]
                     ,height: 'full-300'
                     //,height: 300
+
                   });
                   // table render --end
                   //ddd这是一个特定的语法格式，其中 full 是固定的，而 差值 则是一个数值，这需要你来预估，比如：表格容器距离浏览器顶部和底部的距离“和”'full-20'
@@ -458,7 +491,7 @@
 
                   });
                   //监听行事件方法结束
-                    
+
                       //监听表格 新增 bar
                   table.on('tool(tableBugAdd)', function (obj) {
                         var data = obj.data;
@@ -634,6 +667,9 @@
                 </script>
         <!--  渲染table end-->
                 <!-- 表头搜索框 日期 start-->
+
+
+
 		<script>
 			layui.extend({
 				admin: '{/}../../static/js/admin'
@@ -713,6 +749,8 @@
                         console.log(datas);
                         if (datas.code == 200) {
                             layer.msg('上传成功，导入数据中');
+                            //将上次的文件，保存到excel_upload目录
+
                             //异步请求导入数据
                             //异步请求导入数据:
                             $.ajax({
