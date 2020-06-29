@@ -17,8 +17,6 @@
 	      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
 	    <![endif]-->
 
-        <!-- 引入 layui-soul-table-->
-        <link rel="stylesheet" href="../../static/soulTable/soulTable.css">
 
 
 	</head>
@@ -119,7 +117,7 @@
                 <h2 class="layui-colla-title">添加bug</h2>
                 <div class="layui-colla-content">
                     <!-- 用来进行添加操作的table -->
-                    <table class="layui-hide" id="tableBugAdd" lay-filter="tableBugAdd"></table>
+                    <table  id="tableBugAdd" lay-filter="tableBugAdd"></table>
                 </div>
               </div>
               <div class="layui-colla-item">
@@ -159,22 +157,8 @@
 
         <!--  渲染table estart-->
              <script>
-                /* layui模块入口文件*/
-                // 自定义模块，这里只需要开放soulTable即可
-                layui.config({
-                    base: 'static/soulTable/',   // 第三方模块所在目录
-                    version: 'v2.5.6' // 插件版本号
-                }).extend({
-                    soulTable: 'soulTable',
-                    tableChild: 'tableChild',
-                    tableMerge: 'tableMerge',
-                    tableFilter: 'tableFilter',
-                    excel: 'excel',
-                });
-
                 layui.use('table', function(){
                   var table = layui.table;
-                  var soulTable = layui.soulTable;
 
                   //渲染添加的 table
                   table.render({
@@ -212,7 +196,7 @@
                       ,{field:'third_bug_regression_status', title: '第三次回归结果', edit: 'text', width: 140}
                       ,{field:'third_bug_regression_remark', title: '第三次回归备注', edit: 'text', width: 140}
                       ,{title:'操作', toolbar: '#bugAddRowBar', width: '8%', fixed:'right'}
-                      //,{title:'操作', toolbar: '#rowBar', fixed:'right'} //没有左右框
+                      // ,{title:'操作', toolbar: '#bugAddRowBar', width: '8%', fixed:'right'}
                     ]],
                       response: {
                         statusCode: 200

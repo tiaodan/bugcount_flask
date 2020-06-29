@@ -1253,4 +1253,7 @@ def getBugSolveRateTableForDrawMapALongtimeWithDeveloper():
 
 # 主函数
 if __name__ == '__main__':
-    app.run(debug=True)
+    # app.run(debug=True)
+    # app.run(host='192.168.111.138', port='5000')
+    app.run(debug=True, host='0.0.0.0', port=5000)
+    # app.run(host='127.0.0.1', port='5000')

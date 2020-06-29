@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['app.py'],
-             pathex=['D:\\C_wokspace\\python64\\v8_bug_count_flask'],
+             pathex=['D:\\A_software\\v8_bug_count_flask'],
              binaries=[],
              datas=[],
              hiddenimports=[],
@@ -30,4 +30,4 @@ exe = EXE(pyz,
           upx=True,
           upx_exclude=[],
           runtime_tmpdir=None,
-          console=True , icon='python.ico')
+          console=True )

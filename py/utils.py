@@ -1,5 +1,7 @@
 import hashlib
 import configparser
+import os
+import sys
 import datetime
 
 
@@ -26,7 +28,22 @@ def get_dbargs_from_config():
 
     # -read读取ini文件
     # 因为app。py 已经设置所有资源文件从根目录读取，config的路径直接从根目录写，如果写。。/就报错了
-    config.read('conf/config.ini', encoding='utf-8')
+        #因为打包读取不到配置文件，所以读取绝对路径
+    # 项目路径
+    # root_dir = os.path.split(os.path.realpath(__file__))[0] # exe 生产C:\Users\admin\AppData\Local\Temp
+    root_dir = os.path.dirname(os.path.realpath(sys.argv[0])) #这个可以，直接就读出根目录来
+    # real_root_dir = root_dir[0:-3]
+    real_root_dir = root_dir
+    print(f'项目路径为=={root_dir}')
+    print(f'真实项目路径为=={real_root_dir}')
+    print(f'项目路径为 类型=={type(real_root_dir)}')
+    # config.ini文件路径
+    config_filepath = os.path.join(real_root_dir, 'conf\config.ini')
+    print(f'配置文件路径为=={config_filepath}')
+
+    # config.read('conf/config.ini', encoding='utf-8')
+    # config.read('../conf/config.ini', encoding='utf-8')  # 打包的时候需要这样配置，否则读取不到配置文件
+    config.read(config_filepath, encoding='utf-8')
     print('配置config  sessions', config.sections())
 
     config_dict = dict()
@@ -44,7 +61,7 @@ def get_dbargs_from_config():
     return config_dict
 
 
-# 读取 所有 配置文件  键值对
+# 读取 所有 配置文件  键值对 -暂时没用这个方法
 def get_allargs_from_config():
     print('读取配置文件所有内容,以list返回')
     #  实例化configParser对象

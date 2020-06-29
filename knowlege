@@ -1,13 +1,15 @@
 Mysql报错：Specified key was too long; max key length is 767 bytes
 参考 :https://blog.csdn.net/li66934791/article/details/85296551?utm_medium=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase&depth_1-utm_source=distribute.pc_relevant_t0.none-task-blog-BlogCommendFromMachineLearnPai2-1.nonecase
 1、先检查一下数据库被限制了索引的大小
-SHOW variables like ‘innodb_large_prefix’;
+SHOW variables like 'innodb_large_prefix';
 如果查询的值是off的话,执行下面的命令
 SET GLOBAL INNODB_LARGE_PREFIX = ON;
 2、执行完了,还需要查看当前innodb_file_format引擎格式类型是不是BARRACUDA
-SHOW variables like ‘innodb_file_format’;
+SHOW variables like 'innodb_file_format';
 如果不是的话则需要修改
 SET GLOBAL innodb_file_format = BARRACUDA;
+
+添加索引，行格式设置成dynamic或者compressed
 ///////////////
 
 pyinstaller -F -w (-i icofile) filename
