@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>管理员注册</title>
+	<meta name="renderer" content="webkit|ie-comp|ie-stand">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+    <meta http-equiv="Cache-Control" content="no-siteapp" />
+    <link rel="shortcut icon" href="../favicon.ico" type="image/x-icon" />
+    <link type="text/css"  rel="stylesheet" href="../static/css/font.css">
+	<link type="text/css" rel="stylesheet" href="../static/css/weadmin.css">
+    <script type="text/javascript" src="../lib/layui/layui.js" charset="utf-8"></script>
+
+</head>
+<body class="login-bg">
+    
+    <div class="login">
+        <div class="message">Bug统计考量脚本 - 注册</div>
+        <div id="darkbannerwrap"></div>
+        
+        <form method="post" class="layui-form">
+            <input name="username" placeholder="用户名"  type="text" lay-verify="username" class="layui-input" >
+            <hr class="hr15">
+            <input name="password" lay-verify="password" placeholder="密码"  type="password" class="layui-input">
+            <hr class="hr15">
+            <!--因为是自定义模板，这个lay-filter默认填login ，后续需要更加模板改-->
+            <input class="loginin" value="注册" lay-submit lay-filter="login" style="width:100%;" type="submit">
+            <hr class="hr20" >
+            <div>
+                报错内容：xxxx.xxxxx，需要hint？
+            </div>
+        </form>
+    </div>
+
+<!-- 定义表单相关校验 -->
+<script type="text/javascript">
+    //<!--定义layer-->
+
+    layui.extend({
+				admin: '{/}./static/js/admin'
+			});
+
+    layui.use('form', function () {
+        var form = layui.form;
+
+          //自定义验证规则
+          form.verify({
+            username: function(value){
+              if(value.length < 6){
+                return '用户名至少得6个字符啊';
+              }
+              if(value.length > 12){
+                return '用户名不能超过12个字符啊';
+              }
+            }
+            ,password: [
+              /^[\S]{6,12}$/
+              ,'密码必须6到12位，且不能出现空格'
+            ]
+
+          });
+
+          //监听提交
+          //异步提交
+
+              form.on('submit(login)', function(data){ //formdata是待的参数
+                //取填写的内容
+                dataFiled = data.field;
+                alert("username == " + dataFiled.username);
+                //layer.msg("username == " + dataFiled.username);
+                /*
+                var dataToJsonStr = JSON.stringify(data.field);
+                var dataToJson = JSON.parse(dataToJsonStr);*/
+                /*
+                console.log(data);
+                console.log("data.username==" + data.username);
+                console.log("data['username']==" + data['username']);
+                console.log("data[0]" + data[0]);
+                console.log("JSON.stringify(data.username)" + JSON.stringify(data.username));
+                */
+                console.log("dataToJsonStr==" + dataToJsonStr);
+                console.log("dataToJson==" + dataToJson);
+                console.log("dataToJson-username========" + dataToJson.username);
+                console.log("dataToJson-password========" + dataToJson.password);
+                var username = dataToJson.username
+                var password = dataToJson.password
+                //限制界面不跳转
+                return false;
+                //layer.msg('fefefefsf');  //普通弹窗
+                /*
+                layer.msg('dwedwedew',function(){
+                    //location.href='./index.html'
+                });  //摇头弹窗
+                */
+                //console.log("dataToJson" + dataToJson[username]);
+                //console.log("dataToJson" + dataToJson['username']);
+                //console.log("dataToJson" + dataToJson('username'));
+
+                //var dataToJson = $.parseJSON(data)
+                //var dataToJson = JSON.stringify(data.field)
+                //alert(dataToJson)
+                //alert(JSON.stringify(data.field))
+                //alert("xx==" + dataToJson.username.toString())
+                //alert("username==" + form.val('username'));
+                //alert("password==" + form.val('password'));
+                /*
+                $.ajax({
+                    type: "post", //请求方法
+                    url: "/register", //请求地址
+                    data: {"username":username, "password":password},
+                    datatype: "json",
+                    success:function(returnDatas){
+                        //解析返回的json数据
+                        var returnDataToJsonStr = JSON.stringify(returnDatas.field);
+                        var returnDataToJson = JSON.parse(returnDataToJsonStr);
+                        console.log("返回的json==" + returnDataToJson);
+                        if(returnDataToJson.code == 200){
+                            console.log("注册，返回的200 ok");
+                            //location.href='./login.html';
+                        }
+                    },error:function(){
+                        console.log("注册，ajax请求失败啊=");
+                    }
+                });
+                */
+
+/*
+                layer.msg(JSON.stringify(data.field),function(){
+                    //location.href='./index.html'
+                });
+*/
+
+              });
+
+    });
+
+</script>
+</body>
+</html>

@@ -279,7 +279,7 @@ def logout():
     print("app.py登出成功，保存的user====", user)
     print("app.py登出成功，保存的user。id====", user.get_id())
 
-    # 跳转登录界面
+   # 跳转登录界面
     return app.send_static_file('pages/login.html')
 
 
@@ -1250,6 +1250,47 @@ def getBugSolveRateTableForDrawMapALongtimeWithDeveloper():
 
 # #########################  bug操作相关 end ############################################################################
 
+
+# #########################  系统启动相关 start ############################################################################
+# 获取配置文件所有参数
+@app.route('/getAllArgsFromConfig', methods=['POST', 'GET'])
+def getAllArgsFromConfig():
+    # 获取配置文件所有参数
+    print(request.values)
+    json_str = ''
+
+    # 默认使用 get 请求
+    if request.method == "GET":
+        print('get请求 获取配置文件所有参数')
+        json_str = utils.get_allargs_from_config()
+        print('《app.py》get请求 获取配置文件所有参数, 返回jsonStr=====', json_str)
+
+    return json_str
+
+
+# 获取用户权限
+@app.route('/getPermission', methods=['POST', 'GET'])
+def getPermission():
+    print('获取用户权限，进入app.py 方法')
+    print(request.values)
+    json_str = ''
+    username = request.values.get('username')
+
+    # 默认使用 get 请求
+    if request.method == "GET":
+        print('get请求 获取用户权限')
+        json_str = admin.get_permission(username)
+        print('《app.py》get请求 获取用户权限, 返回jsonStr=====', json_str)
+
+    # 默认使用 get 请求
+    if request.method == "POST":
+        print('get请求 获取用户权限')
+        json_str = admin.get_permission(username)
+        print('《app.py》get请求 获取用户权限, 返回jsonStr=====', json_str)
+
+    return json_str
+
+# #########################  系统启动相关 end ############################################################################
 
 # 主函数
 if __name__ == '__main__':

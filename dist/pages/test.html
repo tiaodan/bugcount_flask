@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>主页面</title>
+    <script src="../lib/jquery-3.2.1.min.js"></script>
+
+    <style>
+
+
+    </style>
+</head>
+
+<body>
+<h1>疫情追踪</h1>
+<h3>实时报道</h3>
+<button id="btn_submit">点我有惊喜</button>
+
+
+<!-- 测试form -->
+<form method="post" id="formTest">
+    username:<input id="id_username">
+    password:<input id="id_password">
+    email:<input id="id_email">
+    <input id="btn_submit" type="submit" value="提交">
+</form>
+
+
+
+<script>
+
+    $("button[id='no']").click(function () {
+        console.log('前台点击了按钮')
+        $.ajax({
+            url:"/getUserList",
+            type:"post",
+            data:{"name":"李四","score":"99"},
+            datatype:"json",
+            success:function (d) {
+                $("h1").html("武汉感染人数" + d)
+            },error:function () {
+                alert("发送ajaxx失败")
+            }
+        })
+    });
+
+    $("button[id='btn_submit']").click(function () {
+        console.log('前台点击了按钮')
+    });
+
+
+</script>
+
+</body>
+</html>

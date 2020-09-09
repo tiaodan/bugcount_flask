@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<!--
+Licensed to the Apache Software Foundation (ASF) under one
+or more contributor license agreements.  See the NOTICE file
+distributed with this work for additional information
+regarding copyright ownership.  The ASF licenses this file
+to you under the Apache License, Version 2.0 (the
+"License"); you may not use this file except in compliance
+with the License.  You may obtain a copy of the License at
+
+   http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing,
+software distributed under the License is distributed on an
+"AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+KIND, either express or implied.  See the License for the
+specific language governing permissions and limitations
+under the License.
+
+复制的axis-multi.html
+-->
+
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <script src="lib/esl.js"></script>
+        <script src="lib/config.js"></script>
+        <script src="lib/jquery.min.js"></script>
+        <script src="lib/facePrint.js"></script>
+        <script src="lib/testHelper.js"></script>
+        <link rel="stylesheet" href="lib/reset.css" />
+    </head>
+    <body>
+
+        <style>
+            .test-title {
+                background: #146402;
+                color: #fff;
+                /*
+                height:5px;
+                line-height: 5px; /*当把 line-height 的高度设置和 height 高度一样就能使 文字垂直居中*/
+
+            }
+        </style>
+
+        <div id="main0"></div>
+
+        <script>
+
+            var chart;
+            var myChart;
+            var option;
+
+            require([
+                'echarts'/*, 'map/js/china' */
+            ], function (echarts) {
+
+                var option = {
+                    /*
+                    tooltip: {
+                        trigger: 'axis',
+                        axisPointer: {
+                            type: 'cross',
+                            crossStyle: {
+                                color: '#999'
+                            }
+                        }
+                    },
+                     */
+                    toolbox: {
+                        feature: {
+                            dataView: {show: true, readOnly: false},
+                            magicType: {show: true, type: ['line', 'bar']},
+                            restore: {show: true},
+                            saveAsImage: {show: true}
+                        }
+                    },
+                    legend: {
+                        //data:['1808','LJG','ZG','test']
+                        data:['总数','新增','关闭','回归','延迟'],
+                    },
+                    xAxis: [
+                        {
+                            type: 'category',
+                            //data: ['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],
+                            data: ['2020-01-10','2020-01-13','2020-01-14','2020-01-15','2020-02-14','2020-02-18','2020-02-19'
+                                  ,'2020-02-25','2020-03-18','2020-03-26','2020-03-30','2020-04-01','2020-04-02'
+                                  ,'2020-04-07','2020-04-13','2020-04-16','2020-05-13','2020-06-10'],
+                            axisPointer: {
+                                type: 'shadow'
+                            }
+                        }
+                    ],
+                    yAxis: [
+                        {
+                            type: 'value',
+                            name: 'bug数量',
+                            min: 0,
+                            max: 300,
+                            interval: 50,
+                            axisLabel: {
+                                //formatter: '{value} ml'
+                                formatter: '{value} 个'
+                            }
+                        },
+                        {
+                            type: 'value',
+                            name: 'bug数量',
+                            min: 0,
+                            max: 300,
+                            interval: 50,
+                            axisLabel: {
+                                formatter: '{value} 个 '
+                            }
+                        }
+
+                    ],
+                    series: [
+                        {
+                            name:'总数',
+                            type:'line',
+                            //data:[2.0, 4.9, 7.0, 23.2, 25.6, 76.7, 135.6, 162.2, 32.6, 20.0, 6.4, 3.3]
+                            data:[22,26,67,70,71,77,83,84,150,153,179,208,219,220,257,267,268,269]
+                        },
+                        {
+                            name:'新增',
+                            type:'line',
+                            //data:[2.6, 5.9, 9.0, 26.4, 28.7, 70.7, 175.6, 182.2, 48.7, 18.8, 6.0, 2.3]
+                            data:[0,0,0,0,0,0,0,0,8,9,9,12,13,13,16,16,16,17]
+                        },
+                        {
+                            name:'关闭',
+                            type:'line',
+                            yAxisIndex: 1,
+                            //data:[2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
+                            data:[22,26,67,70,71,76,82,83,136,138,164,189,197,198,226,236,237,237]
+                        },
+                        {
+                            name:'回归',
+                            type:'line',
+                            yAxisIndex: 1,
+                            //data:[2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 11]
+                            data:[0,0,0,0,0,0,0,1,1,1,1,12,2,2,4,4,4,4]
+                        },
+                        {
+                            name:'延迟',
+                            type:'line',
+                            yAxisIndex: 1,
+                            //data:[2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 11]
+                            data:[0,0,0,0,0,1,1,1,5,5,5,6,7,7,11,11,11,11]
+                        }
+                    ]
+                };
+
+                chart = myChart = testHelper.create(echarts, 'main0', {
+                    option: option,
+                    //title: '测试折线图 - 项目维度 bug每日累计增长情况'
+                });
+            });
+        </script>
+
+    </body>
+</html>
