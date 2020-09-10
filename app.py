@@ -1,10 +1,11 @@
 from flask import Flask, render_template, request, redirect, url_for, Blueprint, send_from_directory
 from py import c_account
 from py import dbutils
-import json
 from py import admin
 from py import utils
 from py import buglist
+from py import announcement
+import json
 import os
 import pymysql
 import time
@@ -1290,7 +1291,41 @@ def getPermission():
 
     return json_str
 
+
 # #########################  系统启动相关 end ############################################################################
+
+
+# #########################  公告管理 start ###############################################################
+# 获取用户权限
+@app.route('/announcement', methods=['POST', 'GET'])
+def announcement_manage():
+    print('请求参数')
+    json_str = ''
+
+    # 默认使用 get 请求
+    if request.method == "GET":
+        print("获取公告内容get")
+        json_str = announcement.get_announcement()
+        print('《app.py》get请求 获取公告内容, 返回jsonStr=====', json_str)
+    if request.method == "POST":
+        print("修改公告内容post")
+        # 获取参数，转成json 作为参数
+        announcement1_text = request.form.get("announcement1_text")
+        announcement2_text = request.form.get("announcement2_text")
+        announcement3_text = request.form.get("announcement3_text")
+        print(request.form.get("announcement1_text"))
+        print(request.form.get("announcement2_text"))
+        print(request.form.get("announcement3_text"))
+        argsjsonstr = {"announcement1_text": announcement1_text, "announcement2_text": announcement2_text, "announcement3_text": announcement3_text}
+        print("参数==", argsjsonstr)
+
+        json_str = announcement.edit_announcement(argsjsonstr)
+        print('《app.py》post请求 修改公告内容, 返回jsonStr=====', json_str)
+
+    return json_str
+
+# #########################  公告管理 end ###############################################################
+
 
 # 主函数
 if __name__ == '__main__':

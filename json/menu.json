@@ -36,6 +36,12 @@
 				"name": "管理员列表",
 				"icon": "",
 				"url": "./pages/admin/list.html"
+			},
+			{
+				"id": 22,
+				"name": "公告管理",
+				"icon": "",
+				"url": "./pages/admin/announcement_manage.html"
 			}]
 		}
 	]
