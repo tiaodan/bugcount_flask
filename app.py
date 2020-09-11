@@ -855,9 +855,21 @@ def editBug():
     return json_str
 
 
-# ###################统计列表方法
+# ###################统计列表方法######################################################
+# 获取bug总数
+@app.route('/buglistTotalNum', methods=["GET"])
+def buglistTotalNum():
+    print('获取bug总数')
+    json_str=''
+
+    if request.method == "GET":
+        json_str = buglist.get_buglist_totalnum()
+
+    return json_str
+
+
 #test getBugCountByProject
-@app.route('/getBugCountByProject', methods=("GET", "POST"))
+@app.route('/getBugCountByProject', methods=["GET", "POST"])
 def getBugCountByProject():
     print('获取bug统计信息')
     print('解析前台传的参数')
@@ -918,7 +930,15 @@ def downloadBuglistTemplate():
     print('文件下载')
     return send_from_directory(r"excel_upload", filename="template.xls", as_attachment=True)
 
-
+"""
+功能： 长传文件（需要将上传文件重命名为template.xlsx，使用户随便传个文件都能传成功，）
+建议： 1. 传的文件最好命名为template.xlsx,不是这个名字也可以
+步骤： 1. 获取请求的文件流
+      2. 重命名要保存的文件名
+      3. 获取文件保存路径  
+      4. 保存文件（如果文件存在，则覆盖；目录没有自动创建）
+      5. 返回数据
+"""
 @app.route('/uploadBuglist', methods=['POST', 'GET'])
 def uploadBuglist():
     code = 500
@@ -934,6 +954,8 @@ def uploadBuglist():
     if request.method == 'POST':
         f = request.files['file']
         basepath = os.path.dirname(__file__)  # 当前文件所在路径
+        # 重命名文件
+        f.filename = "template.xlsx"  # filename str类型
         # upload_path = os.path.join(basepath, 'excel_upload',secure_filename(f.filename))  #注意：没有的文件夹一定要先创建，不然会提示没有该路径
         upload_path = os.path.join(basepath, 'excel_upload', f.filename)  #注意：没有的文件夹一定要先创建，不然会提示没有该路径
         print('上传文件目录==', upload_path)

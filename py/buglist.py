@@ -28,6 +28,66 @@ db_passwd = 'sunkaisens'
 db_dbname = 'bugcount'
 """
 
+
+def get_buglist_totalnum():
+    #  定义初始数据
+    data = {}
+    buglist = []
+    code = 500  # 默认失败
+    msg = 'sql语句执行失败'
+    count = 0  # sql语句执行结果个数
+
+    # 打开数据库连接
+
+    conn = pymysql.connect(db_host, db_user, db_passwd, db_dbname)
+
+    # 使用 cursor() 方法创建一个游标对象 cursor
+    cursor = conn.cursor()
+
+    # 使用 execute()  方法执行 SQL 查询
+    try:
+        sql = 'select count(bugid) from bugcount.buglist'
+        print('sql语句为==', sql)
+
+        # 执行sql语句
+        cursor.execute(sql)
+        # 提交到数据库执行
+        conn.commit()
+        # 执行语句，返回结果
+        sql_return_result_tuple = cursor.fetchall()
+        print(sql_return_result_tuple)
+
+        # 拼接返回数据,返回列表
+        count = sql_return_result_tuple[0]  # sql语句结果个数
+        # 顺利执行完毕就算成功
+        code = 200  # 成功
+        msg = '查询语句执行成功'
+
+    # except Exception:
+    except:
+        # 如果发生错误则回滚
+        # 输出异常信息
+        traceback.print_exc()
+        print('出现异常，sql语句执行失败')
+        # print('出现异常，sql语句执行失败', Exception)
+        conn.rollback()
+    finally:
+        # 不管是否异常，都关闭数据库连接
+        cursor.close()
+        conn.close()
+
+    #  返回json格式的数据
+    data['code'] = code
+    data['msg'] = msg
+    data['count'] = count
+    data['data'] = buglist
+    # 转化下查询结果为{},{},{}这种格式======================
+    # json.dumps()用于将dict类型的数据转成str .json.loads():用于将str类型的数据转成dict
+    json_str = json.dumps(data, ensure_ascii=False)
+    print('<buglist.py> 查询bug总数返回json_str=', json_str)
+    return json_str
+
+
 # 查询所有bug
 # page = 当前页码，limit=当前页码显示个数
 def search_buglist(page, limit):

@@ -173,18 +173,19 @@ def import_mysql_by_excel():
 
     # 获得游标
     cur = conn.cursor()
-    # 创建插入SQL语句
+    # 创建插入SQL语句 带第一次回归、第二次回归、第三次回归相关列表的sql
     # query = 'insert into bugcount.buglist (name,sex,minzu,danwei_zhiwu,phone_number,home_number) values (%s, %s, %s, %s, %s, %s)'
     # query = 'INSERT INTO `buglist` VALUES ('2', '2020-01-10', '1808', 'icss', 'icss_disp_20200108', '调度台无法强插', '3', '2', '2', '1', '0', null, null, null, null, '李东东', null, null, null, null, null, null, null, null, null, null);'
-    query = 'insert into bugcount.buglist (bugid, bug_submit_date, project, software, test_version, bug_description, severity_level, priority, bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer, remark, first_bug_regression_date, first_bug_regression_status, first_bug_regression_remark, second_bug_regression_date, second_bug_regression_status, second_bug_regression_remark, third_bug_regression_date, third_bug_regression_status, third_bug_regression_remark) ' \
-            'values (null, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s) ' \
-            'on duplicate key update bug_submit_date=%s,project=%s,software=%s,test_version=%s,severity_level=%s,priority=%s,bug_difficulty=%s,bug_status=%s,bug_close_date=%s,close_version=%s,cause_analysis=%s,bug_img=%s,intermediate_situation=%s,developer=%s,remark=%s' \
-            ',first_bug_regression_date=%s,first_bug_regression_status=%s,first_bug_regression_remark=%s,second_bug_regression_date=%s,second_bug_regression_status=%s,second_bug_regression_remark=%s,third_bug_regression_date=%s,third_bug_regression_status=%s,third_bug_regression_remark=%s'
-    #dao bug_close_date
+    # sql = 'insert into bugcount.buglist (bugid, bug_submit_date, project, software, test_version, bug_description, severity_level, priority, bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer, remark, first_bug_regression_date, first_bug_regression_status, first_bug_regression_remark, second_bug_regression_date, second_bug_regression_status, second_bug_regression_remark, third_bug_regression_date, third_bug_regression_status, third_bug_regression_remark) ' \
+    #         'values (null, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s) ' \
+    #         'on duplicate key update bug_submit_date=%s,project=%s,software=%s,test_version=%s,severity_level=%s,priority=%s,bug_difficulty=%s,bug_status=%s,bug_close_date=%s,close_version=%s,cause_analysis=%s,bug_img=%s,intermediate_situation=%s,developer=%s,remark=%s' \
+    #         ',first_bug_regression_date=%s,first_bug_regression_status=%s,first_bug_regression_remark=%s,second_bug_regression_date=%s,second_bug_regression_status=%s,second_bug_regression_remark=%s,third_bug_regression_date=%s,third_bug_regression_status=%s,third_bug_regression_remark=%s'
 
-    print(query)
-    #values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s)'
-    # query = 'insert into bugcount.buglist (bug_submit_date, project, software, test_version) values (%s, %s, %s, %s)'
+    sql = 'insert into bugcount.buglist (bugid, bug_submit_date, project, software, test_version, bug_description, severity_level, priority, bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer, remark) ' \
+            'values (null, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s, %s) ' \
+            'on duplicate key update bug_submit_date=%s,project=%s,software=%s,test_version=%s,severity_level=%s,priority=%s,bug_difficulty=%s,bug_status=%s,bug_close_date=%s,close_version=%s,cause_analysis=%s,bug_img=%s,intermediate_situation=%s,developer=%s,remark=%s' \
+
+    print(sql)
 
     # 创建一个for循环迭代读取xls文件每行数据的, 从第二行开始是要跳过标题行
 
@@ -212,28 +213,17 @@ def import_mysql_by_excel():
         intermediate_situation = sheet.cell(r, 12).value
         developer = sheet.cell(r, 14).value
         remark = sheet.cell(r, 15).value
-        first_bug_regression_date = sheet.cell(r, 16).value
-        print('cell_type 17= ', type(sheet.cell(r, 17).ctype))
-
-        first_bug_regression_status = sheet.cell(r, 17).value
-        first_bug_regression_remark = sheet.cell(r, 18).value
-        second_bug_regression_date = sheet.cell(r, 19).value
-        second_bug_regression_status = sheet.cell(r, 20).value
-        second_bug_regression_remark = sheet.cell(r, 21).value
-        third_bug_regression_date = sheet.cell(r, 22).value
-        third_bug_regression_status = sheet.cell(r, 23).value
-        third_bug_regression_remark = sheet.cell(r, 24).value
         n += 1
 
         # values = (name, sex, minzu, danwei_zhiwu, phone_number, home_number) 第一行插入所需的变量（25个，除去bugid）;第二行数据相同更新参数（24个-出去bugid 喝bug_description）
-        values = (bug_submit_date, project, software, test_version, bug_description, severity_level, priority, bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer, remark, first_bug_regression_date, first_bug_regression_status, first_bug_regression_remark, second_bug_regression_date, second_bug_regression_status, second_bug_regression_remark, third_bug_regression_date, third_bug_regression_status, third_bug_regression_remark,
-                  bug_submit_date, project, software, test_version, severity_level, priority, bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer, remark, first_bug_regression_date, first_bug_regression_status, first_bug_regression_remark, second_bug_regression_date, second_bug_regression_status, second_bug_regression_remark, third_bug_regression_date, third_bug_regression_status, third_bug_regression_remark)
+        values = (bug_submit_date, project, software, test_version, bug_description, severity_level, priority, bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer, remark,
+                  bug_submit_date, project, software, test_version, severity_level, priority, bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer, remark)
 
         # values = (bug_submit_date, project, software, test_version)
         print('valuse=', values)
 
         # 执行sql语句
-        cur.execute(query, values)
+        cur.execute(sql, values)
         code = 200
         msg = '导入数据成功'
     conn.commit()

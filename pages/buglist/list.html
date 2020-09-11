@@ -44,7 +44,7 @@
             <button class="layui-btn layui-btn-sm  layui-btn-danger" onclick="layer.msg('待开发')">批量删除</button>
 
             <!-- <button id="no" class="layui-btn layui-btn-sm  layui-btn-danger" >清空数据表</button> -->
-            <span style="float: right">数据库共有数据：88 条</span>
+                <span style="float: right">数据库共有数据：<span id="bugTotalNum">88</span> 条</span>
             </div>
         <!-- dody div end-->
 			<!-- 搜索栏 start-->
@@ -105,22 +105,8 @@
           </div>
             <!-- dody demoTable-->
 
-            <div class="layui-collapse" lay-filter="test">
-              <div class="layui-colla-item">
-                <h2 class="layui-colla-title">添加bug</h2>
-                <div class="layui-colla-content">
-                    <!-- 用来进行添加操作的table -->
-                    <table  id="tableBugAdd" lay-filter="tableBugAdd"></table>
-                </div>
-              </div>
-              <div class="layui-colla-item">
-                <h2 class="layui-colla-title">bug列表</h2>
-                <div class="layui-colla-content">
-                    <!-- 用来进行 查询的的table -->
-                    <table class="layui-hide" id="tableBug" lay-filter="tableBug"></table>
-                </div>
-              </div>
-            </div>
+            <!-- 用来进行 查询的的table -->
+            <table class="layui-hide" id="tableBug" lay-filter="tableBug"></table>
 
             <!-- 自定义的 start-->
             <div id="bugAddRowBar" hidden>
@@ -144,9 +130,6 @@
 
             <!-- dody div end-->
         <!-- 以下为脚本：：：===================================================================================== -->
-        <script>
-
-        </script>
 
         <!--  渲染table estart-->
              <script>
@@ -163,7 +146,8 @@
                       elem: '#tableBugAdd',
                       id: 'tableAddRenderReloadId',
                       url: '../../json/test_buglist.json',
-                      height: 400,
+                      // height: 'full-140',
+                      height: 300,
                       cols: [[
                       {type:'numbers',fixed: 'left' }//, fixed: true
                       ,{checkbox: true, fixed: true}  //{type: 'checkbox'}
@@ -235,15 +219,6 @@
                       ,{field:'intermediate_situation', title: '中间情况', edit: 'text', width: 100}
                       ,{field:'developer', title: '开发者', sort: true, edit: 'text', width: 100}
                       ,{field:'remark', title: '备注', edit: 'text', width: 100}
-                      ,{field:'first_bug_regression_date', title: '第一次回归时间', sort: true, edit: 'text', width: 140}
-                      ,{field:'first_bug_regression_status', title: '第一次回归结果', edit: 'text', width: 140}
-                      ,{field:'first_bug_regression_remark', title: '第一次回归备注', edit: 'text', width: 140}
-                      ,{field:'second_bug_regression_date', title: '第二次回归时间', sort: true, edit: 'text', width: 140}
-                      ,{field:'second_bug_regression_status', title: '第二次回归结果', edit: 'text', width: 140}
-                      ,{field:'second_bug_regression_remark', title: '第二次回归备注', edit: 'text', width: 140}
-                      ,{field:'third_bug_regression_date', title: '第三次回归时间', sort: true, edit: 'text', width: 140}
-                      ,{field:'third_bug_regression_status', title: '第三次回归结果', edit: 'text', width: 140}
-                      ,{field:'third_bug_regression_remark', title: '第三次回归备注', edit: 'text', width: 140}
                       ,{title:'操作', toolbar: '#rowBar', width: '15%', fixed:'right'}
                       //,{title:'操作', toolbar: '#rowBar', fixed:'right'} //没有左右框
                     ]]
@@ -251,7 +226,7 @@
                     ,page: true
                     //,limit: 10     // 每页显示的条数（默认：10）,url请求方式此条没用
                     ,limits: [1,10,15,20,25,30,100,200,500,1000]  //每页条数的选择项，默认：[10,20,30,40,50,60,70,80,90]
-                    ,height: 'full-300'
+                    ,height: 'full-100'
                     //,height: 300
 
                   });
@@ -263,6 +238,24 @@
                     reload: function(){
                       var tableReloadBtn = $('#tableReloadBtn'); //指向按钮的id
 
+                      // 重载的时候重新请求bug总数
+                      $.ajax({
+                            type: "get", //请求方法
+                            url: "/buglistTotalNum", //请求地址
+                            datatype: "json",
+                            async: false,
+                            success: function (datas) {
+                                //解析返回数据
+                                //转成json对象
+                                var datasJsonObj = $.parseJSON(datas)
+                                var bugTotalNum = datasJsonObj.count
+                                console.log("bug列表，点击搜索获取总数成功，bug总数=" + bugTotalNum);
+                                $("#bugTotalNum").html(bugTotalNum)
+                            },
+                            error: function () {
+                                console.log("bug列表，点击搜索获取总数异常error");
+                            }
+                        });
 
                       //执行重载
                       table.reload('tableRenderReloadId', { //指向render 自定义的id
@@ -668,6 +661,25 @@
 				laydate.render({
 					elem: '#end' //指定元素
 				});
+
+				//网页启动获取bug总数
+                $.ajax({
+						type: "get", //请求方法
+						url: "/buglistTotalNum", //请求地址
+						datatype: "json",
+                        async: false,
+						success: function (datas) {
+						    //解析返回数据
+                            //转成json对象
+                            var datasJsonObj = $.parseJSON(datas)
+                            var bugTotalNum = datasJsonObj.count
+							console.log("bug列表，获取总数成功，bug总数=" + bugTotalNum);
+                            $("#bugTotalNum").html(bugTotalNum)
+						},
+						error: function () {
+							console.log("bug列表，获取总数异常error");
+						}
+					});
 
 			});
 			
