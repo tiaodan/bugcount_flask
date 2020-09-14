@@ -739,6 +739,25 @@ def truncateTableBuglist():
     print('《app.py》truncateTableBuglist 返回jsonStr==', json_str)
     return json_str
 
+
+# post 导出所有buglist数据
+@app.route('/exportAllBug', methods=["POST"])
+def export_allbug():
+    print('<app.py> /exportAllBug 导出所有bug')
+    # 获取写文件路径
+    currentpath = os.path.abspath(__file__)
+    print('当前路径', currentpath)
+    root_dir = os.path.abspath(os.path.dirname(currentpath) + os.path.sep + ".")
+    # root_dir = os.path.abspath(os.path.dirname(currentpath) + os.path.sep + "..")
+    print('根目录 ===', root_dir)
+    exportfile_abspath = os.path.join(root_dir, 'excel_upload\export\1.xlsx')
+    # exportfile_abspath = os.path.join(root_dir, 'excel_upload\export')
+    print('要导出的文件的绝对路径=', exportfile_abspath)
+
+    json_str = dbutils.export('bugcount.buglist', exportfile_abspath)
+    print('《app.py》/exportAllBug 导出所有bug 返回jsonStr==', json_str)
+    return json_str
+
 #post 编辑bug
 @app.route('/editBug', methods=("GET", "POST"))
 def editBug():

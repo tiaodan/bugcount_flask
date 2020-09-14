@@ -4,6 +4,7 @@ import json
 import datetime
 import pymysql
 import os
+import xlsxwriter
 import sys
 
 # 获取md5值
@@ -261,4 +262,24 @@ def get_bug_submit_date_list(starttime_str, endtime_str, date_diffrent_str):
     return date_submit_date  # list
 
 
-
+# 写入excel文件
+def wirte_file(path):
+    """
+    # xlwt方式创建workbook
+    # 创建sheet
+    # sheet中写入数据
+    # 保存excel
+    book = xlwt.Workbook(encoding='utf-8')
+    sheet1 = book.add_sheet(u'Sheet1', cell_overwrite_ok=True)
+    sheet1.write(0, 0, 'haha')
+    book.save('D:\\test1.xls')  # 需要写2个\\ xlsx 不支持xlsx格式文件
+    """
+    # XlsxWriter方式创建workbook
+    book = xlsxwriter.Workbook("D:\\test.xlsx")  # 必须使用双\\ 否则报参数错误
+    # 创建sheet
+    sheet1 = book.add_worksheet("Sheet1")
+    # sheet中写入数据
+    sheet1.write(0, 0, "ssss")
+    sheet1.write(0, 1, "ssss")
+    # 关闭workbook
+    book.close()

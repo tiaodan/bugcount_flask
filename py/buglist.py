@@ -112,7 +112,7 @@ def search_buglist(page, limit):
     # 使用 execute()  方法执行 SQL 查询
     try:
         # sql = 'select userid,username,password,user_remark,user_email,user_level,create_time,session from bugcount.user limit %s,%s'
-        sql = 'select bugid, bug_submit_date, project, software, test_version, bug_description, severity_level, priority, bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer, remark, first_bug_regression_date, first_bug_regression_status, first_bug_regression_remark, second_bug_regression_date, second_bug_regression_status, second_bug_regression_remark, third_bug_regression_date, third_bug_regression_status, third_bug_regression_remark from bugcount.buglist limit %s,%s'
+        sql = 'select bugid, bug_submit_date, project, software, test_version, bug_description, severity_level, priority, bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer, remark, regression_times, reopen_times, submitterindex from bugcount.buglist limit %s,%s'
 
         print(f'sql语句为==', sql)
         print(f'sql语句参数 *args====  page={page},limit={limit}')
@@ -141,6 +141,9 @@ def search_buglist(page, limit):
             bug = dict()
             bug['bugid'] = r[0]
             bug['bug_submit_date'] = str(r[1])  # 转成str，否则会报TypeError: Object of type datetime is not JSON serializable
+            # 日期日过查出来是None,前端显示 ''
+            if bug['bug_submit_date'] == 'None':
+                bug['bug_submit_date'] = ''
             bug['project'] = r[2]
             bug['software'] = r[3]
             bug['test_version'] = r[4]
@@ -149,22 +152,37 @@ def search_buglist(page, limit):
             bug['priority'] = r[7]
             bug['bug_difficulty'] = r[8]
             bug['bug_status'] = r[9]
-            bug['bug_close_date'] = str(r[10])
+            # 前端显示为中文字符，1 处理(handle)，2 关闭(close)，3 回归(regression)，4 延迟(delay)， 5 重开(reopen) 0.未知
+            if bug['bug_status'] == 1:
+                bug['bug_status'] = "处理"
+            elif bug['bug_status'] == 2:
+                bug['bug_status'] = "关闭"
+            elif bug['bug_status'] == 3:
+                bug['bug_status'] = "回归"
+            elif bug['bug_status'] == 4:
+                bug['bug_status'] = "延迟"
+            elif bug['bug_status'] == 5:
+                bug['bug_status'] = "重开"
+            else:
+                bug['bug_status'] = "未知"  # 未知（可能用户上传时bug_status字段不对）
+
+            bug['bug_close_date'] = str(r[10])  # 转成str，否则会报TypeError: Object of type datetime is not JSON serializable
+            # 日期如果查出来是None,前端显示 ''
+            if bug['bug_close_date'] == 'None':
+                bug['bug_close_date'] = ''
             bug['close_version'] = r[11]
             bug['cause_analysis'] = r[12]
             bug['bug_img'] = r[13]
             bug['intermediate_situation'] = r[14]
             bug['developer'] = r[15]
             bug['remark'] = r[16]
-            bug['first_bug_regression_date'] = str(r[17])
-            bug['first_bug_regression_status'] = r[18]
-            bug['first_bug_regression_remark'] = r[19]
-            bug['second_bug_regression_date'] = str(r[20])
-            bug['second_bug_regression_status'] = r[21]
-            bug['second_bug_regression_remark'] = r[22]
-            bug['third_bug_regression_date'] = str(r[23])
-            bug['third_bug_regression_status'] = r[24]
-            bug['third_bug_regression_remark'] = r[25]
+            bug['regression_times'] = str(r[17])
+            if bug['regression_times'] == 'None':
+                bug['regression_times'] = ''
+            bug['reopen_times'] = r[18]
+            if bug['reopen_times'] == 'None':
+                bug['reopen_times'] = ''
+            bug['submitterindex'] = r[19]
             print('==============循环person==', bug)
 
             buglist.append(bug)

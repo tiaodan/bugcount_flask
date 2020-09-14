@@ -98,6 +98,7 @@
                   <button id="uploadBuglist" class="layui-btn">上传数据</button>
                   <!--<button id="downloadBuglistTemplate" class="layui-btn "><a href="../../excel_upload/template.xlsx"  target="_blank">下载模板</a></button> -->
                   <a href="../../excel_upload/template/template.xlsx" target="_blank"><button id="downloadBuglistTemplate" class="layui-btn ">下载模板</button></a>
+                  <button id="exportAllBug" class="layui-btn">导出所有</button>
             </div>
             <!--  表格搜索框 end-->
 
@@ -202,23 +203,26 @@
                     ,cols: [[
                       {type:'numbers',fixed: 'left' }//, fixed: true
                       ,{checkbox: true, fixed: true}  //{type: 'checkbox'}
-                      ,{field:'bugid', title: 'bugid', sort: true, width: 80}
+                      ,{field:'bugid', title: 'bugid', width: 70}
                       ,{field:'bug_submit_date', title: '提交时间',sort: true, edit: 'text', width: 120}
                       ,{field:'project', title: '项目', edit: 'text', width: 80, style:'background-color: #009688; color: #fff;', filter:true}
                       ,{field:'software', title: '软件类', edit: 'text', width: 80}
                       ,{field:'test_version', title: '测试版本', edit: 'text', width: 170 }
                       ,{field:'bug_description', title: '描述', edit: 'text', width: 200} //暂时先200
-                      ,{field:'severity_level', title: '严重等级', sort: true, edit: 'text', width: 100}
-                      ,{field:'priority', title: '优先级', sort: true, edit: 'text', width: 80}
-                      ,{field:'bug_difficulty', title: '难度', sort: true, edit: 'text', width: 80}
+                      ,{field:'severity_level', title: '严重等级', edit: 'text', width: 100}
+                      ,{field:'priority', title: '优先级', edit: 'text', width: 80}
+                      ,{field:'bug_difficulty', title: '难度', edit: 'text', width: 80}
                       ,{field:'bug_status', title: '关闭情况',  edit: 'text', width: 100}
-                      ,{field:'bug_close_date', title: '关闭日期', sort: true, edit: 'text', width: 120}
-                      ,{field:'close_version', title: '关闭版本', sort: true, edit: 'text', width: 170}
+                      ,{field:'bug_close_date', title: '关闭日期', edit: 'text', width: 120}
+                      ,{field:'close_version', title: '关闭版本', edit: 'text', width: 170}
                       ,{field:'cause_analysis', title: '原因分析', edit: 'text', width: 120}
                       ,{field:'bug_img', title: '图片', edit: 'text', width: 80}
                       ,{field:'intermediate_situation', title: '中间情况', edit: 'text', width: 100}
                       ,{field:'developer', title: '开发者', sort: true, edit: 'text', width: 100}
                       ,{field:'remark', title: '备注', edit: 'text', width: 100}
+                      ,{field:'regression_times', title: '回归次数', edit: 'text', width: 100}
+                      ,{field:'reopen_times', title: '重开次数', edit: 'text', width: 100}
+                      ,{field:'submitterindex', title: '提交者标识', edit: 'text', width: 100}
                       ,{title:'操作', toolbar: '#rowBar', width: '15%', fixed:'right'}
                       //,{title:'操作', toolbar: '#rowBar', fixed:'right'} //没有左右框
                     ]]
@@ -743,9 +747,8 @@
                         console.log(datas);
                         if (datas.code == 200) {
                             layer.msg('上传成功，导入数据中');
-                            //将上次的文件，保存到excel_upload目录
+                            //判断bug索引是否有重复
 
-                            //异步请求导入数据
                             //异步请求导入数据:
                             $.ajax({
                                 url:"/importMysqlByExcel",
@@ -764,12 +767,19 @@
                                     console.log("msg--type==" + typeof(returnMsg))
                                     returnCount = datasJson.count
                                     returnData = datasJson.data
+                                    isrepeat = datasJson.isrepeat
+                                    repeatlist = datasJson.repeatlist
                                     //判断跳转
                                     if(returnCode == 500 ){ //== 字符串
-                                        console.log("导入数据 失败");
-                                        layer.msg("导入数据 失败")
-                                    }
-                                    if(returnCode == 200){
+                                        console.log("is==========" + isrepeat)
+                                        if(isrepeat == 1){  //有重复项
+                                            alert(returnMsg + ":\n" + repeatlist)
+                                        }else{
+                                            layer.msg(returnMsg)
+                                        }
+                                        console.log(returnMsg);
+
+                                    }else {
                                         console.log("导入数据 成功,请手动刷新当前页面");
                                         layer.msg("导入数据 成功,请手动刷新当前页面")
                                     }
@@ -778,9 +788,7 @@
                                     alert("导入数据请求post 失败")
                                 }
                             });
-
                         }
-
                         //如果上传失败
                         if (datas.code == 500) {
                             layer.msg('上传失败');
@@ -831,6 +839,42 @@
                 //ajax end
 
             })
+
+            //监听 导出数据
+            $("button[id='exportAllBug']").click(function () {
+                     console.log('前台点击了按钮,导出所有数据');
+                     $.ajax({
+                            url:"/exportAllBug",
+                            type:"post",
+                            success:function (datas) {
+                                console.log(typeof(datas)); //返回的json是str
+                                console.log("导出所有数据 请求成功，返回内容如下：");
+                                //转成json
+                                datasJson = $.parseJSON(datas)
+                                console.log("返回结果" + datas);
+                                console.log(datasJson.code);
+
+                                returnCode = datasJson.code
+                                returnMsg = datasJson.msg
+                                console.log("msg--type==" + typeof(returnMsg))
+                                returnCount = datasJson.count
+                                returnData = datasJson.data
+                                //判断跳转
+                                if(returnCode == 500 ){ //== 字符串
+                                    console.log("导出所有数据 失败");
+                                    layer.msg("导出所有数据 失败")
+                                }
+                                if(returnCode == 200){
+                                    console.log("导出所有数据 成功，");
+                                    layer.msg("导出所有数据 成功")
+                                }
+                            },error:function () {
+                                alert("导出所有数据，请求异常")
+                            }
+                        });
+                    //ajax end
+
+            });
 
         </script>
 

@@ -1,9 +1,11 @@
 import xlrd
+import xlwt
 import pymysql
 import json
 #  引入python中的traceback模块，跟踪错误
 import traceback
 from py import utils
+from collections import Counter
 
 # 数据库配置
 """
@@ -161,8 +163,10 @@ def import_mysql_by_excel():
 
     # 默认定义数据
     code = 500  # 默认失败
-    msg = 'sql语句执行失败'
+    msg = '导入失败'
     count = 0  # sql语句执行结果个数
+    isrepeat = 0  # 1有，0没有
+    repeatlist = []  # 提交者索引 重复内容
 
     # 打开数据所在的工作簿，以及选择存有数据的工作表
     # book = xlrd.open_workbook("../excel_upload/buglist.xls")
@@ -181,63 +185,111 @@ def import_mysql_by_excel():
     #         'on duplicate key update bug_submit_date=%s,project=%s,software=%s,test_version=%s,severity_level=%s,priority=%s,bug_difficulty=%s,bug_status=%s,bug_close_date=%s,close_version=%s,cause_analysis=%s,bug_img=%s,intermediate_situation=%s,developer=%s,remark=%s' \
     #         ',first_bug_regression_date=%s,first_bug_regression_status=%s,first_bug_regression_remark=%s,second_bug_regression_date=%s,second_bug_regression_status=%s,second_bug_regression_remark=%s,third_bug_regression_date=%s,third_bug_regression_status=%s,third_bug_regression_remark=%s'
 
-    sql = 'insert into bugcount.buglist (bugid, bug_submit_date, project, software, test_version, bug_description, severity_level, priority, bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer, remark) ' \
-            'values (null, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s, %s) ' \
-            'on duplicate key update bug_submit_date=%s,project=%s,software=%s,test_version=%s,severity_level=%s,priority=%s,bug_difficulty=%s,bug_status=%s,bug_close_date=%s,close_version=%s,cause_analysis=%s,bug_img=%s,intermediate_situation=%s,developer=%s,remark=%s' \
+    sql = 'insert into bugcount.buglist (bugid, bug_submit_date, project, software, test_version, bug_description, severity_level, priority, bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer, remark, regression_times, reopen_times, submitterindex) ' \
+            'values (null, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ' \
+            'on duplicate key update bug_submit_date=%s,project=%s,software=%s,test_version=%s,bug_description=%s,severity_level=%s,priority=%s,bug_difficulty=%s,bug_status=%s,bug_close_date=%s,close_version=%s,cause_analysis=%s,bug_img=%s,intermediate_situation=%s,developer=%s,remark=%s,regression_times=%s,reopen_times=%s'
 
-    print(sql)
+    print('sql==', sql)
 
-    # 创建一个for循环迭代读取xls文件每行数据的, 从第二行开始是要跳过标题行
-
+    # 执行前先判断索引列（submitterindex）是否有重复的，提示用户,重复的行是submitterindex_col_list[n] +1
+    submitterindex_col_list = []
     for r in range(1, sheet.nrows):
-        print('Nlie nrows==', sheet.nrows)
-        print('curent r ==', r)
-        n = 1
-        print('shel.cell', sheet.cell(r, n))
+        submitterindex = sheet.cell(r, 18).value
+        submitterindex_col_list.append(submitterindex)
+    for k, v in Counter(submitterindex_col_list).items():
+        if v > 1:
+            isrepeat = 1  # 有重复选项
+            msg = '上传的execel表索引有重复，请检查submitterindex列'
+            print('重复的元素', k)
+            repeatlist.append(k)
 
-        # bug_submit_date_noformat = datetime.datetime.strptime(str(sheet.cell(r, 0).value), '%Y-%m-%d').time()
-        # time.strftime("%Y-%m-%d %H:%M:%S", sheet.cell(r, 0).value)
-        bug_submit_date = sheet.cell(r, 0).value
-        project = sheet.cell(r, 1).value
-        software = sheet.cell(r, 2).value
-        test_version = sheet.cell(r, 3).value
-        bug_description = sheet.cell(r, 4).value
-        severity_level = sheet.cell(r, 5).value
-        priority = sheet.cell(r, 6).value
-        bug_difficulty = sheet.cell(r, 7).value
-        bug_status = sheet.cell(r, 8).value
-        bug_close_date = sheet.cell(r, 9).value
-        close_version = sheet.cell(r, 10).value
-        cause_analysis = sheet.cell(r, 11).value
-        bug_img = sheet.cell(r, 12).value
-        intermediate_situation = sheet.cell(r, 12).value
-        developer = sheet.cell(r, 14).value
-        remark = sheet.cell(r, 15).value
-        n += 1
+    if isrepeat != 1:  # 没有重复项
+        # 创建一个for循环迭代读取xls文件每行数据的, 从第二行开始是要跳过标题行
+        for r in range(1, sheet.nrows):
+            print('Nlie nrows==', sheet.nrows)
+            print('curent r ==', r)
+            n = 1
+            print('shel.cell', sheet.cell(r, n))
 
-        # values = (name, sex, minzu, danwei_zhiwu, phone_number, home_number) 第一行插入所需的变量（25个，除去bugid）;第二行数据相同更新参数（24个-出去bugid 喝bug_description）
-        values = (bug_submit_date, project, software, test_version, bug_description, severity_level, priority, bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer, remark,
-                  bug_submit_date, project, software, test_version, severity_level, priority, bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer, remark)
+            # bug_submit_date_noformat = datetime.datetime.strptime(str(sheet.cell(r, 0).value), '%Y-%m-%d').time()
+            # time.strftime("%Y-%m-%d %H:%M:%S", sheet.cell(r, 0).value)
+            bug_submit_date = sheet.cell(r, 0).value
+            if bug_submit_date is None or bug_submit_date == '':
+                # bug_submit_date = "1888-01-01"
+                bug_submit_date = None
+            project = sheet.cell(r, 1).value
+            software = sheet.cell(r, 2).value
+            test_version = sheet.cell(r, 3).value
+            bug_description = sheet.cell(r, 4).value
+            severity_level = sheet.cell(r, 5).value  # 严重等级
+            if severity_level is None or severity_level == '':
+                severity_level = None
+            priority = sheet.cell(r, 6).value  # 优先级
+            if priority is None or priority == '':
+                priority = None
+            bug_difficulty = sheet.cell(r, 7).value
+            if bug_difficulty is None or bug_difficulty == '':
+                bug_difficulty = None
+            bug_status = sheet.cell(r, 8).value  # float
+            #将用户导入的“关闭情况” --》转成数字
+                # 1 处理(handle)，2 关闭(close)，3 回归(regression)，4 延迟(delay)， 5 重开(reopen) 0 未知（可能用户上传时bug_status字段不对）//excel上传导入时，填写中文、英文均可
+            if bug_status == "处理" or bug_status == "handle":
+                bug_status = 1
+            elif bug_status == "关闭" or bug_status == "close":
+                bug_status = 2
+            elif bug_status == "回归" or bug_status == "regression":
+                bug_status = 3
+            elif bug_status == "延迟" or bug_status == "delay":
+                bug_status = 4
+            elif bug_status == "重开" or bug_status == "reopen":
+                bug_status = 5
+            else:
+                bug_status = 0  # 未知（可能用户上传时bug_status字段不对）
 
-        # values = (bug_submit_date, project, software, test_version)
-        print('valuse=', values)
+            bug_close_date = sheet.cell(r, 9).value
+            if bug_close_date is None or bug_close_date == '':
+                bug_close_date = None
+            close_version = sheet.cell(r, 10).value
+            cause_analysis = sheet.cell(r, 11).value
+            bug_img = sheet.cell(r, 12).value
+            intermediate_situation = sheet.cell(r, 12).value
+            developer = sheet.cell(r, 14).value
+            remark = sheet.cell(r, 15).value
+            regression_times = sheet.cell(r, 16).value
+            print("regression_times==============================", regression_times)
+            if regression_times is None or regression_times == '':
+                regression_times = None
+            reopen_times = sheet.cell(r, 17).value
+            print("reopen_times==============================", reopen_times)
+            if reopen_times is None or reopen_times == '':
+                reopen_times = None
+            submitterindex = sheet.cell(r, 18).value
+            n += 1
 
-        # 执行sql语句
-        cur.execute(sql, values)
-        code = 200
-        msg = '导入数据成功'
-    conn.commit()
-    cur.close()
-    conn.close()
-    columns = str(sheet.ncols)
-    rows = str(sheet.nrows)
-    print("导入 " + columns + " 列 " + rows + " 行数据到MySQL数据库!")
+            # values = (name, sex, minzu, danwei_zhiwu, phone_number, home_number) 第一行插入所需的变量（25个，除去bugid）;第二行数据相同更新参数（24个-出去bugid 喝bug_description）
+            values = (bug_submit_date, project, software, test_version, bug_description, severity_level, priority, bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer, remark, regression_times, reopen_times, submitterindex,
+                      bug_submit_date, project, software, test_version, bug_description, severity_level, priority, bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer, remark, regression_times, reopen_times)
+
+            # values = (bug_submit_date, project, software, test_version)
+            print('import_mysql_by_excel（）方法 valuse=', values)
+            # 执行sql语句
+            cur.execute(sql, values)
+            code = 200
+            msg = '导入数据成功'
+        conn.commit()
+        cur.close()
+        conn.close()
+        columns = str(sheet.ncols)
+        rows = str(sheet.nrows)
+        print("导入 " + columns + " 列 " + rows + " 行数据到MySQL数据库!")
 
     #  返回json格式的数据
     data['code'] = code
     data['msg'] = msg
     data['count'] = count
     data['data'] = buglist
+    data['isrepeat'] = isrepeat
+    data['repeatlist'] = repeatlist
     # 转化下查询结果为{},{},{}这种格式======================
     json_str = json.dumps(data, ensure_ascii=False)
     print('dbutil==jsonStr=====', json_str)
@@ -561,3 +613,57 @@ def check_username_is_registered(username):
     print('dbutil==jsonStr=====', json_str)
     return json_str
 
+
+"""
+功能：导出数据库表中所有数据到 excel数据
+"""
+def export(tablename,outputpath):
+    # json数据
+    data = {}
+    buglist = []
+    code = 500  # 默认失败
+    msg = '导出失败'
+    count = 0  # sql语句执行结果个数
+
+    conn = pymysql.connect(db_host, db_user, db_passwd, db_dbname, charset='utf8')
+    cursor = conn.cursor()
+    sql = 'select bug_submit_date, project, software, test_version, bug_description, severity_level, priority, bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer, remark, regression_times, reopen_times, submitterindex from ' + tablename
+    print('<dbutils> 导出数据 sql ==', sql)
+
+    count = cursor.execute(sql)
+    print(count)
+    # 重置游标的位置
+    cursor.scroll(0, mode='absolute')
+    # 搜取所有结果
+    results = cursor.fetchall()
+
+    # 获取MYSQL里面的数据字段名称
+    fields = cursor.description
+    workbook = xlwt.Workbook(encoding='utf-8')  # 创建Workbook，相当于创建Excel
+    # sheet = workbook.add_sheet('table_'+table_name, cell_overwrite_ok=True)
+    sheet = workbook.add_sheet('Sheet1', cell_overwrite_ok=True)  # 写入sheet1
+
+    # 写上字段信息
+    for field in range(0, len(fields)):
+        sheet.write(0, field, fields[field][0])
+
+    # 获取并写入数据段信息
+    row = 1
+    col = 0
+    for row in range(1, len(results)+1):
+        for col in range(0, len(fields)):
+            sheet.write(row, col, u'%s'%results[row-1][col])
+    # 写文件，如果目录文件不存在，则创建
+    workbook.save(outputpath)
+
+    #  返回json格式的数据
+    data['code'] = code
+    data['msg'] = msg
+    data['count'] = count
+    data['data'] = buglist
+    data['isrepeat'] = isrepeat
+    data['repeatlist'] = repeatlist
+    # 转化下查询结果为{},{},{}这种格式======================
+    json_str = json.dumps(data, ensure_ascii=False)
+    print('dbutil==jsonStr=====', json_str)
+    return json_str
