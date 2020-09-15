@@ -98,7 +98,7 @@
                   <button id="uploadBuglist" class="layui-btn">上传数据</button>
                   <!--<button id="downloadBuglistTemplate" class="layui-btn "><a href="../../excel_upload/template.xlsx"  target="_blank">下载模板</a></button> -->
                   <a href="../../excel_upload/template/template.xlsx" target="_blank"><button id="downloadBuglistTemplate" class="layui-btn ">下载模板</button></a>
-                  <button id="exportAllBug" class="layui-btn">导出所有</button>
+                  <button id="exportAllBug" class="layui-btn" onclick="exportAllBugs()">导出所有</button>
             </div>
             <!--  表格搜索框 end-->
 
@@ -123,7 +123,7 @@
                 <!--<a title="编辑" onclick="WeAdminShow('编辑','./edit.html')" href="javascript:;"><i class="layui-icon">&#xe642;</i></a>-->
                 <!--<a title="删除" onclick="member_del(this,'要删除的id')" href="javascript:;"><i class="layui-icon">&#xe640;</i></a> -->
                 <!--<a title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>-->
-                <a class="layui-btn layui-btn-xs" lay-event="rowSubmit" title="单行编辑提交">单行编辑提交</a>
+                <a class="layui-btn layui-btn-xs" lay-event="rowSubmit" title="单行提交">单行提交</a>
                 <a class="layui-btn layui-btn-xs" lay-event="edit" >编辑</a>
                 <a class="layui-btn layui-btn-danger layui-btn-xs" title="删除" lay-event="del">删除</a>
             </div>
@@ -153,7 +153,7 @@
                       {type:'numbers',fixed: 'left' }//, fixed: true
                       ,{checkbox: true, fixed: true}  //{type: 'checkbox'}
                       ,{field:'bugid', title: 'bugid', sort: true, width: 80}
-                      ,{field:'bug_submit_date', title: '提交时间',sort: true, edit: 'text', width: 120}
+                      ,{field:'bug_submit_date', title: '提交日期',sort: true, edit: 'text', width: 120}
                       ,{field:'project', title: '项目', sort:true, edit: 'text', width: 80}
                       ,{field:'software', title: '软件类', edit: 'text', width: 80}
                       ,{field:'test_version', title: '测试版本', edit: 'text', width: 170 }
@@ -169,15 +169,6 @@
                       ,{field:'intermediate_situation', title: '中间情况', edit: 'text', width: 100}
                       ,{field:'developer', title: '开发者', sort: true, edit: 'text', width: 100}
                       ,{field:'remark', title: '备注', edit: 'text', width: 100}
-                      ,{field:'first_bug_regression_date', title: '第一次回归时间', sort: true, edit: 'text', width: 140}
-                      ,{field:'first_bug_regression_status', title: '第一次回归结果', edit: 'text', width: 140}
-                      ,{field:'first_bug_regression_remark', title: '第一次回归备注', edit: 'text', width: 140}
-                      ,{field:'second_bug_regression_date', title: '第二次回归时间', sort: true, edit: 'text', width: 140}
-                      ,{field:'second_bug_regression_status', title: '第二次回归结果', edit: 'text', width: 140}
-                      ,{field:'second_bug_regression_remark', title: '第二次回归备注', edit: 'text', width: 140}
-                      ,{field:'third_bug_regression_date', title: '第三次回归时间', sort: true, edit: 'text', width: 140}
-                      ,{field:'third_bug_regression_status', title: '第三次回归结果', edit: 'text', width: 140}
-                      ,{field:'third_bug_regression_remark', title: '第三次回归备注', edit: 'text', width: 140}
                       ,{title:'操作', toolbar: '#bugAddRowBar', width: '8%', fixed:'right'}
                       // ,{title:'操作', toolbar: '#bugAddRowBar', width: '8%', fixed:'right'}
                     ]],
@@ -204,7 +195,7 @@
                       {type:'numbers',fixed: 'left' }//, fixed: true
                       ,{checkbox: true, fixed: true}  //{type: 'checkbox'}
                       ,{field:'bugid', title: 'bugid', width: 70}
-                      ,{field:'bug_submit_date', title: '提交时间',sort: true, edit: 'text', width: 120}
+                      ,{field:'bug_submit_date', title: '提交日期',sort: true, edit: 'text', width: 120}
                       ,{field:'project', title: '项目', edit: 'text', width: 80, style:'background-color: #009688; color: #fff;', filter:true}
                       ,{field:'software', title: '软件类', edit: 'text', width: 80}
                       ,{field:'test_version', title: '测试版本', edit: 'text', width: 170 }
@@ -749,6 +740,11 @@
                             layer.msg('上传成功，导入数据中');
                             //判断bug索引是否有重复
 
+                            // 加载动画
+                            var loading = layer.load(0, {     //0,1,2 只有这3中动画
+                                shade: false,
+                                time: 15*1000 //嘴上等待时间 单位：毫秒
+                            });
                             //异步请求导入数据:
                             $.ajax({
                                 url:"/importMysqlByExcel",
@@ -780,6 +776,7 @@
                                         console.log(returnMsg);
 
                                     }else {
+                                        layer.close(loading);  //关闭加载动画
                                         console.log("导入数据 成功,请手动刷新当前页面");
                                         layer.msg("导入数据 成功,请手动刷新当前页面")
                                     }
@@ -862,11 +859,14 @@
                                 //判断跳转
                                 if(returnCode == 500 ){ //== 字符串
                                     console.log("导出所有数据 失败");
-                                    layer.msg("导出所有数据 失败")
+                                    layer.msg("导出所有数据 失败");
                                 }
                                 if(returnCode == 200){
-                                    console.log("导出所有数据 成功，");
-                                    layer.msg("导出所有数据 成功")
+                                    console.log("导出成功，存储在项目目录--> excel_upload\\export\\buglist.xlsx");
+                                    layer.msg("导出成功，存储在-->项目目录 excel_upload\\export\\buglist.xlsx",{
+                                        icon:1,
+                                        time:4000  ////默认是3秒
+                                    });
                                 }
                             },error:function () {
                                 alert("导出所有数据，请求异常")

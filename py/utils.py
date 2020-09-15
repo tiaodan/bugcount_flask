@@ -5,7 +5,14 @@ import datetime
 import pymysql
 import os
 import xlsxwriter
+import time
 import sys
+
+# 初始化变量
+currentpath = os.path.abspath(__file__)
+print('当前路径', currentpath)
+rootdir = os.path.abspath(os.path.dirname(currentpath) + os.path.sep + '..') # 当前路径上一层
+print('根目录==', rootdir)
 
 # 获取md5值
 def get_md5(arg):
@@ -263,7 +270,13 @@ def get_bug_submit_date_list(starttime_str, endtime_str, date_diffrent_str):
 
 
 # 写入excel文件
-def wirte_file(path):
+"""
+功能：写入excel文件
+参数：path : excel文件的输出路径，结尾必须带上文件后缀,基于项目根目录的路径。如 根目录是“D:” excelrelapath = "test1.xlsx" ->最前面不用加\\
+注意：1. excel文件名不存在会自动创建
+     2. excel文件上级文件夹，如果不存在，不会自动创建
+"""
+def wirte_file(excelrelpath):
     """
     # xlwt方式创建workbook
     # 创建sheet
@@ -275,7 +288,11 @@ def wirte_file(path):
     book.save('D:\\test1.xls')  # 需要写2个\\ xlsx 不支持xlsx格式文件
     """
     # XlsxWriter方式创建workbook
-    book = xlsxwriter.Workbook("D:\\test.xlsx")  # 必须使用双\\ 否则报参数错误
+    excelabspath = rootdir + "\\" + excelrelpath
+    print("excel文件绝对路径", excelabspath)
+    book = xlsxwriter.Workbook(excelabspath)
+    # book = xlsxwriter.Workbook("D:\\test1.xlsx")  # 必须使用双\\ 否则报参数错误
+
     # 创建sheet
     sheet1 = book.add_worksheet("Sheet1")
     # sheet中写入数据
@@ -283,3 +300,14 @@ def wirte_file(path):
     sheet1.write(0, 1, "ssss")
     # 关闭workbook
     book.close()
+
+
+# 功能：判读是否是日期格式
+# 参数：1.传入的字符串 2. 日期格式字符串，如："%Y-%m-%d" ?带秒的如何表示？ %H:%M:%M 格式不对!
+def is_valid_date(str, dataformat="%Y-%m-%d"):
+  '''判断是否是一个有效的日期字符串'''
+  try:
+    time.strptime(str, dataformat)
+    return True
+  except:
+    return False

@@ -115,7 +115,7 @@ def search_buglist(page, limit):
         sql = 'select bugid, bug_submit_date, project, software, test_version, bug_description, severity_level, priority, bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer, remark, regression_times, reopen_times, submitterindex from bugcount.buglist limit %s,%s'
 
         print(f'sql语句为==', sql)
-        print(f'sql语句参数 *args====  page={page},limit={limit}')
+        # print(f'sql语句参数 *args====  page={page},limit={limit}')
 
         # print('sql语句参数args类型=={args}', type(args))
 
@@ -200,6 +200,7 @@ def search_buglist(page, limit):
     except:
         # 如果发生错误则回滚
         # 输出异常信息
+        msg = 'ssss'
         traceback.print_exc()
         print('出现异常，sql语句执行失败')
         # print('出现异常，sql语句执行失败', Exception)
@@ -494,171 +495,117 @@ def truncate_table_buglist():
 
 
 # 25个参数
-def add_bug(*args):
+def add_bug(*args):  # 建议传的时候就是list
+    # 0. 将参数强转成list
+    args = list(args)
+    print("args==============", args)
+
     # 初始化返回的数据 [arg1, arg2, arg3, arg4] arg1=状态码（num）arg2=msg(str) arg3= count(num) arg4=tuple
-    # json数据
+    # 1. 定义json数据
     data = {}
     buglist = []
-
-    # 默认定义数据
     code = 500  # 默认失败
-    msg = 'sql语句执行失败'
+    msg = '添加失败'
     count = 0  # sql语句执行结果个数
-
-    # 打开数据库连接
-
-    conn = pymysql.connect(db_host, db_user, db_passwd, db_dbname)
-
-    # 使用 cursor() 方法创建一个游标对象 cursor
-    cursor = conn.cursor()
-
-    # 使用 execute()  方法执行 SQL 查询
-    try:
-        # 默认bugid 是null 就按顺序加入mysql
-        sql = 'insert into bugcount.buglist (bug_submit_date, project, software, test_version,' \
-                                        ' bug_description, severity_level, priority, bug_difficulty, bug_status,' \
-                                        ' bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation,' \
-                                        ' developer, remark, first_bug_regression_date, first_bug_regression_status, first_bug_regression_remark,' \
-                                        ' second_bug_regression_date, second_bug_regression_status, second_bug_regression_remark,' \
-                                        ' third_bug_regression_date, third_bug_regression_status, third_bug_regression_remark) ' \
-              ' values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
+    is_args_legal = True  # 默认参数合法
 
 
-        print(f'sql语句为==', sql)
-        print('sql语句参数 *args==== }', args)
-        num = 0
-        for i in args:
-            print(f'sql语句参数 *args{num} type==== ', type(args[num]))
-            num += 1
-            if num == 25:
-                break
+    # 2. 判断参数是否合法，主要判断日期格式
+    print("==========================传入参数args", args)  # tuple
+    if utils.is_valid_date(args[0]) is False or utils.is_valid_date(args[9]) is False:  # 判断日期格式
+        msg = '日期格式错误，请检查"提交日期"和"关闭日期"列'
+        is_args_legal = False
+    if args[4] == 'NaN' or args[4] == '' or args[4] == None:  # 判断描述是否为空
+        msg = '描述不能为空，请检查'
+        is_args_legal = False
+    print("sssss????????????????????????????",args[18])
+    if args[18] == 'NaN' or args[18] == '' or args[18] == None:  # 判断submitterindex是否为空
+        msg = '提交者索引不能为空，请检查'
+        is_args_legal = False
 
-        print('sql语句参数 *args type==== }', type(args))
+    if is_args_legal is True:
+        # 3.打开数据库连接
+        conn = pymysql.connect(db_host, db_user, db_passwd, db_dbname)
 
+        # 使用 cursor() 方法创建一个游标对象 cursor
+        cursor = conn.cursor()
 
+        # 使用 execute()  方法执行 SQL 查询
+        try:
+            # 默认bugid 是null 就按顺序加入mysql
+            sql = 'insert into bugcount.buglist (bug_submit_date, project, software, test_version,' \
+                                            ' bug_description, severity_level, priority, bug_difficulty, bug_status,' \
+                                            ' bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation,' \
+                                            ' developer, remark, regression_times, reopen_times, submitterindex) ' \
+                  ' values (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)'
 
+            print(f'sql语句为==', sql)
+            # print('sql语句参数 *args==== }', args)
+            for i in args:
+                index = args.index(i)
+                print(f'sql语句参数 *args{index} type==== ', args[index])
+                if args[index] == 'NaN' or args[index] == '':
+                    args[index] = None
 
-        # username, password, user_remark, user_email, user_level, create_time, session
-        # print('sql语句参数args类型=={args}', type(args))
+            print('sql语句参数 *args type==== }', type(args))
 
-        # cursor.execute那句 sql的所有参数，应该都写到中括号里面，以逗号分割  [pageBegin,IntPageSize])
-        # 判断传入的日期参数 ，如果是空的话，不给sql语句传值就可以了，但是args是tuple类型，不支持删除--》转成list，将time替换成None
-        args_list = list(args)  # tuple --> list
-        if args[1] == '' or args[1] == 'None':
-            print('将time赋值None')
-            args_list[1] = '0000-00-00'  # 转成None
-            print('args_list[1] = ', args_list[1])
-        if args[10] == '' or args[10] == 'None':
-            print('将time赋值None')
-            # args_list[10] = None  # 转成None
-            args_list[10] = '0000-00-00'  # 转成None
-            print('args_list[1] = ', args_list[10])
-        if args[17] == '' or args[17] == 'None':
-            print('将time赋值None')
-            args_list[17] = '0000-00-00'  # 转成None
-            print('args_list[1] = ', args_list[17])
-        if args[20] == '' or args[20] == 'None':
-            print('将time赋值None')
-            args_list[20] = '0000-00-00'  # 转成None
-            print('args_list[1] = ', args_list[20])
-        if args[23] == '' or args[23] == 'None':
-            print('将time赋值None')
-            args_list[23] = '0000-00-00'  # 转成None
-            print('args_list[1] = ', args_list[23])
+            # 判断传入的日期参数 ，如果是空的话，不给sql语句传值就可以了，但是args是tuple类型，不支持删除--》转成list，将time替换成None
+            args_list = list(args)  # tuple --> list
+            if args[1] == '' or args[0] == 'None':  # 开始时间
+                print('将time赋值None')
+                args_list[1] = '0000-00-00'  # 转成None
+                print('args_list[1] = ', args_list[1])
+            if args[10] == '' or args[9] == 'None':  # 关闭时间
+                print('将time赋值None')
+                # args_list[10] = None  # 转成None
+                args_list[10] = '0000-00-00'  # 转成None
+                print('args_list[1] = ', args_list[10])
 
-        # """
-        #     后台统一转换参数格式，处理"" 或者NaN情况
-        num = 0
-        for i in args_list:
-            if args_list[num] == 'NaN':
-                args_list[num] = None
-                num += 1
-        num = 0
-        # """
-        print('sql语句参数 转换后  *args==== }', args)
+            print('sql语句参数 转换后  *args==== }', args)
 
-        args = tuple(args_list)  # list --> tuple
+            # 多参数，execute要传2个参数，sql 和args分解出来的
+            print('type(args)===================================', type(args))
+            # cursor.execute(sql, args)  # 偶尔不好用
+            args_test = [args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10],
+                args[11], args[12], args[13], args[14], args[15], args[16], args[17], args[18]]  # 测试用
 
-        # 多参数，execute要传2个参数，sql 和args分解出来的
-        print('type(args)===================================', type(args))
-        # cursor.execute(sql, args)  # 偶尔不好用
-        args_test = [args[0], args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10]
-            , args[11], args[12], args[13], args[14], args[15], args[16], args[17], args[18], args[19], args[20]
-            , args[21], args[22], args[23], args[24]]  # 测试用
+            print("打印  tuple类型的参数 ", len(args_test))
 
-        print("打印  tuple类型的参数 ", len(args_test))
+            cursor.execute(sql, args_test)
+            # 提交到数据库执行
+            conn.commit()
+            # 执行语句，返回结果
+            sql_return_result_tuple = cursor.fetchall()
 
+            # 转换查询结果为[{},{},{}]这种格式的
+            print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
+            print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
+            print("执行语句返回结果(类型)==", type(sql_return_result_tuple))
+            print("sql语句执行成功")
 
+            # 转化下查询结果为{},{},{}这种格式======================
+            print('????????result=', sql_return_result_tuple)
+            print('????????????????????type = ', type(sql_return_result_tuple))
 
-        cursor.execute(sql, args_test)
-        # 提交到数据库执行
-        conn.commit()
-        # 执行语句，返回结果
-        sql_return_result_tuple = cursor.fetchall()
+            # 拼接返回数据,返回列表
+            count = len(sql_return_result_tuple)  # sql语句结果个数
+            # 判断是否 能登录
+            code = 200  # 成功
+            msg = 'add bug语句执行成功'
 
-        # 转换查询结果为[{},{},{}]这种格式的
-        print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
-        print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
-        print("执行语句返回结果(类型)==", type(sql_return_result_tuple))
-        print("sql语句执行成功")
-
-        # 转化下查询结果为{},{},{}这种格式======================
-        print('????????result=', sql_return_result_tuple)
-        print('????????????????????type = ', type(sql_return_result_tuple))
-
-        for r in sql_return_result_tuple:
-
-            bug = dict()
-            # 没有bugid
-            bug['bug_submit_date'] = str(r[0])  # 转成str，否则会报TypeError: Object of type datetime is not JSON serializable
-            bug['project'] = r[1]
-            bug['software'] = r[2]
-            bug['test_version'] = r[3]
-            bug['bug_description'] = r[4]
-            bug['severity_level'] = r[5]
-            bug['priority'] = r[6]
-            bug['bug_difficulty'] = r[7]
-            bug['bug_status'] = r[8]
-            bug['bug_close_date'] = str(r[9])
-            bug['close_version'] = r[10]
-            bug['cause_analysis'] = r[11]
-            bug['bug_img'] = r[12]
-            bug['intermediate_situation'] = r[13]
-            bug['developer'] = r[14]
-            bug['remark'] = r[15]
-            bug['first_bug_regression_date'] = str(r[16])
-            bug['first_bug_regression_status'] = r[17]
-            bug['first_bug_regression_remark'] = r[18]
-            bug['second_bug_regression_date'] = str(r[19])
-            bug['second_bug_regression_status'] = r[20]
-            bug['second_bug_regression_remark'] = r[21]
-            bug['third_bug_regression_date'] = str(r[22])
-            bug['third_bug_regression_status'] = r[23]
-            bug['third_bug_regression_remark'] = r[24]
-
-            buglist.append(bug)
-            print('????dbutil 转换完的【{}】格式数据users==', buglist)
-
-        # 拼接返回数据,返回列表
-        count = len(sql_return_result_tuple)  # sql语句结果个数
-
-        # 判断是否 能登录
-        # if count > 0:
-        code = 200  # 成功
-        msg = 'add bug语句执行成功'
-
-    # except Exception:
-    except:
-        # 如果发生错误则回滚
-        # 输出异常信息
-        traceback.print_exc()
-        print('出现异常，sql语句执行失败')
-        # print('出现异常，sql语句执行失败', Exception)
-        conn.rollback()
-    finally:
-        # 不管是否异常，都关闭数据库连接
-        cursor.close()
-        conn.close()
+        # except Exception:
+        except pymysql.Error as e:
+            # 输出异常信息，如果发生错误则回滚
+            print("==============错误")
+            print(e.args[0], e.args[1])
+            # traceback.print_exc()  # 暂时不用，打印内容过多
+            print('出现异常，sql语句执行失败')
+            # print('出现异常，sql语句执行失败', Exception)
+            conn.rollback()
+        finally:
+            # 不管是否异常，都关闭数据库连接
+            cursor.close()
+            conn.close()
 
     #  返回json格式的数据
     data['code'] = code

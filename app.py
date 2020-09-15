@@ -284,10 +284,6 @@ def logout():
     return app.send_static_file('pages/login.html')
 
 
-
-
-
-
 #test getUserList
 @app.route('/getUserList', methods=("GET", "POST"))
 def getUserList():
@@ -300,6 +296,20 @@ def getUserList():
         # 获取请求的页码， 和每页个数
         json_str = admin.search_users(page, limit)
         return json_str
+
+
+# 获取用户总数
+@app.route('/userTotalNum', methods=["GET"])
+def getusertotalnum():
+    print('获取用户总数')
+    json_str=''
+
+    if request.method == "GET":
+        sql = 'select userid,username,password,user_remark,user_email,user_level,create_time,session,roleId from bugcount.user'
+        json_str = dbutils.execute_onesql_returnjson(sql)
+
+    return json_str
+
 
 #post 添加用户
 @app.route('/addUser', methods=("GET", "POST"))
@@ -554,34 +564,18 @@ def getBugList():
 
 
 #post 新增bug
-@app.route('/addBug', methods=("GET", "POST"))
+@app.route('/addBug', methods=["POST"])
 def addBug():
     print('<app.py> 新增单个bug')
 
-    code = 500
-    print('??????????????code type=', type(code))
-    msg = '新增bug失败，请重新尝试'
-    count = 0
-    addbug_sql_return_json_data = list()
-
-    # json数据
-    data = {}
-
-    # GET请求
-    if request.method == "GET":
-        print('get请求')
-        msg = 'get请求,不处理'
-    # POST请求
     if request.method == "POST":
-        print("====注册===== - post请求")
-        print('requets.header=', request.headers)
-        print('equest.json', request.json)
-        print('equest.date', request.data)
+        # print('requets.header=', request.headers)
+        # print('equest.json', request.json)
+        # print('equest.date', request.data)
 
         # 解析前台传的参数
         # 1
         # bugid = request.form.get('bugid')
-        # print('获取到的参数 userid ==', bugid) -
         bug_submit_date = request.form.get('bug_submit_date')
         project = request.form.get('project')
         software = request.form.get('software')
@@ -604,67 +598,18 @@ def addBug():
         # 4
         developer = request.form.get('developer')
         remark = request.form.get('remark')
-        first_bug_regression_date = request.form.get('first_bug_regression_date')
-        first_bug_regression_status = request.form.get('first_bug_regression_status')
-        first_bug_regression_remark = request.form.get('first_bug_regression_remark')
+        regression_times = request.form.get('regression_times')
+        reopen_times = request.form.get('reopen_times')
+        submitterindex = request.form.get('submitterindex')
 
-        # 5
-        second_bug_regression_date = request.form.get('second_bug_regression_date')
-        second_bug_regression_status = request.form.get('second_bug_regression_status')
-        second_bug_regression_remark = request.form.get('second_bug_regression_remark')
-        third_bug_regression_date = request.form.get('third_bug_regression_date')
-        third_bug_regression_status = request.form.get('third_bug_regression_status')
-        third_bug_regression_remark = request.form.get('third_bug_regression_remark')
-
-
-
-        # 账号或密码不能为空
-
-        # 执行sql ， 除了bugid，其他都能改
-        """
-        参数(bugid, bug_submit_date, project, software, test_version
-           , bug_description, severity_level, priority, bug_difficulty, bug_status
-           , bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation
-           , developer, remark, first_bug_regression_date, first_bug_regression_status, first_bug_regression_remark
-           , second_bug_regression_date, second_bug_regression_status, second_bug_regression_remark
-           , third_bug_regression_date, third_bug_regression_status, third_bug_regression_remark)
-        """
         # 25个参数 不包括bugid, bugid在数据库中自增
-        addbug_return_json = buglist.add_bug(bug_submit_date, project, software, test_version
-                                               , bug_description, severity_level, priority, bug_difficulty,
-                                               bug_status
-                                               , bug_close_date, close_version, cause_analysis, bug_img,
-                                               intermediate_situation
-                                               , developer, remark, first_bug_regression_date,
-                                               first_bug_regression_status, first_bug_regression_remark
-                                               , second_bug_regression_date, second_bug_regression_status,
-                                               second_bug_regression_remark
-                                               , third_bug_regression_date, third_bug_regression_status,
-                                               third_bug_regression_remark)
-
-        # 判断执行结果,我只要成功或者失败就可以了
-        # 获取到json需要解析
-        addbug_return_json_loads = json.loads(addbug_return_json)
-        if addbug_return_json_loads['code'] == 200:
-            code = addbug_return_json_loads['code']
-            msg = '新增用户成功'
-            count = addbug_return_json_loads['count']
-            addbug_sql_return_json_data = addbug_return_json_loads['data']
-        if addbug_return_json_loads['code'] == 500:
-            msg = addbug_return_json_loads['msg']  # 编辑用户失败
-
-
-    # 什么条件都不符合，返回失败
-    data['code'] = code
-    data['msg'] = msg
-    data['count'] = count
-    data['data'] = addbug_sql_return_json_data
-    print('未转化json前的数据， ===', data)
+        jsonstr = buglist.add_bug(bug_submit_date, project, software, test_version, bug_description, severity_level,
+                                  priority, bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis,
+                                  bug_img, intermediate_situation, developer, remark,
+                                  regression_times, reopen_times, submitterindex)
 
     # 转化下查询结果为{},{},{}这种格式======================
-    json_str = json.dumps(data, ensure_ascii=False)  # ensure_ascii=False传回utf8
-    print('《app.py》返回json==jsonStr=====', json_str)
-    return json_str
+    return jsonstr
 
 #post 删除bug
 @app.route('/delBug', methods=("GET", "POST"))
@@ -744,19 +689,14 @@ def truncateTableBuglist():
 @app.route('/exportAllBug', methods=["POST"])
 def export_allbug():
     print('<app.py> /exportAllBug 导出所有bug')
-    # 获取写文件路径
-    currentpath = os.path.abspath(__file__)
-    print('当前路径', currentpath)
-    root_dir = os.path.abspath(os.path.dirname(currentpath) + os.path.sep + ".")
-    # root_dir = os.path.abspath(os.path.dirname(currentpath) + os.path.sep + "..")
-    print('根目录 ===', root_dir)
-    exportfile_abspath = os.path.join(root_dir, 'excel_upload\export\1.xlsx')
-    # exportfile_abspath = os.path.join(root_dir, 'excel_upload\export')
-    print('要导出的文件的绝对路径=', exportfile_abspath)
-
-    json_str = dbutils.export('bugcount.buglist', exportfile_abspath)
-    print('《app.py》/exportAllBug 导出所有bug 返回jsonStr==', json_str)
-    return json_str
+    excelabspath = request.values.get("excelabspath")
+    sql = 'select bug_submit_date, project, software, test_version, bug_description, severity_level, priority, ' \
+          'bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, ' \
+          'intermediate_situation, developer, remark, regression_times, reopen_times, submitterindex ' \
+          'from bugcount.buglist'
+    jsonstr = dbutils.wirte2excelfile_returnjson("excel_upload\\export\\test1.xlsx", sql, True)
+    print('《app.py》/exportAllBug 导出所有bug 返回jsonStr==', jsonstr)
+    return jsonstr
 
 #post 编辑bug
 @app.route('/editBug', methods=("GET", "POST"))

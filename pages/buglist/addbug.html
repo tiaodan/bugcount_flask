@@ -51,7 +51,7 @@
                       {type:'numbers',fixed: 'left' }//, fixed: true
                       ,{checkbox: true, fixed: true}  //{type: 'checkbox'}
                       ,{field:'bugid', title: 'bugid', sort: true, width: 80}
-                      ,{field:'bug_submit_date', title: '提交时间',sort: true, edit: 'text', width: 120}
+                      ,{field:'bug_submit_date', title: '提交日期',sort: true, edit: 'text', width: 120}
                       ,{field:'project', title: '项目', sort:true, edit: 'text', width: 80}
                       ,{field:'software', title: '软件类', edit: 'text', width: 80}
                       ,{field:'test_version', title: '测试版本', edit: 'text', width: 170 }
@@ -67,15 +67,9 @@
                       ,{field:'intermediate_situation', title: '中间情况', edit: 'text', width: 100}
                       ,{field:'developer', title: '开发者', sort: true, edit: 'text', width: 100}
                       ,{field:'remark', title: '备注', edit: 'text', width: 100}
-                      ,{field:'first_bug_regression_date', title: '第一次回归时间', sort: true, edit: 'text', width: 140}
-                      ,{field:'first_bug_regression_status', title: '第一次回归结果', edit: 'text', width: 140}
-                      ,{field:'first_bug_regression_remark', title: '第一次回归备注', edit: 'text', width: 140}
-                      ,{field:'second_bug_regression_date', title: '第二次回归时间', sort: true, edit: 'text', width: 140}
-                      ,{field:'second_bug_regression_status', title: '第二次回归结果', edit: 'text', width: 140}
-                      ,{field:'second_bug_regression_remark', title: '第二次回归备注', edit: 'text', width: 140}
-                      ,{field:'third_bug_regression_date', title: '第三次回归时间', sort: true, edit: 'text', width: 140}
-                      ,{field:'third_bug_regression_status', title: '第三次回归结果', edit: 'text', width: 140}
-                      ,{field:'third_bug_regression_remark', title: '第三次回归备注', edit: 'text', width: 140}
+                      ,{field:'regression_times', title: '回归次数', edit: 'text', width: 100}
+                      ,{field:'reopen_times', title: '重开次数', edit: 'text', width: 100}
+                      ,{field:'submitterindex', title: '提交者标识', edit: 'text', width: 100}
                       ,{title:'操作', toolbar: '#bugAddRowBar', width: '8%', fixed:'right'}
                       // ,{title:'操作', toolbar: '#bugAddRowBar', width: '8%', fixed:'right'}
                     ]],
@@ -150,17 +144,9 @@
                             //4
                             developer = data.developer;
                             remark = data.remark;
-                            first_bug_regression_date = data.first_bug_regression_date;
-                            first_bug_regression_status = data.first_bug_regression_status;
-                            first_bug_regression_remark = data.first_bug_regression_remark;
-
-                            //5
-                            second_bug_regression_date = data.second_bug_regression_date;
-                            second_bug_regression_status = data.second_bug_regression_status;
-                            second_bug_regression_remark = data.second_bug_regression_remark;
-                            third_bug_regression_date = data.third_bug_regression_date;
-                            third_bug_regression_status = data.third_bug_regression_status;
-                            third_bug_regression_remark = data.third_bug_regression_remark;
+							regression_times = data.regression_times;
+                            reopen_times  = data.reopen_times;
+                            submitterindex = data.submitterindex;
 
                             console.log("获取前台提交的值 =");
                             //console.log("获取前台提交的值 bugid =" + data.bugid );
@@ -209,15 +195,9 @@
                                     "intermediate_situation": intermediate_situation,
                                     "developer": developer,
                                     "remark": remark,
-                                    "first_bug_regression_date": first_bug_regression_date,
-                                    "first_bug_regression_status": first_bug_regression_status,
-                                    "first_bug_regression_remark": first_bug_regression_remark,
-                                    "second_bug_regression_date": second_bug_regression_date,
-                                    "second_bug_regression_status": second_bug_regression_status,
-                                    "second_bug_regression_remark": second_bug_regression_remark,
-                                    "third_bug_regression_date": third_bug_regression_date,
-                                    "third_bug_regression_status": third_bug_regression_status,
-                                    "third_bug_regression_remark": third_bug_regression_remark
+                                    "regression_times": regression_times,
+                                    "reopen_times": reopen_times,
+                                    "submitterindex": submitterindex
                                 },
                                 datatype: "json",
                                 success: function (datas) {
@@ -236,8 +216,8 @@
                                     returnData = datasJson.data
                                     //判断跳转
                                     if (returnCode == 500) { //== 字符串
-                                        console.log("新增 bug 失败");
-                                        layer.msg("新增 bug 失败")
+                                        console.log(returnMsg);
+                                        layer.msg(returnMsg)
                                     }
                                     if (returnCode == 200) {
                                         console.log("新增 bug 成功,请手动重载。。");
