@@ -289,11 +289,11 @@ def import_mysql_by_excel():
             developer = sheet.cell(r, 14).value
             remark = sheet.cell(r, 15).value
             regression_times = sheet.cell(r, 16).value
-            print("regression_times==============================", regression_times)
+            # print("regression_times==============================", regression_times)
             if regression_times is None or regression_times == '':
                 regression_times = None
             reopen_times = sheet.cell(r, 17).value
-            print("reopen_times==============================", reopen_times)
+            # print("reopen_times==============================", reopen_times)
             if reopen_times is None or reopen_times == '':
                 reopen_times = None
             submitterindex = sheet.cell(r, 18).value
@@ -863,6 +863,110 @@ def execute_onesql_returnjson(sql, *args):
     return json_str
 
 
+# 功能：执行一条sql语句,返回json数据.里面sqlresultcode =
+# 1. sql 2. 参数后面的匹配变量
+def execute_onesql_returnjson_privilege(sql, *args):
+    # 初始化数据
+    code = 500  # 默认失败
+    msg = 'sql语句执行失败'
+    count = 0  # sql语句执行结果个数
+    data = {}
+    jsondatas = []  # data:{jsondatas}
+    privilege_int = 0
+
+    # 打开数据库连接
+    conn = pymysql.connect(db_host, db_user, db_passwd, db_dbname)
+    print('sql语句为==', sql)
+    print("*args====", args)
+    # print('参数args类型=={args}', type(args))
+
+    # 使用 cursor() 方法创建一个游标对象 cursor
+    cursor = conn.cursor()
+
+    # 使用 execute()  方法执行 SQL 查询
+    try:
+        # 执行sql语句
+        cursor.execute(sql, args)
+        # 提交到数据库执行
+        conn.commit()
+        # 执行语句，返回结果
+        sql_return_result_tuple = cursor.fetchall()
+        print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
+        print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
+        print("执行语句返回结果(类型)==", type(sql_return_result_tuple))  # tuple
+        print("sql语句执行成功")
+
+        # 拼接返回数据,返回列表
+        code = 200  # 成功
+        msg = 'sql语句执行成功'
+        count = len(sql_return_result_tuple)
+        privilege_int = sql_return_result_tuple[0]
+    except:
+        # 如果发生错误则回滚
+        print('sql语句执行失败')
+        conn.rollback()
+        return 0  # 异常返回数字0
+    finally:
+        # 不管是否异常，都关闭数据库连接
+        cursor.close()
+        conn.close()
+
+    # 5.返回json格式的数据
+    data['code'] = code
+    data['msg'] = msg
+    data['count'] = count
+    data['data'] = jsondatas
+    data['privilege_int'] = privilege_int
+    # 转化下查询结果为{},{},{}这种格式======================
+    json_str = json.dumps(data, ensure_ascii=False)
+    print('<dbutil.py> (execute_onesql_returnjson) 返回jsonStr=====', json_str)
+    return json_str
+
+
+# 功能：执行一条sql语句,返回int数据
+# 1. sql 2. 参数后面的匹配变量
+def execute_onesql_returnint(sql, *args):
+    # 初始化数据
+    result_int = 0  # sql语句执行结果
+
+    # 打开数据库连接
+    conn = pymysql.connect(db_host, db_user, db_passwd, db_dbname)
+    print('sql语句为==', sql)
+    print("*args====", args)
+    # print('参数args类型=={args}', type(args))
+
+    # 使用 cursor() 方法创建一个游标对象 cursor
+    cursor = conn.cursor()
+
+    # 使用 execute()  方法执行 SQL 查询
+    try:
+        # 执行sql语句
+        cursor.execute(sql, args)
+        # 提交到数据库执行
+        conn.commit()
+        # 执行语句，返回结果
+        sql_return_result_tuple = cursor.fetchall()
+        print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
+        print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
+        print("执行语句返回结果(类型)==", type(sql_return_result_tuple))  # tuple
+        print("sql语句执行成功")
+
+        # 拼接返回数据,返回列表
+        result_int = sql_return_result_tuple[0]  # 成功
+        print('获取权限，typesql_return_result_tuple ========================', sql_return_result_tuple)
+        msg = 'sql语句执行成功'
+    except:
+        # 如果发生错误则回滚
+        print('sql语句执行失败')
+        conn.rollback()
+        return 0  # 异常返回数字0
+    finally:
+        # 不管是否异常，都关闭数据库连接
+        cursor.close()
+        conn.close()
+
+    # 5.返回json格式的数据
+    return result_int
 
 
 # 写入excel文件
@@ -948,7 +1052,25 @@ def wirte2excelfile_returnjson(excelrelpath, searchsql, ifwrite_th=True):
             if tdtuples[row - 1][col] is None:  # 表格内容是None,替换成空字符串
                 sheet1.write(row, col, '')
             else:
-                sheet1.write(row, col, u'%s' % tdtuples[row - 1][col])  # 写入具体内容
+                # 将 ‘关闭情况’int--> 文字
+                if col == 8:  # 第9列是 ‘关闭情况’
+                    # print('tdtuples[row - 1][col]type======================', type(tdtuples[row - 1][col])) # int
+                    # print('tdtuples[row - 1][col]======================', tdtuples[row - 1][col])
+                    if tdtuples[row - 1][col] == 1:
+                        # tdtuples[row - 1][col] = '处理'  # 因为tuple 不能复制，所以这种写法错误，报错TypeError: 'tuple' object does not support item assignment
+                        sheet1.write(row, col, '处理')
+                    elif tdtuples[row - 1][col] == 2:
+                        sheet1.write(row, col, '关闭')
+                    elif tdtuples[row - 1][col] == 3:
+                        sheet1.write(row, col, '回归')
+                    elif tdtuples[row - 1][col] == 4:
+                        sheet1.write(row, col, '延迟')
+                    elif tdtuples[row - 1][col] == 5:
+                        sheet1.write(row, col, '重开')
+                    else:
+                        sheet1.write(row, col, '未知')
+                else:
+                    sheet1.write(row, col, u'%s' % tdtuples[row - 1][col])  # 写入具体内容
     book.close()  # 必须关闭流，否则写不进去
 
     # 4. 重置json数据,顺序执行完就算陈公公

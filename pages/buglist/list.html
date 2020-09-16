@@ -135,9 +135,8 @@
         <!--  渲染table estart-->
              <script>
                  // 刚启动网页获取信息 start
-                 userPermissions = sessionStorage.getItem("")
+                 userPermissions = sessionStorage.getItem("");
                  // 刚启动网页获取信息 end
-
 
                 layui.use('table', function(){
                   var table = layui.table;
@@ -182,6 +181,7 @@
                   table.render({
                     elem: '#tableBug' //指向table的id
                     ,toolbar: '#toolbarId' //开启头部工具栏，并为其绑定左侧模板 - >对应自定义toolbar id
+                    // ,toolbar: true //开启头部工具栏，并为其绑定左侧模板 - >对应自定义toolbar id
                     ,url: '/getBugList' //render只需要json data里的数据，所以只返回data就行
                     //,url: '../../json/test_buglist.json' //render只需要json data里的数据，所以只返回data就行
                     //,data: [] //数据前段直接处理数组，分页生效， data和url不能公用
@@ -251,6 +251,28 @@
                                 console.log("bug列表，点击搜索获取总数异常error");
                             }
                         });
+
+                      // 刚启动网页获取 权限
+                $.ajax({
+                            type: "get", //请求方法
+                            url: "/getPrivilge", //请求地址
+                            datatype: "json",
+                            async: false,
+                            success: function (datas) {
+                                //解析返回数据
+                                //转成json对象
+                                var datasJsonObj = $.parseJSON(datas);
+                                var privilege = datasJsonObj.privilege_int;
+                                console.log("bug列表，获取权限成功，清空数据库权限=" + privilege);
+                                if (privilege != 1){
+                                    $("#truncateTableBuglist").hide();
+                                }
+                            },
+                            error: function () {
+                                console.log("bug列表，获取权限异常error");
+                            }
+                        });
+
 
                       //执行重载
                       table.reload('tableRenderReloadId', { //指向render 自定义的id
@@ -675,6 +697,27 @@
 							console.log("bug列表，获取总数异常error");
 						}
 					});
+
+                // 刚启动网页获取 权限
+                $.ajax({
+                            type: "get", //请求方法
+                            url: "/getPrivilge", //请求地址
+                            datatype: "json",
+                            async: false,
+                            success: function (datas) {
+                                //解析返回数据
+                                //转成json对象
+                                var datasJsonObj = $.parseJSON(datas);
+                                var privilege = datasJsonObj.privilege_int;
+                                console.log("bug列表，获取权限成功，清空数据库权限=" + privilege);
+                                if (privilege != 1){
+                                    $("#truncateTableBuglist").hide();
+                                }
+                            },
+                            error: function () {
+                                console.log("bug列表，获取权限异常error");
+                            }
+                        });
 
 			});
 			

@@ -172,14 +172,28 @@
                                             <li title="8）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线 + bug剩余情况(累计)">累计bug趋势</li>
                                             <li title="11）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线">易bug产生比率趋势</li>
                                             <li title="12）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制一二级bug解决及时率曲线和三四级bug解决及时率曲线。">bug解决率趋势</li>
-                                            <li>易bug产生比率数据</li>
-                                            <li>bug解决率数据</li>
+<!--                                            <li>易bug产生比率数据</li>-->
+<!--                                            <li>bug解决率数据</li>-->
                                       </ul>
                                       <div class="layui-tab-content">
                                             <div class="layui-tab-item layui-show">
                                                     <blockquote class="layui-elem-quote" hidden><div align="center">每日数据</div></blockquote>
                                                     <div class="layui-row">
-                                                        <table class="layui-hide" id="tableWithDeveloper" lay-filter="tableWithDeveloper"></table>
+                                                        <table class="layui-hide" id="tableWithDevelope" lay-filter="tableWithDeveloper"></table>
+                                                    </div>
+
+                                                    <div class="layui-tab-item layui-show">
+                                                        <blockquote class="layui-elem-quote" hidden><div align="center">易bug产生比率数据</div></blockquote>
+                                                        <div class="layui-row">
+                                                            <table class="layui-hide" id="easyBugTableWithDeveloper" lay-filter="easyBugTableWithDeveloper"></table>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="layui-tab-item layui-show">
+                                                            <blockquote class="layui-elem-quote" hidden><div align="center">bug解决率数据</div></blockquote>
+                                                            <div class="layui-row">
+                                                                <table class="layui-hide" id="bugSolveRateTableWithDeveloper" lay-filter="bugSolveRateTableWithDeveloper"></table>
+                                                            </div>
                                                     </div>
                                             </div>
 
@@ -203,19 +217,7 @@
                                                     <div id="bugSolveRateStatusMapWithDeveloper" style="height: 400px;width: 1390px;"></div>
                                             </div>
 
-                                            <div class="layui-tab-item layui-show">
-                                                    <blockquote class="layui-elem-quote" hidden><div align="center">易bug产生比率数据</div></blockquote>
-                                                    <div class="layui-row">
-                                                        <table class="layui-hide" id="easyBugTableWithDeveloper" lay-filter="easyBugTableWithDeveloper"></table>
-                                                    </div>
-                                            </div>
 
-                                            <div class="layui-tab-item layui-show">
-                                                    <blockquote class="layui-elem-quote" hidden><div align="center">bug解决率数据</div></blockquote>
-                                                    <div class="layui-row">
-                                                        <table class="layui-hide" id="bugSolveRateTableWithDeveloper" lay-filter="bugSolveRateTableWithDeveloper"></table>
-                                                    </div>
-                                            </div>
 
                                       </div>
                                  </div>
@@ -1696,7 +1698,7 @@
                                     type: 'value',
                                     name: 'bug数量',
                                     min: 0,
-                                    max: 500,
+                                    max: 1200,
                                     interval: 100,
                                     axisLabel: {
                                         //formatter: '{value} ml'
@@ -1707,7 +1709,7 @@
                                     type: 'value',
                                     name: 'bug数量',
                                     min: 0,
-                                    max: 500,
+                                    max: 1200,
                                     interval: 100,
                                     axisLabel: {
                                         formatter: '{value} 个 '
@@ -1716,7 +1718,8 @@
 
                             ],
                             //series: seriesData
-                            series: seriesData
+                            series: seriesData,
+                            animationDuration: 300  //有用，折线图绘制总时间
                         };
 
 
@@ -1948,16 +1951,16 @@
                                     type:'line',
                                     data:seriesDataJson['close']
                                 };
-                    var lastSeriesDataNotComplete = {
+                    /*var lastSeriesDataNotComplete = {
                                     name:legendData[2],
                                     type:'line',
                                     data:seriesDataJson['last']
-                                };
+                                };*/
 
                     var seriesData = []; //最终数据，放在option里的
                     seriesData.push(addSeriesDataNotComplete);
                     seriesData.push(closeSeriesDataNotComplete);
-                    seriesData.push(lastSeriesDataNotComplete);
+                    // seriesData.push(lastSeriesDataNotComplete);
                     for(var i=0; i< legendData.length/3 -1; i++) {
                         console.log("legendData.length" + legendData.length);
                         console.log("renderMapWithDeveloperByTimeAlongtimeAddBugAddAndClose, 获取折线图option,循环=" + i + legendData[i] );
@@ -1973,16 +1976,16 @@
                                     type:'line',
                                     data:seriesDataJson['close_developer' + i]
                                 };
-                        var  last_seriesDeveloperN   =
+                        /*var  last_seriesDeveloperN   =
                                 {
                                     name:legendData[i*3+5],   //add_developer0 close_developer0 last_developer0
                                     type:'line',
                                     data:seriesDataJson['last_developer' + i]
-                                };
+                                };*/
 
                         seriesData.push(add_seriesDeveloperN);
                         seriesData.push(close_seriesDeveloperN);
-                        seriesData.push(last_seriesDeveloperN);
+                        // seriesData.push(last_seriesDeveloperN);
                     }
                     console.log("seriesData==================");
                     console.log(seriesData);
@@ -3415,14 +3418,14 @@
 
                         ///////////////////////////开发维度
                         // 渲染table - 所有bug and 1-2bug
-                        // renderTableAllBugDeveloper('tableWithDeveloper', '/getTableWithDeveloper', startTimeFromForm, endTimeFromForm, timeDifferenceFromForm,'tableWithDeveloperId');
+                        renderTableAllBugDeveloper('tableWithDevelope', '/getTableWithDeveloper', startTimeFromForm, endTimeFromForm, timeDifferenceFromForm,'tableWithDeveloperId');
 
                         // 9）开发维度，按时间（时间可自定义）统计软件自测考量：相比较这段时间产生的所有bug，易bug产生比率；
                         // renderTableEasyBugDeveloper('easyBugTableWithDeveloper', '/getEasyBugTableWithDeveloper', startTimeFromForm, endTimeFromForm, 'easyBugTableWithDeveloperId');
-                        // renderTableEasyBugALongtimeDeveloper('easyBugTableWithDeveloper', '/getEasyBugTableForDrawMapWithDeveloper', startTimeFromForm, endTimeFromForm, timeDifferenceFromForm, 'easyBugTableWithDeveloperId');
+                        renderTableEasyBugALongtimeDeveloper('easyBugTableWithDeveloper', '/getEasyBugTableForDrawMapWithDeveloper', startTimeFromForm, endTimeFromForm, timeDifferenceFromForm, 'easyBugTableWithDeveloperId');
 
                         // 10）开发维度，按时间（时间可自定义）统计bug解决的及时性考量：一二级bug一定时间内（可自定义）的解决率，三四级bug一定时间内（可自定义时间）
-                        // renderTableBugSolveRateALongtimeDeveloper('bugSolveRateTableWithDeveloper', '/getBugSolveRateTableForDrawMapALongtimeWithDeveloper', startTimeFromForm, endTimeFromForm, timeDifferenceFromForm, 'bugSolveRateTableWithDeveloperId');
+                        renderTableBugSolveRateALongtimeDeveloper('bugSolveRateTableWithDeveloper', '/getBugSolveRateTableForDrawMapALongtimeWithDeveloper', startTimeFromForm, endTimeFromForm, timeDifferenceFromForm, 'bugSolveRateTableWithDeveloperId');
 
 
                         /*
@@ -3574,7 +3577,7 @@
                             console.log("allBugAlongtimeProjectSeriesDataJson=====" + JSON.stringify(allBugAlongtimeProjectSeriesDataJson));
                             renderMapWithProjectByTimeAlongtimeAllBug(allBugAlongtimeProjectLegendData, allBugAlongtimeProjectXAxisData, allBugAlongtimeProjectSeriesDataJson);
 
-                        /* //7）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；
+                         //7）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线； 新增bug趋势
                             console.log("画折线图 - 新增bug增长曲线和关闭曲线");
                             console.log("画折线图 - 新增bug增长曲线和关闭曲线，参数timeDifferenceFromForm" + timeDifferenceFromForm );
                             var addAndCloseBugAlongtimeDeveloperJsonStr = getRenderMapWithDeveloperByTimeAlongtimeAddBugAddAndCloseArgs(startTimeFromForm, endTimeFromForm, timeDifferenceFromForm);
@@ -3589,9 +3592,8 @@
                             console.log("addAndCloseBugAlongtimeDeveloperXAxisData=====" + JSON.stringify(addAndCloseBugAlongtimeDeveloperXAxisData));
                             console.log("addAndCloseBugAlongtimeDeveloperSeriesDataJson=====" + JSON.stringify(addAndCloseBugAlongtimeDeveloperSeriesDataJson));
                             renderMapWithDeveloperByTimeAlongtimeAddBugAddAndClose(addAndCloseBugAlongtimeDeveloperLegendData, addAndCloseBugAlongtimeDeveloperXAxisData, addAndCloseBugAlongtimeDeveloperSeriesDataJson);
-*/
 
-                        /* //8）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线 + bug剩余情况 ；
+                         //8）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线 + bug剩余情况 ；
                             console.log("画折线图 - 全部bug增长曲线和关闭曲线");
                             console.log("画折线图 - 全部bug增长曲线和关闭曲线，参数timeDifferenceFromForm" + timeDifferenceFromForm );
                             var allBugAlongtimeDeveloperJsonStr = getRenderMapWithDeveloperByTimeAlongtimeAllBugArgs(startTimeFromForm, endTimeFromForm, timeDifferenceFromForm);
@@ -3606,9 +3608,8 @@
                             console.log("allBugAlongtimeDeveloperXAxisData=====" + JSON.stringify(allBugAlongtimeDeveloperXAxisData));
                             console.log("allBugAlongtimeDeveloperSeriesDataJson=====" + JSON.stringify(allBugAlongtimeDeveloperSeriesDataJson));
                             renderMapWithDeveloperByTimeAlongtimeAllBug(allBugAlongtimeDeveloperLegendData, allBugAlongtimeDeveloperXAxisData, allBugAlongtimeDeveloperSeriesDataJson);
-*/
 
-                         /*//11）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线；1/2    月/周/季
+                         //11）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线；1/2    月/周/季
                             console.log("画折线图 - 开发维度,一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线");
                             console.log("画折线图 - 开发维度,一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线，参数timeDifferenceFromForm" + timeDifferenceFromForm );
                             var easyBugAlongtimeDeveloperJsonStr = getRenderMapWithDeveloperByTimeAlongtimeEasyBugArgs(startTimeFromForm, endTimeFromForm, timeDifferenceFromForm);
@@ -3623,8 +3624,6 @@
                             console.log("allBugAlongtimeDeveloperXAxisData=====" + JSON.stringify(easyBugAlongtimeDeveloperXAxisData));
                             console.log("allBugAlongtimeDeveloperSeriesDataJson=====" + JSON.stringify(easyBugAlongtimeDeveloperSeriesDataJson));
                             renderMapWithDeveloperByTimeAlongtimeEasyBug(easyBugAlongtimeDeveloperLegendData, easyBugAlongtimeDeveloperXAxisData, easyBugAlongtimeDeveloperSeriesDataJson);
-                            */
-/*
 
                          // 12）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制一二级bug解决及时率曲线和三四级bug解决及时率曲线。
                             console.log("画折线图 - 开发维度,一定时间颗粒度（时间可自定义），绘制一二级bug解决及时率曲线和三四级bug解决及时率曲线");
@@ -3641,7 +3640,6 @@
                             console.log("bugSolveRateAlongtimeDeveloperXAxisData=====" + JSON.stringify(bugSolveRateAlongtimeDeveloperXAxisData));
                             console.log("bugSolveRateAlongtimeDeveloperSeriesDataJson=====" + JSON.stringify(bugSolveRateAlongtimeDeveloperSeriesDataJson));
                             renderMapWithDeveloperByTimeAlongtimeBugSolveRate(bugSolveRateAlongtimeDeveloperLegendData, bugSolveRateAlongtimeDeveloperXAxisData, bugSolveRateAlongtimeDeveloperSeriesDataJson);
-*/
 
                             layer.close(loadingMap);
 

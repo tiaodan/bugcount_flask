@@ -1063,7 +1063,7 @@ def getTableWithDeveloper():
     endTime = request.values.get("endTime")
     timeDifference = int(request.values.get("timeDifference"))
     print(f'timeDifference 类型{type(timeDifference)}')  # str
-    print(f"《app.py。开发维度》bug table，前台传的参数startime={startTime}， endtime={endTime}, timeDifference={timeDifference}")
+    print(f"《app.py。开发维度》每日数据，前台传的参数startime={startTime}， endtime={endTime}, timeDifference={timeDifference}")
 
     json_str = ''
 
@@ -1071,12 +1071,7 @@ def getTableWithDeveloper():
     if request.method == "GET":
         print('get请求')
         json_str = buglist.get_table_withdeveloper_orderby_date(startTime, endTime, timeDifference)
-        print('《app.py。开发维度》bug table, 返回json==jsonStr=====', json_str)
-
-    if request.method == "POST":
-        print('get请求')
-        json_str = buglist.get_table_withdeveloper_orderby_date(startTime, endTime, timeDifference)
-        print('《app.py。开发维度》bug table, 返回json==jsonStr=====', json_str)
+        print('《app.py。开发维度》每日数据, 返回json==jsonStr=====', json_str)
 
     return json_str
 
@@ -1235,27 +1230,21 @@ def getAllArgsFromConfig():
     return json_str
 
 
-# 获取用户权限
-@app.route('/getPermission', methods=['POST', 'GET'])
-def getPermission():
+# 获取用户权限 getPrivilge getPermission
+@app.route('/getPrivilge', methods=['POST', 'GET'])
+def getprivilge():
     print('获取用户权限，进入app.py 方法')
     print(request.values)
-    json_str = ''
-    username = request.values.get('username')
+    privilgeint = 0  # 没有权限
 
     # 默认使用 get 请求
     if request.method == "GET":
         print('get请求 获取用户权限')
-        json_str = admin.get_permission(username)
-        print('《app.py》get请求 获取用户权限, 返回jsonStr=====', json_str)
+        sql = 'SELECT COUNT(privilegeId) FROM bugcount.role_privilege WHERE roleId = 2 AND privilegeId = 38 '
+        privilgeint = dbutils.execute_onesql_returnjson_privilege(sql)
+        print('《app.py》get请求 获取用户权限, 返回jsonStr=====', privilgeint)
 
-    # 默认使用 get 请求
-    if request.method == "POST":
-        print('get请求 获取用户权限')
-        json_str = admin.get_permission(username)
-        print('《app.py》get请求 获取用户权限, 返回jsonStr=====', json_str)
-
-    return json_str
+    return privilgeint
 
 
 # #########################  系统启动相关 end ############################################################################
