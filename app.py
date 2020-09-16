@@ -694,7 +694,7 @@ def export_allbug():
           'bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, ' \
           'intermediate_situation, developer, remark, regression_times, reopen_times, submitterindex ' \
           'from bugcount.buglist'
-    jsonstr = dbutils.wirte2excelfile_returnjson("excel_upload\\export\\test1.xlsx", sql, True)
+    jsonstr = dbutils.wirte2excelfile_returnjson("excel_upload\\export\\buglist.xlsx", sql, True)
     print('《app.py》/exportAllBug 导出所有bug 返回jsonStr==', jsonstr)
     return jsonstr
 
@@ -949,7 +949,7 @@ def importMysqlByExcel():
     return json_str
 
 # 为了画折线图 获取所有项目的数据 get
-@app.route('/getTableForDrawMapWithProject', methods=['POST', 'GET'])
+@app.route('/getTableForDrawMapWithProject', methods=['GET'])
 def getTableForDrawMapWithProject():
     # 获取前台传的参数
     startTime = request.values.get("startTime")
@@ -960,11 +960,6 @@ def getTableForDrawMapWithProject():
 
     # 默认使用 get 请求
     if request.method == "GET":
-        print('get请求')
-        json_str = buglist.get_allprojectdata_withproject_orderby_date(startTime, endTime)
-        print('《app.py》画折线图 获取所有项目的数据, 返回json==jsonStr=====', json_str)
-
-    if request.method == "POST":
         print('get请求')
         json_str = buglist.get_allprojectdata_withproject_orderby_date(startTime, endTime)
         print('《app.py》画折线图 获取所有项目的数据, 返回json==jsonStr=====', json_str)
@@ -986,11 +981,6 @@ def getTableForDrawMapWithProjectALongtimeNewBugAddAndClose():
 
     # 默认使用 get 请求
     if request.method == "GET":
-        print('get请求')
-        json_str = buglist.get_allprojectdata_withproject_alongtime_newbug_addandclose_orderby_date(startTime, endTime, timeDifference)
-        print('《app.py》画折线图 获取新增bug(status=1) 今天相对昨天的增长和关闭情况, 返回json==jsonStr=====', json_str)
-
-    if request.method == "POST":
         print('get请求')
         json_str = buglist.get_allprojectdata_withproject_alongtime_newbug_addandclose_orderby_date(startTime, endTime, timeDifference)
         print('《app.py》画折线图 获取新增bug(status=1) 今天相对昨天的增长和关闭情况, 返回json==jsonStr=====', json_str)
@@ -1037,11 +1027,6 @@ def getTableForDrawMapWithProjectALongtimeAllBug():
 
     # 默认使用 get 请求
     if request.method == "GET":
-        print('get请求')
-        json_str = buglist.get_allprojectdata_withproject_alongtime_allbug_orderby_date(startTime, endTime, timeDifference)
-        print('《app.py》画折线图 获取全部bug 一段时间内的的增长和关闭情况, 返回json==jsonStr=====', json_str)
-
-    if request.method == "POST":
         print('get请求')
         json_str = buglist.get_allprojectdata_withproject_alongtime_allbug_orderby_date(startTime, endTime, timeDifference)
         print('《app.py》画折线图 获取全部bug 一段时间内的的增长和关闭情况, 返回json==jsonStr=====', json_str)

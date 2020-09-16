@@ -104,7 +104,7 @@ def search_users(page, limit):
             person['user_level'] = r[5]
             person['create_time'] = str(r[6])  # 转成str，否则会报TypeError: Object of type datetime is not JSON serializable
             person['session'] = r[7]
-            print('==============循环person==', person)
+            # print('==============循环person==', person)
 
             users.append(person)
         print('????dbutil 转换完的【{}】格式数据users==', users)
@@ -225,7 +225,7 @@ def add_user(*args):
                 print('person(create_time)===空')
                 person['create_time'] = None
             person['session'] = r[7]
-            print('==============循环person==', person)
+            # print('==============循环person==', person)
 
             users.append(person)
             print('????dbutil 转换完的【{}】格式数据users==', users)
@@ -403,7 +403,7 @@ def edit_user(*args):
                 person['create_time'] = None
             """
             person['session'] = r[7]
-            print('==============循环person==', person)
+            # print('==============循环person==', person)
 
             users.append(person)
             print('????dbutil 转换完的【{}】格式数据users==', users)

@@ -354,7 +354,7 @@ def register(*args):
             person['user_level'] = r[5]
             person['create_time'] = str(r[6])
             person['session'] = r[7]
-            print('==============循环person==', person)
+            # print('==============循环person==', person)
 
             users.append(person)
             print('????dbutil 转换完的【{}】格式数据users==', users)
@@ -452,7 +452,7 @@ def login(*args):
             person['user_level'] = r[5]
             person['create_time'] = str(r[6])
             person['session'] = r[7]
-            print('==============循环person==', person)
+            # print('==============循环person==', person)
 
             users.append(person)
             print('????dbutil 转换完的【{}】格式数据users==', users)

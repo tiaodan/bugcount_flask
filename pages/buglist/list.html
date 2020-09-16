@@ -124,7 +124,7 @@
                 <!--<a title="删除" onclick="member_del(this,'要删除的id')" href="javascript:;"><i class="layui-icon">&#xe640;</i></a> -->
                 <!--<a title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>-->
                 <a class="layui-btn layui-btn-xs" lay-event="rowSubmit" title="单行提交">单行提交</a>
-                <a class="layui-btn layui-btn-xs" lay-event="edit" >编辑</a>
+<!--                <a class="layui-btn layui-btn-xs" lay-event="edit" >编辑</a>-->
                 <a class="layui-btn layui-btn-danger layui-btn-xs" title="删除" lay-event="del">删除</a>
             </div>
             <!-- 自定义的 end-->
@@ -214,12 +214,12 @@
                       ,{field:'regression_times', title: '回归次数', edit: 'text', width: 100}
                       ,{field:'reopen_times', title: '重开次数', edit: 'text', width: 100}
                       ,{field:'submitterindex', title: '提交者标识', edit: 'text', width: 100}
-                      ,{title:'操作', toolbar: '#rowBar', width: '15%', fixed:'right'}
+                      ,{title:'操作', toolbar: '#rowBar', width: '10%', fixed:'right'}
                       //,{title:'操作', toolbar: '#rowBar', fixed:'right'} //没有左右框
                     ]]
                     ,id: 'tableRenderReloadId' //给渲染制定一个id,共其他监听调用
                     ,page: true
-                    //,limit: 10     // 每页显示的条数（默认：10）,url请求方式此条没用
+                    ,limit: 10     // 每页显示的条数（默认：10）,url请求方式此条没用
                     ,limits: [1,10,15,20,25,30,100,200,500,1000]  //每页条数的选择项，默认：[10,20,30,40,50,60,70,80,90]
                     ,height: 'full-100'
                     //,height: 300

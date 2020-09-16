@@ -20,6 +20,12 @@
 	</head>
 
 	<body>
+<!--			表格上方功能框start-->
+			<div class="layui-btn-container" id="toolbarId" hidden>
+            <button class="layui-btn layui-btn-sm" onclick="layer.msg('待开发')"><i class="layui-icon"></i>批量添加</button>
+<!--            <button class="layui-btn layui-btn-sm  layui-btn-danger" onclick="layer.msg('待开发')">批量删除</button>-->
+            </div>
+<!--			表格上方功能框end-->
             <table  id="tableBugAdd" lay-filter="tableBugAdd"></table>
 
             <!-- 自定义的 start-->
@@ -46,26 +52,27 @@
                       elem: '#tableBugAdd',
                       id: 'tableAddRenderReloadId',
                       url: '../../json/test_buglist.json',
+					  toolbar: '#toolbarId',
                       height: 600,
                       cols: [[
                       {type:'numbers',fixed: 'left' }//, fixed: true
                       ,{checkbox: true, fixed: true}  //{type: 'checkbox'}
-                      ,{field:'bugid', title: 'bugid', sort: true, width: 80}
-                      ,{field:'bug_submit_date', title: '提交日期',sort: true, edit: 'text', width: 120}
+                      ,{field:'bugid', title: 'bugid', width: 80}
+                      ,{field:'bug_submit_date', title: '提交日期', edit: 'text', width: 120}
                       ,{field:'project', title: '项目', sort:true, edit: 'text', width: 80}
                       ,{field:'software', title: '软件类', edit: 'text', width: 80}
                       ,{field:'test_version', title: '测试版本', edit: 'text', width: 170 }
                       ,{field:'bug_description', title: '描述', edit: 'text', width: 200} //暂时先200
-                      ,{field:'severity_level', title: '严重等级', sort: true, edit: 'text', width: 100}
-                      ,{field:'priority', title: '优先级', sort: true, edit: 'text', width: 80}
-                      ,{field:'bug_difficulty', title: '难度', sort: true, edit: 'text', width: 80}
+                      ,{field:'severity_level', title: '严重等级', edit: 'text', width: 100}
+                      ,{field:'priority', title: '优先级', edit: 'text', width: 80}
+                      ,{field:'bug_difficulty', title: '难度', edit: 'text', width: 80}
                       ,{field:'bug_status', title: '关闭情况',  edit: 'text', width: 100}
-                      ,{field:'bug_close_date', title: '关闭日期', sort: true, edit: 'text', width: 120}
-                      ,{field:'close_version', title: '关闭版本', sort: true, edit: 'text', width: 170}
+                      ,{field:'bug_close_date', title: '关闭日期', edit: 'text', width: 120}
+                      ,{field:'close_version', title: '关闭版本',  edit: 'text', width: 170}
                       ,{field:'cause_analysis', title: '原因分析', edit: 'text', width: 120}
                       ,{field:'bug_img', title: '图片', edit: 'text', width: 80}
                       ,{field:'intermediate_situation', title: '中间情况', edit: 'text', width: 100}
-                      ,{field:'developer', title: '开发者', sort: true, edit: 'text', width: 100}
+                      ,{field:'developer', title: '开发者', edit: 'text', width: 100}
                       ,{field:'remark', title: '备注', edit: 'text', width: 100}
                       ,{field:'regression_times', title: '回归次数', edit: 'text', width: 100}
                       ,{field:'reopen_times', title: '重开次数', edit: 'text', width: 100}
@@ -178,6 +185,7 @@
                             $.ajax({
                                 type: "post", //请求方法
                                 url: "/addBug", //请求地址
+								async: false,
                                 data: {
                                     "bug_submit_date": bug_submit_date,
                                     "project": project,
@@ -209,19 +217,37 @@
                                     console.log("返回结果" + datas);
                                     console.log(datasJson.code);
 
-                                    returnCode = datasJson.code
-                                    returnMsg = datasJson.msg
+                                    var returnCode = datasJson.code
+									var returnErrorCode = datasJson.errorcode
+                                    var returnMsg = datasJson.msg
                                     console.log("msg--type==" + typeof (returnMsg))
-                                    returnCount = datasJson.count
-                                    returnData = datasJson.data
+                                    var returnCount = datasJson.count
+                                    var returnData = datasJson.data
                                     //判断跳转
-                                    if (returnCode == 500) { //== 字符串
-                                        console.log(returnMsg);
-                                        layer.msg(returnMsg)
-                                    }
-                                    if (returnCode == 200) {
+									switch (returnCode) {
+                                    	case 500:
+											console.log(returnMsg);
+                                        	layer.msg(returnMsg);
+											break;
+										case 200:
+											console.log(returnMsg);
+                                        	layer.msg(returnMsg);
+											break;
+									}
+									if (returnCode == 500){
+										// 判断错误码
+										switch(returnErrorCode) {
+											 case 1062:
+											 	returnMsg = "’提交者标注‘列 重复，请检查"
+												 layer.msg(returnMsg);
+												break;
+											 default:  // 与case 不同时执行
+												console.log(returnMsg);
+												layer.msg(returnMsg);
+										}
+									}else if (returnCode == 200) {
                                         console.log("新增 bug 成功,请手动重载。。");
-                                        layer.msg("新增 bug 成功,请手动重载。。")
+                                        layer.msg("新增 bug 成功")
                                         /*
                                             //添加div消失
                                             // 获得frame索引

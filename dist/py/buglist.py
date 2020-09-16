@@ -105,7 +105,7 @@ def search_buglist(page, limit):
             bug['third_bug_regression_date'] = str(r[23])
             bug['third_bug_regression_status'] = r[24]
             bug['third_bug_regression_remark'] = r[25]
-            print('==============循环person==', bug)
+            # print('==============循环person==', bug)
 
             buglist.append(bug)
         print('????dbutil 转换完的【{}】格式数据users==', buglist)
@@ -668,7 +668,7 @@ def get_bugcount_by_project(startTime, endTime):
             bug['rankByProjectByProject'] = rank  #排名 sql未查出来，自己算,因为sql查出来是根据 解决率 倒序的，第一个是排名第1
             bug['totalNumByProject'] = r[12]  # 总数
             rank += 1
-            print('==============循环person==', bug)
+            # print('==============循环person==', bug)
 
             bugcount.append(bug)
         # print('????dbutil 转换完的【{}】格式数据users==', bugcount)
@@ -889,7 +889,7 @@ def get_bugcount_by_project_orderby_time_error_nouse(startTime, endTime):
                 """
 
             rank += 1
-            print('==============循环person==', bug)
+            # print('==============循环person==', bug)
 
             forum_project += 1
 
@@ -1209,7 +1209,7 @@ def get_bugcount_by_developer(startTime, endTime):
             bug['rankByProjectByDeveloper'] = rank  #排名 sql未查出来，自己算,因为sql查出来是根据 解决率 倒序的，第一个是排名第1
             bug['totalNumByDeveloper'] = r[12]  # 总数
             rank += 1
-            print('==============循环person==', bug)
+            # print('==============循环person==', bug)
 
             bugcount.append(bug)
         print('<bulist.py>  get_bugcount_by_developer,sql  转换完的【{}】格式数据 bugcount==', bugcount)
@@ -1393,7 +1393,7 @@ def get_allprojectdata_withproject_orderby_date(startTime, endTime):
 
             bug = dict()
             bug['bug_submit_date'] = str(r[0])  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
-            print('========================bug_submit_date', bug['bug_submit_date'])
+            # print('========================bug_submit_date', bug['bug_submit_date'])
             bug['project'] = r[1]  # 项目名称
             bug['add'] = r[2]  # 新增
             bug['close'] = r[3]  # 关闭
@@ -2116,14 +2116,14 @@ def get_allprojectdata_withdeveoper_orderby_date(startTime, endTime):
             sql_close_num_bydeveloper_belong_developer = ",count(bug_status=2 and developer = " + developer_name + " or null) as close_num_developer" + str(index)
             sql_regression_num_bydeveloper_belong_developer = ",count(bug_status=3 and developer = " + developer_name + " or null) as regression_num_developer" + str(index)
             sql_delay_num_bydeveloper_belong_developer = ",count(bug_status=4 and developer = " + developer_name + " or null) as delay_num_developer" + str(index)
-            print('for 循环拼接的sql == ', sql_name_developer + sql_add_num_bydeveloper_belong_developer +sql_close_num_bydeveloper_belong_developer +
-                  sql_regression_num_bydeveloper_belong_developer + sql_delay_num_bydeveloper_belong_developer)
+            # print('for 循环拼接的sql == ', sql_name_developer + sql_add_num_bydeveloper_belong_developer +sql_close_num_bydeveloper_belong_developer +
+            #       sql_regression_num_bydeveloper_belong_developer + sql_delay_num_bydeveloper_belong_developer)
 
             for_sql = sql_name_developer + sql_add_num_bydeveloper_belong_developer +sql_close_num_bydeveloper_belong_developer + sql_regression_num_bydeveloper_belong_developer + sql_delay_num_bydeveloper_belong_developer
             print('for sql ======', for_sql)
             # search_sql_middle_about_developer 基础上拼接
             search_sql_middle_about_developer += for_sql
-            print('开发相关sql 拼接结果==', search_sql_middle_about_developer)
+            # print('开发相关sql 拼接结果==', search_sql_middle_about_developer)
 
 
         # for循环拼接sql end
@@ -2151,7 +2151,7 @@ def get_allprojectdata_withdeveoper_orderby_date(startTime, endTime):
 
             bug = dict()
             bug['bug_submit_date'] = str(r[0])  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
-            print('========================bug_submit_date', bug['bug_submit_date'])
+            # print('========================bug_submit_date', bug['bug_submit_date'])
             bug['project'] = r[1]  # 项目名称
             bug['add'] = r[2]  # 新增
             bug['close'] = r[3]  # 关闭
@@ -2169,10 +2169,10 @@ def get_allprojectdata_withdeveoper_orderby_date(startTime, endTime):
             # 后面是项目相关的 关闭情况，有几个项目循环几次
             for developer in developer_tuple:
                 # 当前索引
-                print(f'当前developer=={str(developer)}')
+                # print(f'当前developer=={str(developer)}')
                 index = developer_tuple.index(developer)
-                print(f'当前索引=={index}')
-                print(f'第{index}次循环开始================================================')
+                # print(f'当前索引=={index}')
+                # print(f'第{index}次循环开始================================================')
 
                 # project0
 
@@ -2293,7 +2293,7 @@ def get_table_withdeveloper_orderby_date(startTime, endTime, timeDifference):
         # 循环拼接字符串
         for developer in developer_tuple:
             # 当前索引
-            print(f'当前 developer=={str(developer)}')
+            # print(f'当前 developer=={str(developer)}')
             index = developer_tuple.index(developer)
             developer_name_tuple_to_str = str(developer_tuple[index])
             developer_name = developer_name_tuple_to_str[1:len(developer_name_tuple_to_str) - 2]
@@ -2383,7 +2383,7 @@ def get_table_withdeveloper_orderby_date(startTime, endTime, timeDifference):
             for developer in developer_tuple:
 
                 # 当前索引
-                print(f'当前 developer r=={str(developer)}')
+                # print(f'当前 developer r=={str(developer)}')
                 index = developer_tuple.index(developer)
                 # print(f'当前索引=={index}')
                 # print(f'第{index}次循环开始================================================')
@@ -2503,7 +2503,7 @@ def get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, 
         # 循环拼接字符串
         for developer in developer_tuple:
             # 当前索引
-            print(f'当前developer=={str(developer)}')
+            # print(f'当前developer=={str(developer)}')
             index = developer_tuple.index(developer)
             developer_name_tuple_to_str = str(developer_tuple[index])
             developer_name = developer_name_tuple_to_str[1:len(developer_name_tuple_to_str) - 2]
@@ -2617,7 +2617,7 @@ def get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, 
             # 后面是开发相关的 关闭情况，有几个开发循环几次
             for developer in developer_tuple:
                 # 当前索引
-                print(f'当前 developer r=={str(developer)}')
+                # print(f'当前 developer r=={str(developer)}')
                 index = developer_tuple.index(developer)
                 # print(f'当前索引=={index}')
                 # print(f'第{index}次循环开始================================================')
@@ -2740,7 +2740,7 @@ def get_alldeveloperdata_withdeveloper_alongtime_addandclosebug_orderby_date(sta
         # 循环拼接字符串
         for developer in developer_tuple:
             # 当前索引
-            print(f'当前developer=={str(developer)}')
+            # print(f'当前developer=={str(developer)}')
             index = developer_tuple.index(developer)
             developer_name_tuple_to_str = str(developer_tuple[index])
             developer_name = developer_name_tuple_to_str[1:len(developer_name_tuple_to_str) - 2]
@@ -2854,7 +2854,7 @@ def get_alldeveloperdata_withdeveloper_alongtime_addandclosebug_orderby_date(sta
             # 后面是开发相关的 关闭情况，有几个开发循环几次
             for developer in developer_tuple:
                 # 当前索引
-                print(f'当前 developer r=={str(developer)}')
+                # print(f'当前 developer r=={str(developer)}')
                 index = developer_tuple.index(developer)
                 # print(f'当前索引=={index}')
                 # print(f'第{index}次循环开始================================================')
@@ -2977,12 +2977,12 @@ def get_easybug_table_withdeveloper_orderby_date(startTime, endTime):
 
             # sql_easybug_rate_belong_developer = ", count(bug_difficulty = 2 and developer = " + developer_name + " or null) as easybug_rate_developer" + str(index)
             sql_easybug_rate_belong_developer = ", convert( count(bug_difficulty = 2 and developer = " + developer_name + " or null)/count(bugid or null),decimal(10,2) ) as easybug_rate_developer" + str(index)
-            print('for 循环拼接的sql == ', sql_easybug_rate_belong_developer)
+            # print('for 循环拼接的sql == ', sql_easybug_rate_belong_developer)
 
             for_sql = sql_easybug_rate_belong_developer
             # search_sql_middle_about_developer 基础上拼接
             search_sql_middle_about_developer += for_sql
-            print('开发相关sql 拼接结果==', search_sql_middle_about_developer)
+            # print('开发相关sql 拼接结果==', search_sql_middle_about_developer)
 
         # for循环拼接sql end
         search_sql = searchsql_not_complete + search_sql_middle_about_developer + searchsql_end
@@ -3009,7 +3009,7 @@ def get_easybug_table_withdeveloper_orderby_date(startTime, endTime):
 
             bug = dict()
             bug['bug_submit_date'] = str(startTime + ' - ' + endTime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
-            print('========================bug_submit_date', bug['bug_submit_date'])
+            # print('========================bug_submit_date', bug['bug_submit_date'])
             bug['project'] = r[1]  # 项目名称
             # bug解决率有可能出现none的情况
             if r[2] is None:
@@ -3021,10 +3021,10 @@ def get_easybug_table_withdeveloper_orderby_date(startTime, endTime):
             # 后面是项目相关的 ，有几个项目循环几次
             for developer in developer_tuple:
                 # 当前索引
-                print(f'当前developer=={str(developer)}')
-                index = developer_tuple.index(developer)
-                print(f'当前索引=={index}')
-                print(f'第{index}次循环开始================================================')
+                # print(f'当前developer=={str(developer)}')
+                # index = developer_tuple.index(developer)
+                # print(f'当前索引=={index}')
+                # print(f'第{index}次循环开始================================================')
 
                 #   str1808[1:len(str1808)-2] 截取字符串 中developer名字--》'1808'
                 #   str1808[2:len(str1808)-3] 截取字符串 中developer名字--》1808 (去掉''格式的)
@@ -3152,12 +3152,12 @@ def get_easybug_table_fordrawmap_withdeveloper_orderby_date(startTime, endTime, 
 
             # sql_easybug_rate_belong_developer = ", count(bug_difficulty = 2 and developer = " + developer_name + " or null) as easybug_rate_developer" + str(index)
             sql_easybug_rate_belong_developer = ", convert( count(bug_difficulty = 2 and developer = " + developer_name + " or null)/count(bugid or null),decimal(10,2) ) as easybug_rate_developer" + str(index)
-            print('for 循环拼接的sql == ', sql_easybug_rate_belong_developer)
+            # print('for 循环拼接的sql == ', sql_easybug_rate_belong_developer)
 
             for_sql = sql_easybug_rate_belong_developer
             # search_sql_middle_about_developer 基础上拼接
             search_sql_middle_about_developer += for_sql
-            print('开发相关sql 拼接结果==', search_sql_middle_about_developer)
+            # print('开发相关sql 拼接结果==', search_sql_middle_about_developer)
 
         # for循环拼接sql end
         search_sql = searchsql_not_complete + search_sql_middle_about_developer + searchsql_end
@@ -3195,7 +3195,7 @@ def get_easybug_table_fordrawmap_withdeveloper_orderby_date(startTime, endTime, 
             bug = dict()
             # bug['bug_submit_date'] = str(startTime + ' - ' + endTime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable （xx -xx 这种格式）
             bug['bug_submit_date'] = str(endTime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
-            print('========================bug_submit_date', bug['bug_submit_date'])
+            # print('========================bug_submit_date', bug['bug_submit_date'])
             bug['project'] = r[1]  # 项目名称
             # bug解决率有可能出现none的情况
             if sql_return_result_tuple[0][2] is None:
@@ -3209,10 +3209,10 @@ def get_easybug_table_fordrawmap_withdeveloper_orderby_date(startTime, endTime, 
             # 后面是项目相关的 ，有几个项目循环几次
             for developer in developer_tuple:
                 # 当前索引
-                print(f'当前developer=={str(developer)}')
+                # print(f'当前developer=={str(developer)}')
                 index = developer_tuple.index(developer)
-                print(f'当前索引=={index}')
-                print(f'第{index}次循环开始================================================')
+                # print(f'当前索引=={index}')
+                # print(f'第{index}次循环开始================================================')
 
                 #   str1808[1:len(str1808)-2] 截取字符串 中developer名字--》'1808'
                 #   str1808[2:len(str1808)-3] 截取字符串 中developer名字--》1808 (去掉''格式的)
@@ -3352,12 +3352,12 @@ def get_bugsolverate_table_fordrawmap_withdeveloper_orderby_date(startTime, endT
             sql_bug12_solve_rate_belong_developer = ", convert( (count(severity_level <= 2 and bug_status = 2 and date_add(bug_submit_date, interval %s day) between %s and %s and developer = " + developer_name + " or null))/(count(severity_level <= 2 and  date_add(bug_submit_date, interval %s day) between %s and %s or null)),decimal(10,2) ) as bug12_solve_rate_developer" + str(index)
             sql_bug34_solve_rate_belong_developer = ", convert( (count(severity_level > 2 and bug_status = 2 and date_add(bug_submit_date, interval %s day) between %s and %s and developer = " + developer_name + " or null))/(count(severity_level > 2 and  date_add(bug_submit_date, interval %s day) between %s and %s or null)),decimal(10,2) ) as bug34_solve_rate_developer" + str(index)
             sql_bug_solve_rate_belong_developer = sql_bug12_solve_rate_belong_developer + sql_bug34_solve_rate_belong_developer
-            print('for 循环拼接的sql == ', sql_bug_solve_rate_belong_developer)
+            # print('for 循环拼接的sql == ', sql_bug_solve_rate_belong_developer)
 
             for_sql = sql_bug_solve_rate_belong_developer
             # search_sql_middle_about_developer 基础上拼接
             search_sql_middle_about_developer += for_sql
-            print('开发相关sql 拼接结果==', search_sql_middle_about_developer)
+            # print('开发相关sql 拼接结果==', search_sql_middle_about_developer)
 
         # for循环拼接sql end
         search_sql = searchsql_not_complete + search_sql_middle_about_developer + searchsql_end
@@ -3423,7 +3423,7 @@ def get_bugsolverate_table_fordrawmap_withdeveloper_orderby_date(startTime, endT
             bug = dict()
             # bug['bug_submit_date'] = str(startTime + ' - ' + endTime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable （xx -xx 这种格式）
             bug['bug_submit_date'] = str(endTime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
-            print('========================bug_submit_date', bug['bug_submit_date'])
+            # print('========================bug_submit_date', bug['bug_submit_date'])
             bug['project'] = r[1]  # 项目名称
             # bug解决率有可能出现none的情况
             if sql_return_result_tuple[0][2] is None:
@@ -3441,10 +3441,10 @@ def get_bugsolverate_table_fordrawmap_withdeveloper_orderby_date(startTime, endT
             # 后面是项目相关的 ，有几个项目循环几次
             for developer in developer_tuple:
                 # 当前索引
-                print(f'当前developer=={str(developer)}')
+                # print(f'当前developer=={str(developer)}')
                 index = developer_tuple.index(developer)
-                print(f'当前索引=={index}')
-                print(f'第{index}次循环开始================================================')
+                # print(f'当前索引=={index}')
+                # print(f'第{index}次循环开始================================================')
 
                 #   str1808[1:len(str1808)-2] 截取字符串 中developer名字--》'1808'
                 #   str1808[2:len(str1808)-3] 截取字符串 中developer名字--》1808 (去掉''格式的)

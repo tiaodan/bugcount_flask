@@ -16,5 +16,11 @@ from py import utils
 
 # dbutils.wirte2excelfile("excel_upload\\export\\test1.xlsx")
 # dbutils.wirte2excelfile_returnjson("excel_upload\\export\\test1.xlsx", sql, True)
-print(utils.is_valid_date("2020-01-01", "%Y-%m-%d"))
-
+# print(utils.is_valid_date("2020-01-01", "%Y-%m-%d"))
+i = 1
+aa = dict()
+aa['aa'+str(i)] = 5
+aa['a'] = 6
+# print(aa['aa'] + aa['a'])
+print(aa['aa1'])
+print(aa['aa'+str(i)] + aa['a'])

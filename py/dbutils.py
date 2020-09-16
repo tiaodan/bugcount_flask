@@ -239,10 +239,10 @@ def import_mysql_by_excel():
     if isrepeat != 1:  # 没有重复项
         # 创建一个for循环迭代读取xls文件每行数据的, 从第二行开始是要跳过标题行
         for r in range(1, sheet.nrows):
-            print('Nlie nrows==', sheet.nrows)
-            print('curent r ==', r)
+            # print('Nlie nrows==', sheet.nrows)
+            # print('curent r ==', r)
             n = 1
-            print('shel.cell', sheet.cell(r, n))
+            # print('shel.cell', sheet.cell(r, n))
 
             # bug_submit_date_noformat = datetime.datetime.strptime(str(sheet.cell(r, 0).value), '%Y-%m-%d').time()
             # time.strftime("%Y-%m-%d %H:%M:%S", sheet.cell(r, 0).value)
@@ -309,7 +309,7 @@ def import_mysql_by_excel():
             remark, regression_times, reopen_times)
 
             # values = (bug_submit_date, project, software, test_version)
-            print('import_mysql_by_excel（）方法 valuse=', values)
+            # print('import_mysql_by_excel（）方法 valuse=', values)
             # 执行sql语句
             cur.execute(sql, values)
             code = 200
@@ -433,7 +433,7 @@ def register(*args):
             person['user_level'] = r[5]
             person['create_time'] = str(r[6])
             person['session'] = r[7]
-            print('==============循环person==', person)
+            # print('==============循环person==', person)
 
             users.append(person)
             print('????dbutil 转换完的【{}】格式数据users==', users)
@@ -529,7 +529,7 @@ def login(*args):
             person['user_level'] = r[5]
             person['create_time'] = str(r[6])
             person['session'] = r[7]
-            print('==============循环person==', person)
+            # print('==============循环person==', person)
 
             users.append(person)
             print('????dbutil 转换完的【{}】格式数据users==', users)

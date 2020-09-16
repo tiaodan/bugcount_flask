@@ -132,11 +132,11 @@
                                         <div class="layui-tab-item">
                                             <!--3) 项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；-->
 <!--                                            <div id="AddBugAddAndCloseStatusMapWithProject" style="height: 400px;width: 1590px;"></div>-->
-                                            <div id="AddBugAddAndCloseStatusMapWithProject" style="height: 400px;width: 1590px;"></div>
+                                            <div id="AddBugAddAndCloseStatusMapWithProject" style="height: 400px;width: 1390px;"></div>
                                         </div>
                                         <div class="layui-tab-item">
                                             <!--4）项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线； + bug剩余情况	；-->
-                                             <div id="allBugStatusMapWithProject" style="width: 1590px; height:400px;"></div>
+                                             <div id="allBugStatusMapWithProject" style="width: 1390px; height:400px;"></div>
                                         </div>
 
                                         <!--<div class="layui-tab-item" hidden>
@@ -185,22 +185,22 @@
 
                                             <div class="layui-tab-item">
                                                    <!-- 7）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；-->
-                                                    <div id="AddBugAddAndCloseStatusMapWithDeveloper" style="height: 400px;width: 1590px;"></div>
+                                                    <div id="AddBugAddAndCloseStatusMapWithDeveloper" style="height: 400px;width: 1390px;"></div>
                                             </div>
 
                                             <div class="layui-tab-item">
                                                    <!-- 8）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线 + bug剩余情况(累计)-->
-                                                    <div id="allBugStatusMapWithDeveloper" style="height: 400px;width: 1590px;"></div>
+                                                    <div id="allBugStatusMapWithDeveloper" style="height: 400px;width: 1390px;"></div>
                                             </div>
 
                                             <div class="layui-tab-item">
                                                    <!--11）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线-->
-                                                    <div id="easyBugStatusMapWithDeveloper" style="height: 400px;width: 1590px;"></div>
+                                                    <div id="easyBugStatusMapWithDeveloper" style="height: 400px;width: 1390px;"></div>
                                             </div>
 
                                             <div class="layui-tab-item">
                                                    <!--12）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制一二级bug解决及时率曲线和三四级bug解决及时率曲线-->
-                                                    <div id="bugSolveRateStatusMapWithDeveloper" style="height: 400px;width: 1590px;"></div>
+                                                    <div id="bugSolveRateStatusMapWithDeveloper" style="height: 400px;width: 1390px;"></div>
                                             </div>
 
                                             <div class="layui-tab-item layui-show">
@@ -295,10 +295,14 @@
                             , {field: 'close', title: '关闭', sort: true, width: 80}
                             , {field: 'regression', title: '回归', sort: true, width: 80}
                             , {field: 'delay', title: '延迟', width: 80}
+                            , {field: 'reopen', title: '重开', width: 80}
+
                             , {field: 'add12', title: '新增(1-2级) ', sort: true, width: 120}
                             , {field: 'close12', title: '关闭(1-2级)', sort: true,  width: 120} //暂时先200
                             , {field: 'regression12', title: '回归(1-2级)', sort: true, width: 120}
                             , {field: 'delay12', title: '延迟(1-2级)', sort: true, width: 120}
+                            , {field: 'reopen12', title: '重开(1-2级)', sort: true, width: 120}
+
                             , {field: 'total12', title: '总数(1-2级)', sort: true, width: 120}
                             , {field: 'bugCloseRate', title: 'bug解决率', sort: true, width: 120}
                             , {field: 'rank', title: '排名', sort: true, width: 80}
@@ -309,87 +313,98 @@
                             , {field: 'close_project0', title: '项目0关闭', sort: true, width: 120}
                             , {field: 'regression_project0', title: '项目0回归', sort: true, width: 120}
                             , {field: 'delay_project0', title: '项目0延迟', sort: true, width: 120}
+                            , {field: 'reopen_project0', title: '项目0重开', sort: true, width: 120}
 
                             , {field: 'project1', title: '项目1名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
                             , {field: 'add_project1', title: '项目1新增', sort: true, width: 120}
                             , {field: 'close_project1', title: '项目1关闭', sort: true, width: 120}
                             , {field: 'regression_project1', title: '项目1回归', sort: true, width: 120}
                             , {field: 'delay_project1', title: '项目1延迟', sort: true, width: 120}
+                            , {field: 'reopen_project1', title: '项目1重开', sort: true, width: 120}
 
                             , {field: 'project2', title: '项目2名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
                             , {field: 'add_project2', title: '项目2新增', sort: true, width: 120}
                             , {field: 'close_project2', title: '项目2关闭', sort: true, width: 120}
                             , {field: 'regression_project2', title: '项目2回归', sort: true, width: 120}
                             , {field: 'delay_project2', title: '项目2延迟', sort: true, width: 120}
+                            , {field: 'reopen_project2', title: '项目2重开', sort: true, width: 120}
 
                             , {field: 'project3', title: '项目3名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
                             , {field: 'add_project3', title: '项目3新增', sort: true, width: 120}
                             , {field: 'close_project3', title: '项目3关闭', sort: true, width: 120}
                             , {field: 'regression_project3', title: '项目3回归', sort: true, width: 120}
                             , {field: 'delay_project3', title: '项目3延迟', sort: true, width: 120}
+                            , {field: 'reopen_project3', title: '项目3重开', sort: true, width: 120}
 
                             , {field: 'project4', title: '项目4名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
                             , {field: 'add_project4', title: '项目4新增', sort: true, width: 120}
                             , {field: 'close_project4', title: '项目4关闭', sort: true, width: 120}
                             , {field: 'regression_project4', title: '项目4回归', sort: true, width: 120}
                             , {field: 'delay_project4', title: '项目4延迟', sort: true, width: 120}
+                            , {field: 'reopen_project4', title: '项目4重开', sort: true, width: 120}
 
                             , {field: 'project5', title: '项目5名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
                             , {field: 'add_project5', title: '项目5新增', sort: true, width: 120}
                             , {field: 'close_project5', title: '项目5关闭', sort: true, width: 120}
                             , {field: 'regression_project5', title: '项目5回归', sort: true, width: 120}
                             , {field: 'delay_project5', title: '项目5延迟', sort: true, width: 120}
+                            , {field: 'reopen_project5', title: '项目5重开', sort: true, width: 120}
 
                             , {field: 'project6', title: '项目6名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
                             , {field: 'add_project6', title: '项目6新增', sort: true, width: 120}
                             , {field: 'close_project6', title: '项目6关闭', sort: true, width: 120}
                             , {field: 'regression_project6', title: '项目6回归', sort: true, width: 120}
                             , {field: 'delay_project6', title: '项目6延迟', sort: true, width: 120}
+                            , {field: 'reopen_project6', title: '项目6重开', sort: true, width: 120}
 
                             , {field: 'project7', title: '项目7名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
                             , {field: 'add_project7', title: '项目7新增', sort: true, width: 120}
                             , {field: 'close_project7', title: '项目7关闭', sort: true, width: 120}
                             , {field: 'regression_project7', title: '项目7回归', sort: true, width: 120}
                             , {field: 'delay_project7', title: '项目7延迟', sort: true, width: 120}
+                            , {field: 'reopen_project7', title: '项目7重开', sort: true, width: 120}
 
                             , {field: 'project8', title: '项目8名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
                             , {field: 'add_project8', title: '项目8新增', sort: true, width: 120}
                             , {field: 'close_project8', title: '项目8关闭', sort: true, width: 120}
                             , {field: 'regression_project8', title: '项目8回归', sort: true, width: 120}
                             , {field: 'delay_project8', title: '项目8延迟', sort: true, width: 120}
+                            , {field: 'reopen_project8', title: '项目8重开', sort: true, width: 120}
 
                             , {field: 'project9', title: '项目9名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
                             , {field: 'add_project9', title: '项目9新增', sort: true, width: 120}
                             , {field: 'close_project9', title: '项目9关闭', sort: true, width: 120}
                             , {field: 'regression_project9', title: '项目9回归', sort: true, width: 120}
                             , {field: 'delay_project9', title: '项目9延迟', sort: true, width: 120}
+                            , {field: 'reopen_project9', title: '项目9重开', sort: true, width: 120}
 
                             , {field: 'project10', title: '项目10名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
                             , {field: 'add_project10', title: '项目10新增', sort: true, width: 120}
                             , {field: 'close_project10', title: '项目10关闭', sort: true, width: 120}
                             , {field: 'regression_project10', title: '项目10回归', sort: true, width: 120}
                             , {field: 'delay_project10', title: '项目10延迟', sort: true, width: 120}
+                            , {field: 'reopen_project10', title: '项目10重开', sort: true, width: 120}
 
                             , {field: 'project11', title: '项目11名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
                             , {field: 'add_project11', title: '项目11新增', sort: true, width: 120}
                             , {field: 'close_project11', title: '项目11关闭', sort: true, width: 120}
                             , {field: 'regression_project11', title: '项目11回归', sort: true, width: 120}
                             , {field: 'delay_project11', title: '项目11延迟', sort: true, width: 120}
+                            , {field: 'reopen_project11', title: '项目11重开', sort: true, width: 120}
 
                             , {field: 'project12', title: '项目12名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
                             , {field: 'add_project12', title: '项目12新增', sort: true, width: 120}
                             , {field: 'close_project12', title: '项目12关闭', sort: true, width: 120}
                             , {field: 'regression_project12', title: '项目12回归', sort: true, width: 120}
                             , {field: 'delay_project12', title: '项目12延迟', sort: true, width: 120}
+                            , {field: 'reopen_project12', title: '项目12重开', sort: true, width: 120}
 
                             , {field: 'project13', title: '项目13名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
                             , {field: 'add_project13', title: '项目13新增', sort: true, width: 120}
                             , {field: 'close_project13', title: '项目13关闭', sort: true, width: 120}
                             , {field: 'regression_project13', title: '项目13回归', sort: true, width: 120}
                             , {field: 'delay_project13', title: '项目13延迟', sort: true, width: 120}
-
-
-
+                            , {field: 'reopen_project13', title: '项目13重开', sort: true, width: 120}
                         ]]
                             , id: argTableRenderId //给渲染制定一个id,共其他监听调用
                             , page: false
@@ -685,7 +700,7 @@
                             async:false,
                             success:function(josnstr){//jsonstr 格式
                                 console.log("获取后台数据成功，解析数据");
-                                console.log("获取后台数据成功，解析数据datas="+ josnstr);
+                                console.log("file=echarts1.html fun=getTableForDrawMapWithProjectEverydaySum 获取后台数据成功，解析数据datas="+ josnstr);
                                 console.log("获取后台数据成功，解析数据datas.type="+ typeof(josnstr));
                                 console.log("jsonstringfy==" + JSON.stringify(josnstr.field));
                                 returnDataJson = $.parseJSON(josnstr);
@@ -951,7 +966,8 @@
                         window.addEventListener("resize", function(){
                             // layer.msg("窗口改变，echarts应对应改变");
                             var div=document.getElementById("allBugMapWithProject");
-                            div.style.width = 100 + "%";
+                            // div.style.width = 100 + "%";
+                            div.style.width = 1390 + "px";
                             myChart.resize();
                         });
 
@@ -1166,7 +1182,8 @@
                         window.addEventListener("resize", function(){
                             // layer.msg("窗口改变，echarts应对应改变");
                             var div=document.getElementById("Bug12MapWithProject");
-                            div.style.width = 100 + "%";
+                            // div.style.width = 100 + "%";
+                            div.style.width = 1390 + "px";
                             myChart.resize();
                         });
 
@@ -1215,24 +1232,26 @@
                                 console.log(Object.keys(returnDataJson.data[0]).length);
                                 console.log("，returnDataJson.data[0] 类型？？？？？？？？？？？？？？？？？？？？？="+ typeof(returnDataJson.data[0]));
                                 console.log(typeof(returnDataJson.data[0]));
-
-                                //获取渲染折线图所需数据
-                                    //项目-新增bug增长和关闭参数
-                                var xAxisDataWithProjectNewAndCloseBugFromServer = [];
-                                var addNumArrWithProjectNewAndCloseBugFromServer = [];
-                                var closeNumArrWithProjectNewAndCloseBugFromServer = [];
-                                var addNumArrWithProjectNewAndCloseBugFromServerProject0 = [];
-                                var closeNumArrWithProjectNewAndCloseBugFromServerProject0 = [];
-
-
-                                //这里未完成，要有项目‘1808’-新增 == add_project0 close_project0, 有几个项目显示几个标题，对应项目名称，而不是add_project0
-                                var legendDataWithProjectNewAndCloseBug = ["新增","关闭"];
                                 //查看有多少项目：？？？？？？？？？？？？？？？？？？ -4 /3
                                 //,"add_project0","close_project0
                                 var projectNum =  (Object.keys(returnDataJson.data[0]).length -4)/3;
+
+                                //获取渲染折线图所需数据
+                                    //1. 项目-新增bug增长和关闭参数
+                                var xAxisDataWithProjectNewAndCloseBugFromServer = [];
+                                var addNumArrWithProjectNewAndCloseBugFromServer = [];
+                                var closeNumArrWithProjectNewAndCloseBugFromServer = [];
+                                var projectArgsKeyValue = {};
+                                for(var i=0;i<projectNum;i++){
+                                    projectArgsKeyValue['addNumArrWithProjectNewAndCloseBugFromServerProject' + i] = new Array();  //项目0 新增
+                                    projectArgsKeyValue['closeNumArrWithProjectNewAndCloseBugFromServerProject' + i] = new Array(); //项目0 关闭
+                                }
+
+                                //这里未完成，要有项目‘1808’-新增 == add_project0 close_project0, 有几个项目显示几个标题，对应项目名称，而不是add_project0
+                                var legendDataWithProjectNewAndCloseBug = ["新增","关闭"];
+
                                 for(var i=0;i<projectNum;i++){
                                     //折线图标题 arr添加数据
-
                                     legendDataWithProjectNewAndCloseBug.push(returnDataJson.data[0]['project' + i] + "新增");//项目名称新增
                                     legendDataWithProjectNewAndCloseBug.push(returnDataJson.data[0]['project' + i] + "关闭");//项目名称新增
                                 }
@@ -1244,8 +1263,10 @@
                                     xAxisDataWithProjectNewAndCloseBugFromServer.push(item.bug_submit_date); //日期
                                     addNumArrWithProjectNewAndCloseBugFromServer.push(item.add);  //新增
                                     closeNumArrWithProjectNewAndCloseBugFromServer.push(item.close); //关闭
-                                    addNumArrWithProjectNewAndCloseBugFromServerProject0.push(item.add_project0); //add_project0
-                                    closeNumArrWithProjectNewAndCloseBugFromServerProject0.push(item.close_project0); //close_project0
+                                    for(i=0;i<projectNum;i++){
+                                        projectArgsKeyValue['addNumArrWithProjectNewAndCloseBugFromServerProject' + i].push(item['add_project' + i]); //add_project0
+                                        projectArgsKeyValue['closeNumArrWithProjectNewAndCloseBugFromServerProject' + i].push(item['close_project' + i]); //close_project0
+                                    }
 
                                 });
                                 console.log("legendDataWithProjectNewAndCloseBug???????????????????????????????????????????????????????=");
@@ -1255,18 +1276,15 @@
 
                                 addNumArrWithProjectNewAndCloseBug = addNumArrWithProjectNewAndCloseBugFromServer;
                                 closeNumArrWithProjectNewAndCloseBug = closeNumArrWithProjectNewAndCloseBugFromServer;
-                                addNumArrWithProjectNewAndCloseBugProject0 = addNumArrWithProjectNewAndCloseBugFromServerProject0;
-                                closeNumArrWithProjectNewAndCloseBugProject0 = closeNumArrWithProjectNewAndCloseBugFromServerProject0;
 
-                                var seriesDataJsonWithProjectNewAndCloseBug = {"add": addNumArrWithProjectNewAndCloseBug, "close": closeNumArrWithProjectNewAndCloseBug,
-                                                       "add_project0":addNumArrWithProjectNewAndCloseBugProject0, "close_project0":closeNumArrWithProjectNewAndCloseBugProject0};
-
-
+                                seriesDataJsonWithProjectNewAndCloseBug = {"add": addNumArrWithProjectNewAndCloseBug, "close": closeNumArrWithProjectNewAndCloseBug};
+                                for(i=0;i<projectNum;i++){
+                                    seriesDataJsonWithProjectNewAndCloseBug['add_project' + i] = projectArgsKeyValue['addNumArrWithProjectNewAndCloseBugFromServerProject' + i]; //对应一个数组
+                                    seriesDataJsonWithProjectNewAndCloseBug['close_project' + i] = projectArgsKeyValue['closeNumArrWithProjectNewAndCloseBugFromServerProject' + i];
+                                }
                                 json_obj.legendData = legendDataWithProjectNewAndCloseBug;
                                 json_obj.xAxisData = xAxisDataWithProjectNewAndCloseBug;
                                 json_obj.seriesDataJson = seriesDataJsonWithProjectNewAndCloseBug;
-                                console.log("json_str==" + JSON.stringify(json_obj))
-
                             },error:function(){
                                 console.log("获取后台数据失败");
                             }
@@ -1281,8 +1299,10 @@
             //3-1）3）按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线
             function renderMapWithProjectByTimeAddBugAddAndClose(legendData, xAxisData, seriesDataJson){
                     var layer = layui.layer;
-                    //先清空div中的数据 第一种：
+                    //先清空div中的数据 第一种：然后重新设置高和宽
                     document.getElementById('AddBugAddAndCloseStatusMapWithProject').innerHTML = "";
+                    // document.getElementById('AddBugAddAndCloseStatusMapWithProject').style.height = 400 + "px";
+                    // document.getElementById('AddBugAddAndCloseStatusMapWithProject').style.width = 1590 + "px";
                     //第二种：$('#bigDiv').html("");
 
                     var seriesDataJsonArr = ['add_project0', 'close_project0', 'add_project1', 'close_project1', 'add_project2', 'close_project2', 'add_project3', 'close_project3', 'add_project4', 'close_project4',
@@ -1326,13 +1346,13 @@
                         console.log("renderMapWithProjectByTimeAddBugAddAndClose, 获取折线图option,循环=" + i + legendData[i] );
                         var add_seriesProjectN =
                                 {
-                                    name:legendData[i+2],  //add_project0 close_project0
+                                    name:legendData[i*2+2],  //add_project0 close_project0
                                     type:'line',
                                     data:seriesDataJson['add_project' + i]
                                 };
-                        var  close_seriesProjectN   =
+                        var  close_seriesProjectN =
                                 {
-                                    name:legendData[i+3],  //add_project0 close_project0
+                                    name:legendData[i*2+3],  //add_project0 close_project0
                                     type:'line',
                                     data:seriesDataJson['close_project' + i]
                                 };
@@ -1340,7 +1360,7 @@
                         seriesData.push(add_seriesProjectN);
                         seriesData.push(close_seriesProjectN);
                     }
-                    console.log("seriesData==================");
+                    console.log("新增bug趋势 seriesData==================");
                     console.log(seriesData);
                     //console.log(seriesDataNotComplete);
 
@@ -1445,7 +1465,8 @@
                         window.addEventListener("resize", function(){
                             // layer.msg("窗口改变，echarts应对应改变");
                             var div=document.getElementById("AddBugAddAndCloseStatusMapWithProject");
-                            div.style.width = 100 + "%";
+                            // div.style.width = "100%";
+                            div.style.width = 1390 + "px";
                             myChart.resize();
                             // div.resize();
                         });
@@ -1478,16 +1499,15 @@
                             data:{"startTime":startTimeFromForm,"endTime":endTimeFromForm, "timeDifference":timeDifferenceFromForm},
                             datatype:"json",
                             async:false,
-                            success:function(josnstr){//jsonstr 格式
-                                console.log("获取后台数据成功，解析数据");
-                                console.log("获取后台数据成功，getRenderMapWithProjectByTimeAlongtimeAllBugArgs解析数据datas="+ josnstr);
-                                console.log("获取后台数据成功，解析数据datas.type="+ typeof(josnstr));
-                                console.log("jsonstringfy==" + JSON.stringify(josnstr.field));
-                                returnDataJson = $.parseJSON(josnstr);
+                            success:function(jsonstr){//jsonstr 格式
+                                console.log("bug累计趋势，获取后台数据成功，解析数据datas.type="+ typeof(jsonstr));
+                                console.log("ug累计趋势，获取后台数据成功，解" + jsonstr);
+                                console.log("jsonstringfy==" + JSON.stringify(jsonstr.field));
+                                returnDataJson = $.parseJSON(jsonstr);
                                 console.log("，returnDataJson==============");
                                 console.log(returnDataJson);
                                 console.log("，returnDataJson.type="+ typeof(returnDataJson));
-
+                                var projectNum =  returnDataJson.count  ;  //有多少项目- 一半==count
                                 //获取渲染折线图所需数据
                                     //项目-全部bug增长和关闭参数
                                 var xAxisDataWithProjectAllBugFromServer = [];
@@ -1497,11 +1517,13 @@
                                 var lastNumArrWithProjectAllBugFromServer = []; //剩余
                                 var totalNumArrWithProjectAllBugFromServer = []; //总数
 
-                                var addNumArrWithProjectAllBugFromServerProject0 = []; //项目0 新增
-                                var closeNumArrWithProjectAllBugFromServerProject0 = []; //项目0 关闭
-                                var lastNumArrWithProjectAllBugFromServerProject0 = []; //项目0 剩余
-                                var totalNumArrWithProjectAllBugFromServerProject0 = []; //项目0 总数
-
+                                var projectArgsKeyValue = {};
+                                for(var i=0;i<projectNum;i++){
+                                    projectArgsKeyValue['addNumArrWithProjectAllBugFromServerProject' + i] = new Array();  //项目0 新增
+                                    projectArgsKeyValue['closeNumArrWithProjectAllBugFromServerProject' + i] = new Array(); //项目0 关闭
+                                    projectArgsKeyValue['lastNumArrWithProjectAllBugFromServerProject' + i] = new Array(); //项目0 剩余
+                                    // projectArgsKeyValue['totalNumArrWithProjectAllBugFromServerProject0' + i] = new Array(); //项目0 关闭
+                                }
 
                                 //循环获取[{xx,xx}, {xx,xx}] json中的数据
                                 $.each(returnDataJson.data,function (index, item) {
@@ -1512,9 +1534,11 @@
                                     closeNumArrWithProjectAllBugFromServer.push(item.close); //关闭
                                     lastNumArrWithProjectAllBugFromServer.push(item.last); //剩余bug情况
 
-                                    addNumArrWithProjectAllBugFromServerProject0.push(item.add_project0); //add_project0
-                                    closeNumArrWithProjectAllBugFromServerProject0.push(item.close_project0); //close_project0
-                                    lastNumArrWithProjectAllBugFromServerProject0.push(item.last_project0); //last_project0
+                                    for(i=0;i<projectNum;i++){
+                                        projectArgsKeyValue['addNumArrWithProjectAllBugFromServerProject' + i].push(item['add_project' + i]); //add_project0
+                                        projectArgsKeyValue['closeNumArrWithProjectAllBugFromServerProject' + i].push(item['close_project' + i]); //close_project0
+                                        projectArgsKeyValue['lastNumArrWithProjectAllBugFromServerProject' + i].push(item['last_project' + i]); //last_project
+                                    }
 
                                 });
 
@@ -1522,13 +1546,10 @@
                                 var legendDataWithProjectAllBug = ["新增","关闭","剩余"];
                                 //查看有多少项目：？？？？？？？？？？？？？？？？？？ -14 /7 (为什么除以4 项目名 + add_project0 + close_project0 + last_project0)
 
-                                //,"add_project0","close_project0
-                                var projectNum =  (Object.keys(returnDataJson.data[0]).length -14)/7;  //看打印
                                 console.log("getRenderMapWithProjectByTimeAlongtimeAllBugArgs data总个数==" + Object.keys(returnDataJson.data[0]).length );
                                 console.log("getRenderMapWithProjectByTimeAlongtimeAllBugArgs projectNum==" + projectNum );
                                 for(var i=0;i<projectNum;i++){
                                     //折线图标题 arr添加数据
-
                                     legendDataWithProjectAllBug.push(returnDataJson.data[0]['project' + i] + "新增");//项目名称新增
                                     legendDataWithProjectAllBug.push(returnDataJson.data[0]['project' + i] + "关闭");//项目名称新增
                                     legendDataWithProjectAllBug.push(returnDataJson.data[0]['project' + i] + "剩余");//项目名称新增
@@ -1540,14 +1561,14 @@
                                 closeNumArrWithProjectAllBug = closeNumArrWithProjectAllBugFromServer;
                                 lastNumArrWithProjectAllBug = lastNumArrWithProjectAllBugFromServer;
 
-                                addNumArrWithProjectAllBugProject0 = addNumArrWithProjectAllBugFromServerProject0;
-                                closeNumArrWithProjectAllBugProject0 = closeNumArrWithProjectAllBugFromServerProject0;
-                                lastNumArrWithProjectAllBugProject0 = lastNumArrWithProjectAllBugFromServerProject0;
+                                var seriesDataJsonWithProjectAllBug = {"add": addNumArrWithProjectAllBug, "close": closeNumArrWithProjectAllBug, "last":lastNumArrWithProjectAllBug};
+                                for(i=0;i<projectNum;i++){
+                                    seriesDataJsonWithProjectAllBug['add_project' + i] = projectArgsKeyValue['addNumArrWithProjectAllBugFromServerProject' + i]; //对应一个数组
+                                    seriesDataJsonWithProjectAllBug['close_project' + i] = projectArgsKeyValue['closeNumArrWithProjectAllBugFromServerProject' + i];
+                                    seriesDataJsonWithProjectAllBug['last_project' + i] = projectArgsKeyValue['lastNumArrWithProjectAllBugFromServerProject' + i];
+                                }
 
-                                var seriesDataJsonWithProjectAllBug = {"add": addNumArrWithProjectAllBug, "close": closeNumArrWithProjectAllBug, "last":lastNumArrWithProjectAllBug,
-                                                       "add_project0":addNumArrWithProjectAllBugProject0, "close_project0":closeNumArrWithProjectAllBugProject0, "last_project0":lastNumArrWithProjectAllBugProject0};
-
-
+                                // console.log("bug累计趋势projectArgsKeyValue=" + projectArgsKeyValue);
                                 json_obj.legendData = legendDataWithProjectAllBug;
                                 json_obj.xAxisData = xAxisDataWithProjectAllBug;
                                 json_obj.seriesDataJson = seriesDataJsonWithProjectAllBug;
@@ -1556,10 +1577,10 @@
                             },error:function(){
                                 console.log("获取后台数据失败");
                             }
-                        });
+                });
 
                 var json_str = JSON.stringify(json_obj);
-                console.log('获取全部bug增长关闭情况,折线图参数，返回的json_str=', json_str);
+                console.log('获取bug累计趋势参数，返回的json_str=', json_str);
                 return json_str;
             }
 
@@ -1605,19 +1626,19 @@
                         console.log("renderMapWithProjectByTimeAlongtimeAllBug, 获取折线图option,循环=" + i + legendData[i] );
                         var add_seriesProjectN =
                                 {
-                                    name:legendData[i+3],  //add_project0 close_project0
+                                    name:legendData[i*3+3],  //add_project0 close_project0
                                     type:'line',
                                     data:seriesDataJson['add_project' + i]
                                 };
                         var  close_seriesProjectN   =
                                 {
-                                    name:legendData[i+4],  //add_project0 close_project0
+                                    name:legendData[i*3+4],  //add_project0 close_project0
                                     type:'line',
                                     data:seriesDataJson['close_project' + i]
                                 };
                         var  last_seriesProjectN   =
                                 {
-                                    name:legendData[i+5],  //add_project0 close_project0 last_project0
+                                    name:legendData[i*3+5],  //add_project0 close_project0 last_project0
                                     type:'line',
                                     data:seriesDataJson['last_project' + i]
                                 };
@@ -1735,7 +1756,8 @@
                         window.addEventListener("resize", function(){
                             // layer.msg("窗口改变，allBugStatusMapWithProject echarts应对应改变");
                             var div=document.getElementById("allBugStatusMapWithProject");
-                            div.style.width = 100 + "%";
+                            // div.style.width = 100 + "%";
+                            div.style.width = 1390 + "px";
                             myChart.resize();
                         });
 
@@ -2045,7 +2067,8 @@
                         window.addEventListener("resize", function(){
                             // layer.msg("窗口改变，echarts应对应改变");
                             var div=document.getElementById("AddBugAddAndCloseStatusMapWithDeveloper");
-                            div.style.width = 100 + "%";
+                            // div.style.width = 100 + "%";
+                            div.style.width = 1390 + "px";
                             myChart.resize();
                         });
 
@@ -2508,7 +2531,8 @@
                         window.addEventListener("resize", function(){
                             // layer.msg("窗口改变，echarts应对应改变");
                             var div=document.getElementById("allBugStatusMapWithDeveloper");
-                            div.style.width = 100 + "%";
+                            // div.style.width = 100 + "%";
+                            div.style.width = 1390 + "px";
                             myChart.resize();
                         });
 
@@ -2940,7 +2964,8 @@
                         window.addEventListener("resize", function(){
                             // layer.msg("窗口改变，echarts应对应改变");
                             var div=document.getElementById("easyBugStatusMapWithDeveloper");
-                            div.style.width = 100 + "%";
+                            // div.style.width = 100 + "%";
+                            div.style.width = 1390 + "px";
                             myChart.resize();
                         });
 
@@ -3327,7 +3352,8 @@
                         window.addEventListener("resize", function(){
                             // layer.msg("窗口改变，echarts应对应改变");
                             var div=document.getElementById("bugSolveRateStatusMapWithDeveloper");
-                            div.style.width = 100 + "%";
+                            // div.style.width = 100 + "%";
+                            div.style.width = 1390 + "px";
                             myChart.resize();
                         });
 
@@ -3368,34 +3394,35 @@
                         //timeDifference =  document.getElementById('timeDifference').value;
                         timeDifferenceFromForm = $('#selector option:selected') .val();  // 定位id ，时间差
 
-
                         console.log("开始时间=" + startTimeFromForm);
                         console.log("结束时间=" + endTimeFromForm);
                         console.log("点击了搜索按钮");
                         console.log("stimeDifferenceFromForme===" + timeDifferenceFromForm);
 
-
                         //渲染table - 每天数据
                         renderTable('tableForDrawMapWithProject', '/getTableForDrawMapWithProject', startTimeFromForm, endTimeFromForm, 'tableForDrawMapWithProjectId');
-                        //渲染table - 每天相对昨天 增长/关闭情况
+
+                        /*//渲染table - 新增bug趋势 数据-暂时没有显示该表格
                         console.log("渲染table - 每天相对昨天 增长/关闭情况");
                         renderTableForDrawMapWithProjectALongtimeNewBugAddAndClose('tableForDrawMapWithProjectALongtimeNewBugAddAndClose', '/getTableForDrawMapWithProjectALongtimeNewBugAddAndClose', startTimeFromForm, endTimeFromForm, timeDifferenceFromForm, 'tableForDrawMapWithProjectALongtimeNewBugAddAndCloseId');
+                        */
+
                         //渲染table - 每天累加数据
-                        renderTable('tableForDrawMapWithProjectEverydaySum', '/getTableForDrawMapWithProjectEverydaySum', startTimeFromForm, endTimeFromForm, 'tableForDrawMapWithProjectEverydaySumId');
+                        // renderTable('tableForDrawMapWithProjectEverydaySum', '/getTableForDrawMapWithProjectEverydaySum', startTimeFromForm, endTimeFromForm, 'tableForDrawMapWithProjectEverydaySumId');
 
                         //渲染table - 项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线； + bug剩余情况
-                        renderTableForDrawMapWithProjectALongtimeAllBug('tableForDrawMapWithProjectALongtimeAllBug', '/getTableForDrawMapWithProjectALongtimeAllBug', startTimeFromForm, endTimeFromForm, timeDifferenceFromForm, 'tableForDrawMapWithProjectALongtimeAllBugId');
+                        // renderTableForDrawMapWithProjectALongtimeAllBug('tableForDrawMapWithProjectALongtimeAllBug', '/getTableForDrawMapWithProjectALongtimeAllBug', startTimeFromForm, endTimeFromForm, timeDifferenceFromForm, 'tableForDrawMapWithProjectALongtimeAllBugId');
 
                         ///////////////////////////开发维度
                         // 渲染table - 所有bug and 1-2bug
-                        renderTableAllBugDeveloper('tableWithDeveloper', '/getTableWithDeveloper', startTimeFromForm, endTimeFromForm, timeDifferenceFromForm,'tableWithDeveloperId');
+                        // renderTableAllBugDeveloper('tableWithDeveloper', '/getTableWithDeveloper', startTimeFromForm, endTimeFromForm, timeDifferenceFromForm,'tableWithDeveloperId');
 
                         // 9）开发维度，按时间（时间可自定义）统计软件自测考量：相比较这段时间产生的所有bug，易bug产生比率；
                         // renderTableEasyBugDeveloper('easyBugTableWithDeveloper', '/getEasyBugTableWithDeveloper', startTimeFromForm, endTimeFromForm, 'easyBugTableWithDeveloperId');
-                        renderTableEasyBugALongtimeDeveloper('easyBugTableWithDeveloper', '/getEasyBugTableForDrawMapWithDeveloper', startTimeFromForm, endTimeFromForm, timeDifferenceFromForm, 'easyBugTableWithDeveloperId');
+                        // renderTableEasyBugALongtimeDeveloper('easyBugTableWithDeveloper', '/getEasyBugTableForDrawMapWithDeveloper', startTimeFromForm, endTimeFromForm, timeDifferenceFromForm, 'easyBugTableWithDeveloperId');
 
                         // 10）开发维度，按时间（时间可自定义）统计bug解决的及时性考量：一二级bug一定时间内（可自定义）的解决率，三四级bug一定时间内（可自定义时间）
-                        renderTableBugSolveRateALongtimeDeveloper('bugSolveRateTableWithDeveloper', '/getBugSolveRateTableForDrawMapALongtimeWithDeveloper', startTimeFromForm, endTimeFromForm, timeDifferenceFromForm, 'bugSolveRateTableWithDeveloperId');
+                        // renderTableBugSolveRateALongtimeDeveloper('bugSolveRateTableWithDeveloper', '/getBugSolveRateTableForDrawMapALongtimeWithDeveloper', startTimeFromForm, endTimeFromForm, timeDifferenceFromForm, 'bugSolveRateTableWithDeveloperId');
 
 
                         /*
@@ -3481,7 +3508,7 @@
                             }
                         });
                         */
-                        //1. 画全部bug折线图
+                        //1. 画全部bug
                             //获取全部bug 折线图参数 - 暂时不用
                             /*console.log("画折线图 - all bug 增长/关闭情况");
                             var allBugJsonStr = getRenderMapWithProjectByTimeAllBugArgs(startTimeFromForm, endTimeFromForm);
@@ -3514,22 +3541,22 @@
                             console.log("Bug12SeriesDataJson=====" + JSON.stringify(Bug12SeriesDataJson));
                             renderMapWithProjectByTime12Bug(Bug12LegendData, Bug12XAxisData, Bug12SeriesDataJson);*/
 
-                         //3. 按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线
+                         //3. ！！新增bug趋势 （增长是一段时间的，关闭时累计的）3）按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线
                             //增bug增长曲线和关闭曲线
                             console.log("画折线图 - 新增bug增长曲线和关闭曲线");
                             console.log("画折线图 - 新增bug增长曲线和关闭曲线，参数timeDifferenceFromForm" + timeDifferenceFromForm );
                             var addAndCloseBugJsonStr = getRenderMapWithProjectByTimeAddBugAddAndCloseArgs(startTimeFromForm, endTimeFromForm, timeDifferenceFromForm);
                             console.log("画折线图 - 新增bug增长曲线和关闭曲线 Bug12JsonStr= "+ addAndCloseBugJsonStr);
                             //转成json格式
-                            var addAndCloseBugJsonObj = $.parseJSON(addAndCloseBugJsonStr);
+                            var addBugJsonObj = $.parseJSON(addAndCloseBugJsonStr);
 
-                            var addAndCloseBug12LegendData = addAndCloseBugJsonObj.legendData;
-                            var addAndCloseXAxisData = addAndCloseBugJsonObj.xAxisData;
-                            var addAndCloseSeriesDataJson = addAndCloseBugJsonObj.seriesDataJson;
-                            console.log("addAndCloseBug12LegendData=====" + JSON.stringify(addAndCloseBug12LegendData));
-                            console.log("addAndCloseXAxisData=====" + JSON.stringify(addAndCloseXAxisData));
-                            console.log("addAndCloseSeriesDataJson=====" + JSON.stringify(addAndCloseSeriesDataJson));
-                            renderMapWithProjectByTimeAddBugAddAndClose(addAndCloseBug12LegendData, addAndCloseXAxisData, addAndCloseSeriesDataJson);
+                            var addBugLegendData = addBugJsonObj.legendData;
+                            var addBugXAxisData = addBugJsonObj.xAxisData;
+                            var addBugSeriesDataJson = addBugJsonObj.seriesDataJson;
+                            console.log("addBugLegendData=====" + JSON.stringify(addBugLegendData));
+                            console.log("addBugXAxisData=====" + JSON.stringify(addBugXAxisData));
+                            console.log("addBugSeriesDataJson=====" + JSON.stringify(addBugSeriesDataJson));
+                            renderMapWithProjectByTimeAddBugAddAndClose(addBugLegendData, addBugXAxisData, addBugSeriesDataJson);
 
                          //4. 项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线； + bug剩余情况
                             console.log("画折线图 - 全部bug增长曲线和关闭曲线");
@@ -3547,7 +3574,7 @@
                             console.log("allBugAlongtimeProjectSeriesDataJson=====" + JSON.stringify(allBugAlongtimeProjectSeriesDataJson));
                             renderMapWithProjectByTimeAlongtimeAllBug(allBugAlongtimeProjectLegendData, allBugAlongtimeProjectXAxisData, allBugAlongtimeProjectSeriesDataJson);
 
-                         //7）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；
+                        /* //7）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；
                             console.log("画折线图 - 新增bug增长曲线和关闭曲线");
                             console.log("画折线图 - 新增bug增长曲线和关闭曲线，参数timeDifferenceFromForm" + timeDifferenceFromForm );
                             var addAndCloseBugAlongtimeDeveloperJsonStr = getRenderMapWithDeveloperByTimeAlongtimeAddBugAddAndCloseArgs(startTimeFromForm, endTimeFromForm, timeDifferenceFromForm);
@@ -3562,8 +3589,9 @@
                             console.log("addAndCloseBugAlongtimeDeveloperXAxisData=====" + JSON.stringify(addAndCloseBugAlongtimeDeveloperXAxisData));
                             console.log("addAndCloseBugAlongtimeDeveloperSeriesDataJson=====" + JSON.stringify(addAndCloseBugAlongtimeDeveloperSeriesDataJson));
                             renderMapWithDeveloperByTimeAlongtimeAddBugAddAndClose(addAndCloseBugAlongtimeDeveloperLegendData, addAndCloseBugAlongtimeDeveloperXAxisData, addAndCloseBugAlongtimeDeveloperSeriesDataJson);
+*/
 
-                         //8）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线 + bug剩余情况 ；
+                        /* //8）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线 + bug剩余情况 ；
                             console.log("画折线图 - 全部bug增长曲线和关闭曲线");
                             console.log("画折线图 - 全部bug增长曲线和关闭曲线，参数timeDifferenceFromForm" + timeDifferenceFromForm );
                             var allBugAlongtimeDeveloperJsonStr = getRenderMapWithDeveloperByTimeAlongtimeAllBugArgs(startTimeFromForm, endTimeFromForm, timeDifferenceFromForm);
@@ -3578,8 +3606,9 @@
                             console.log("allBugAlongtimeDeveloperXAxisData=====" + JSON.stringify(allBugAlongtimeDeveloperXAxisData));
                             console.log("allBugAlongtimeDeveloperSeriesDataJson=====" + JSON.stringify(allBugAlongtimeDeveloperSeriesDataJson));
                             renderMapWithDeveloperByTimeAlongtimeAllBug(allBugAlongtimeDeveloperLegendData, allBugAlongtimeDeveloperXAxisData, allBugAlongtimeDeveloperSeriesDataJson);
+*/
 
-                         //11）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线；1/2    月/周/季
+                         /*//11）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线；1/2    月/周/季
                             console.log("画折线图 - 开发维度,一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线");
                             console.log("画折线图 - 开发维度,一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线，参数timeDifferenceFromForm" + timeDifferenceFromForm );
                             var easyBugAlongtimeDeveloperJsonStr = getRenderMapWithDeveloperByTimeAlongtimeEasyBugArgs(startTimeFromForm, endTimeFromForm, timeDifferenceFromForm);
@@ -3594,6 +3623,8 @@
                             console.log("allBugAlongtimeDeveloperXAxisData=====" + JSON.stringify(easyBugAlongtimeDeveloperXAxisData));
                             console.log("allBugAlongtimeDeveloperSeriesDataJson=====" + JSON.stringify(easyBugAlongtimeDeveloperSeriesDataJson));
                             renderMapWithDeveloperByTimeAlongtimeEasyBug(easyBugAlongtimeDeveloperLegendData, easyBugAlongtimeDeveloperXAxisData, easyBugAlongtimeDeveloperSeriesDataJson);
+                            */
+/*
 
                          // 12）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制一二级bug解决及时率曲线和三四级bug解决及时率曲线。
                             console.log("画折线图 - 开发维度,一定时间颗粒度（时间可自定义），绘制一二级bug解决及时率曲线和三四级bug解决及时率曲线");
@@ -3610,6 +3641,7 @@
                             console.log("bugSolveRateAlongtimeDeveloperXAxisData=====" + JSON.stringify(bugSolveRateAlongtimeDeveloperXAxisData));
                             console.log("bugSolveRateAlongtimeDeveloperSeriesDataJson=====" + JSON.stringify(bugSolveRateAlongtimeDeveloperSeriesDataJson));
                             renderMapWithDeveloperByTimeAlongtimeBugSolveRate(bugSolveRateAlongtimeDeveloperLegendData, bugSolveRateAlongtimeDeveloperXAxisData, bugSolveRateAlongtimeDeveloperSeriesDataJson);
+*/
 
                             layer.close(loadingMap);
 

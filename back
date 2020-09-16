@@ -699,8 +699,8 @@ def get_allprojectdata_withdeveoper_orderby_date(startTime, endTime):
                 # 当前索引
                 print(f'当前developer=={str(developer)}')
                 index = developer_tuple.index(developer)
-                print(f'当前索引=={index}')
-                print(f'第{index}次循环开始================================================')
+                #print(f'当前索引=={index}')
+                #print(f'第{index}次循环开始================================================')
 
                 # project0
 
@@ -793,8 +793,8 @@ def get_allprojectdata_withdeveoper_orderby_date(startTime, endTime):
             # 当前索引
             print(f'当前developer=={str(developer)}')
             index = developer_tuple.index(developer)
-            print(f'当前索引=={index}')
-            print(f'第{index}次循环开始================================================')
+            #print(f'当前索引=={index}')
+           # print(f'第{index}次循环开始================================================')
 
             # project0
 
