@@ -18,6 +18,12 @@
 				"name": "bug统计图",
 				"icon": "",
 				"url": "./static/js/incubator-echarts-4.2.1/test/echarts1.html"
+			},
+			{
+				"id": 13,
+				"name": "bug记录",
+				"icon": "",
+				"url": "../pages/buglist/addbug.html"
 			}]
 		},
 		{
@@ -30,6 +36,12 @@
 				"name": "管理员列表",
 				"icon": "",
 				"url": "./pages/admin/list.html"
+			},
+			{
+				"id": 22,
+				"name": "公告管理",
+				"icon": "",
+				"url": "./pages/admin/announcement_manage.html"
 			}]
 		}
 	]

@@ -10,6 +10,7 @@ import json
 #  引入python中的traceback模块，跟踪错误
 import traceback
 from py import utils
+from py import dbutils
 
 
 
@@ -39,7 +40,7 @@ def search_users(page, limit):
     #默认定义数据
     code = 500  # 默认失败
     msg = 'sql语句执行失败'
-    count = 0  # sql语句执行结果个数
+    count = 0  # 用户总数
 
     # 打开数据库连接
 
@@ -50,8 +51,15 @@ def search_users(page, limit):
 
     # 使用 execute()  方法执行 SQL 查询
     try:
+        # 1. 计算count
+        usertotoalsql = 'select count(userid) from bugcount.user'
+        count = dbutils.execute_onesql_returnint(usertotoalsql)
+        # print('===============', usertotoalsql_tuple)
+        # print('===============type', type(usertotoalsql_tuple))
+
+
         # sql = 'select userid,username,password,user_remark,user_email,user_level,create_time,session from bugcount.user limit 0,40'
-        sql = 'select userid,username,password,user_remark,user_email,user_level,create_time,session from bugcount.user limit %s,%s'
+        sql = 'select userid,username,password,user_remark,user_email,user_level,create_time,session,roleId from bugcount.user limit %s,%s'
         print(f'sql语句为==', sql)
         print(f'sql语句参数 *args====  page={page},limit={limit}')
 
@@ -70,14 +78,14 @@ def search_users(page, limit):
         sql_return_result_tuple = cursor.fetchall()
 
         #转换查询结果为[{},{},{}]这种格式的
-        print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
-        print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
-        print("执行语句返回结果(类型)==", type(sql_return_result_tuple))
-        print("sql语句执行成功")
+        # print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
+        # print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
+        # print("执行语句返回结果(类型)==", type(sql_return_result_tuple))
+        # print("sql语句执行成功")
 
         # 转化下查询结果为{},{},{}这种格式======================
-        print('????????result=', sql_return_result_tuple)
-        print('????????????????????type = ', type(sql_return_result_tuple))
+        # print('????????result=', sql_return_result_tuple)
+        # print('????????????????????type = ', type(sql_return_result_tuple))
 
 
         for r in sql_return_result_tuple:
@@ -95,8 +103,8 @@ def search_users(page, limit):
             """
             person = dict()
             person['userid'] = r[0]
-            print('=============================r=', r)
-            print('=============================userid=',  person['userid'])
+            # print('=============================r=', r)
+            # print('=============================userid=',  person['userid'])
             person['username'] = r[1]
             person['password'] = r[2]
             person['user_remark'] = r[3]
@@ -104,16 +112,13 @@ def search_users(page, limit):
             person['user_level'] = r[5]
             person['create_time'] = str(r[6])  # 转成str，否则会报TypeError: Object of type datetime is not JSON serializable
             person['session'] = r[7]
+            person['roleId'] = r[8]
             # print('==============循环person==', person)
 
             users.append(person)
-        print('????dbutil 转换完的【{}】格式数据users==', users)
+        # print('????dbutil 转换完的【{}】格式数据users==', users)
 
-        # 拼接返回数据,返回列表
-        count = len(sql_return_result_tuple)  # sql语句结果个数
-
-        # 判断是否 能登录
-        # if count > 0:
+        # 顺利执行认为成功
         code = 200  # 成功
         msg = '查询语句执行成功'
 
@@ -136,11 +141,11 @@ def search_users(page, limit):
     data['count'] = count
     data['data'] = users
     # 转化下查询结果为{},{},{}这种格式======================
-    print('<admin.py> 搜索用户方法 type(data)== ', type(data))
-    print('<admin.py> 搜索用户方法 type== ', data)
+    # print('<admin.py> 搜索用户方法 type(data)== ', type(data))
+    # print('<admin.py> 搜索用户方法 type== ', data)
     # json.dumps()用于将dict类型的数据转成str .json.loads():用于将str类型的数据转成dict
     json_str = json.dumps(data, ensure_ascii=False)
-    print('dbutil==jsonStr=====', json_str)
+    print('<admin.py>>获取用户列表=====', json_str)
     return json_str
 
 

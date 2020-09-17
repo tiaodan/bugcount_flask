@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>角色管理</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<link rel="stylesheet" href="../../static/css/font.css">
+		<link rel="stylesheet" href="../../static/css/weadmin.css">
+		<script type="text/javascript" src="../../lib/jquery-3.2.1.min.js" charset="utf-8"></script>
+		<!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
+		<!--[if lt IE 9]>
+	      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
+	      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
+	    <![endif]-->
+	</head>
+
+	<body>
+		<div class="weadmin-body">
+			<form action="" method="post" class="layui-form layui-form-pane">
+				<div class="layui-form-item layui-form-text">
+					<label for="desc" class="layui-form-label">
+                        公告1
+                    </label>
+					<div class="layui-input-block">
+						<textarea placeholder="请输入内容" id="announcement1" name="desc" class="layui-textarea"></textarea>
+					</div>
+
+					<label for="desc" class="layui-form-label">
+                        公告2
+                    </label>
+					<div class="layui-input-block">
+						<textarea placeholder="请输入内容" id="announcement2" name="desc" class="layui-textarea"></textarea>
+					</div>
+
+					<label for="desc" class="layui-form-label">
+                        公告3
+                    </label>
+					<div class="layui-input-block">
+						<textarea placeholder="请输入内容" id="announcement3" name="desc" class="layui-textarea"></textarea>
+					</div>
+				</div>
+				<div class="layui-form-item">
+					<button class="layui-btn" lay-submit="" lay-filter="edit">修改</button>
+				</div>
+			</form>
+		</div>
+
+<!--	脚本相关//////////////////////////////////////////////-->
+		<script src="../../lib/layui/layui.js" charset="utf-8"></script>
+		<script type="text/javascript">
+			layui.extend({
+				admin: '{/}../../static/js/admin'
+			});
+			layui.use(['jquery','form', 'layer'], function() {
+				var $ = layui.jquery,
+						form = layui.form,
+						layer = layui.layer;
+
+				//1. 通过layui.use这种方式，使页面加载的时候查询公告内容
+				//显示加载动画，获取公告内容，填充到html
+				var loading = layer.load(0, {     //0,1,2 只有这3中动画
+									shade: false,
+									time: 3*1000 //嘴上等待时间 单位：毫秒
+				});
+				$.ajax({
+					type: "get", //请求方法
+					url: "/announcement", //请求地址
+					// data: {"bugid":bugid, "bug_submit_date":bug_submit_date},
+					datatype: "json",
+					success: function (datas) {
+
+						console.log(typeof (datas)); //返回的json是str
+						console.log("公告管理，get请求公告数据，返回内容如下：");
+						//转成json
+						datasJson = $.parseJSON(datas)
+						console.log("返回结果" + datas);
+						console.log(datasJson.code);
+
+						returnCode = datasJson.code
+						returnMsg = datasJson.msg
+						console.log("msg--type==" + typeof (returnMsg))
+						returnCount = datasJson.count
+						returnData = datasJson.data
+						//判断跳转
+						if (returnCode == 500) { //== 字符串
+							console.log("公告管理，获取公告内容失败");
+							layer.msg("公告管理，获取公告内容失败")
+						}
+						if (returnCode == 200) {
+							console.log("公告管理，获取公告内容成功");
+							// layer.msg("公告管理，获取公告内容成功")
+							//解析json种data内容，通过id赋值给html元素
+							//2. 公告内容赋值
+							console.log(returnData[0])
+							console.log(returnData[1])
+							console.log(returnData[2])
+							announcement1_text = returnData[0].announcement
+							announcement2_text = returnData[1].announcement
+							announcement3_text = returnData[2].announcement
+							// $("textarea").html("Admin"); //引用html元素
+							$("#announcement1").html(announcement1_text); //引用html元素
+							$("#announcement2").html(announcement2_text); //引用html元素
+							$("#announcement3").html(announcement3_text); //引用html元素
+							//加载完毕后，关闭加载动画
+							layer.close(loading);
+						}
+					},
+					error: function () {
+						console.log("公告管理，获取公告内容异常error");
+						layer.close(loading);
+					}
+				});
+
+				//公告修改，监听提交
+				form.on('submit(edit)', function (data) {
+					console.log(data);
+					//发异步，把数据提交给后台
+					// layer.alert/msg("修改成功", {
+					// 	icon: 6
+					// }, function() {
+					// 	// 获得frame索引
+					// 	var index = parent.layer.getFrameIndex(window.name);
+					// 	//关闭当前frame
+					// 	parent.layer.close(index);
+					// });
+					layer.msg("修改成功", {
+						icon: 6
+					});
+
+					//发送修改数据 getElementById("announcement1").textContent修改后的内容无法拿到，.value可以
+					announcement1_text = document.getElementById("announcement1").value
+					console.log("=============================announcement1_text"+ announcement1_text.textContent)
+					announcement2_text = document.getElementById("announcement2").value
+					announcement3_text = document.getElementById("announcement3").value
+					console.log("公告1内容=" + announcement1_text)
+					console.log("公告2内容=" + announcement2_text)
+					console.log("公告3内容=" + announcement3_text)
+					var announcementJsonObj = {
+						"announcement1_text": announcement1_text,
+						"announcement2_text": announcement2_text,
+						"announcement3_text": announcement3_text
+					}
+					$.ajax({
+						type: "post", //请求方法
+						url: "/announcement", //请求地址
+						data: announcementJsonObj,
+						datatype: "json",
+						success: function (datas) {
+							console.log("公告管理，修改公告内容成功");
+						},
+						error: function () {
+							console.log("公告管理，修改公告内容异常error");
+						}
+					});
+					return false;
+				});
+			//layui-use-end
+			});
+		</script>
+	</body>
+
+</html>

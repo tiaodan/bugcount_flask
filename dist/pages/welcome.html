@@ -10,11 +10,8 @@
 		<link rel="stylesheet" href="../static/css/font.css">
 		<link rel="stylesheet" href="../static/css/weadmin.css">
         <script type="text/javascript" src="../lib/jquery-3.2.1.min.js" charset="utf-8"></script>
-        <!-- 让IE8/9支持媒体查询，从而兼容栅格 -->
-		<!--[if lt IE 9]>
-	      <script src="https://cdn.staticfile.org/html5shiv/r29/html5.min.js"></script>
-	      <script src="https://cdn.staticfile.org/respond.js/1.4.2/respond.min.js"></script>
-	    <![endif]-->
+
+
 	</head>
 
 	<body>
@@ -118,13 +115,13 @@
                             <div class="layui-carousel weadmin-notice" lay-filter="notice" lay-indicator="inside" lay-arrow="none" style="width: 100%; height: 280px;">
                                 <div carousel-item="">
                                     <div class="">
-                                        <a id="announcement1" href="" target="_blank" class="layui-bg-red">公告1</a>
+                                        <a id="announcement1"  target="_blank" class="layui-bg-red">公告1</a>
                                     </div>
                                     <div class="">
-                                        <a id="announcement2" href="" target="_blank" class="layui-bg-blue">公告2</a>
+                                        <a id="announcement2"  target="_blank" class="layui-bg-blue">公告2</a>
                                     </div>
                                     <div class="">
-                                        <a id="announcement1" href="" target="_blank" class="layui-bg-green">公告3</a>
+                                        <a id="announcement3"  target="_blank" class="layui-bg-green">公告3</a>
                                     </div>
 
                                 </div>
@@ -143,15 +140,15 @@
                     <!--<legend>信息统计</legend>-->
                     <blockquote class="layui-elem-quote font16">信息统计</blockquote>
                     <div class="">
-                        <table class="layui-table" lay-even>
+                        <!--<table class="layui-table" lay-even>
                             <thead>
                                 <tr>
-                                    <th>统计</th>
-                                    <th>资讯库</th>
-                                    <th>图片库</th>
-                                    <th>产品库</th>
-                                    <th>用户</th>
-                                    <th>管理员</th>
+                                    <th>项目</th>
+                                    <th>新增</th>
+                                    <th>关闭</th>
+                                    <th>回归</th>
+                                    <th>延迟</th>
+                                    <th>汇总</th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -196,7 +193,8 @@
                                     <td>0</td>
                                 </tr>
                             </tbody>
-                        </table>
+                        </table>-->
+                        <table class="layui-hide" id="countByProject"></table>
 <!--                        服务器信息 start-->
                         <!--<table class="layui-table">
                             <thead>
@@ -260,11 +258,23 @@
                             <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
                             <div class="layui-timeline-content layui-text">
                                 <div class="layui-timeline-title">
-                                    <h3>更新记录1</h3>
+                                    <h3>v2.0</h3>
+                                    <span class="layui-badge-rim">2020-09-11</span>
+                                </div>
+                                <ul>
+                                    <li>1. 修改v1.0 测出来的问题,具体请看项目中readme文件</li>
+                                    <li>2. 优化登录流程和相关细节</li>
+
+                                </ul>
+
+                                <div class="layui-timeline-title">
+                                    <h3>v1.0</h3>
                                     <span class="layui-badge-rim">2020-06-01</span>
                                 </div>
                                 <ul>
-                                    <li>bugcount v1.0</li>
+                                    <li>1. bug的增删改查</li>
+                                    <li>2. bug数据统计和趋势图显示</li>
+                                    <li>3. 用户的增删改查</li>
                                 </ul>
                             </div>
                         </li>
@@ -287,20 +297,80 @@
         <script type="text/javascript" src="../lib/layui-v2.5.6/layui.all.js" charset="utf-8"></script>
         <script type="text/javascript">
             var $ = layui.jquery;
-            alert("执行到了这0")
-            console.log("000000000000000000000000000000")
+            // announcementView
+            // $.get("/getAllArgsFromConfig")
+            $.ajax({
+                    url: "/announcement",
+                    method: "get",
+                    datatype:"json",
+                    async:false,
+                    success:function(datas){//jsonstr 格式
+                        // alert("announcementView成功")
+                        console.log(typeof(datas)); //返回的json是str
+						console.log("公告管理，get请求公告数据，返回内容如下：");
+						console.log("sss0")
+                        //转成json
+						datasJson = $.parseJSON(datas)
+						console.log("sss1")
+						console.log("返回结果" + datas);
+						console.log(datasJson.code);
+
+						returnCode = datasJson.code
+						returnMsg = datasJson.msg
+						console.log("msg--type==" + typeof(returnMsg))
+						returnCount = datasJson.count
+						returnData = datasJson.data
+						//判断跳转
+						if(returnCode == 500 ){ //== 字符串
+							console.log("公告管理，获取公告内容失败");
+							layer.msg("公告管理，获取公告内容失败")
+						}
+						if(returnCode == 200){
+							console.log("公告管理，获取公告内容成功");
+							// layer.msg("公告管理，获取公告内容成功")
+							//解析json种data内容，通过id赋值给html元素
+							//2. 公告内容赋值
+							console.log(returnData[0])
+							console.log(returnData[1])
+							console.log(returnData[2])
+							announcement1_text = returnData[0].announcement
+							announcement2_text = returnData[1].announcement
+							announcement3_text = returnData[2].announcement
+							// $("textarea").html("Admin"); //引用html元素
+							$("#announcement1").html(announcement1_text); //引用html元素
+							$("#announcement2").html(announcement2_text); //引用html元素
+							$("#announcement3").html(announcement3_text); //引用html元素
+						}
+                    },error:function(){
+                        layer.msg("公告管理，获取公告内容失败")
+                    }
+                });
+
+            // $.ajax({
+            //         url: "/getAllArgsFromConfig",
+            //         method: "get",
+            //         datatype:"json",
+            //         async:false,
+            //         success:function(josnstr){//jsonstr 格式
+            //             alert("getAllArgsFromConfig成功")
+            //
+            //         },error:function(){
+            //             alert("getAllArgsFromConfigfail")
+            //         }
+            //     });
+
             //获取欢迎界面快捷链接地址
             //读取到数据后，将数据写入缓存，第一次获取才去服务器获取，之后都在缓存中获取 / 写入配置 object
                 //获取配置文件参数
             let configDataJsonStr = sessionStorage.getItem("configDataJsonStr");
             //如果session 里没有存 配置文件，就去后台获取
             if(configDataJsonStr == null){
-                console.log("第一次获取配置 if ==null")
+                console.log("获取配置 if ==null")
                 console.log("sessionStorage里未获取到配置文件，从后台获取。。");
                 let configDataJsonObj = {"db_host": "", "db_user": "", "db_passwd": "", "db_dbname": "",
                 "testlink_quick_link": "", "redmine_quick_link": "", "oa_quick_link": "", "enterprise_email_quick_link": ""};
 
-                $.ajax({
+                 $.ajax({
                     url: "/getAllArgsFromConfig",
                     method: "get",
                     datatype:"json",
@@ -333,7 +403,6 @@
                         layer.msg("获取配置文件失败，请刷新页面重新获取")
                     }
                 });
-
                  console.log("最终的 configDataJson=== 下一行" + configDataJsonObj)
                  console.log( configDataJsonObj);
 
@@ -353,7 +422,8 @@
             document.getElementById("redmine_quick_link").href = "http://" + configDataJsonObj.redmine_quick_link;
             document.getElementById("oa_quick_link").href = "http://" + configDataJsonObj.oa_quick_link;
             document.getElementById("enterprise_email_quick_link").href = "http://" + configDataJsonObj.enterprise_email_quick_link;
-            alert("执行到了这1")
+
+
             //layui相关
             layui.extend({
                 admin: '{/}../static/js/admin',
@@ -364,7 +434,6 @@
                     carousel = layui.carousel,
                     util = layui.util,
                     admin = layui.admin;
-
                 //建造实例
                 carousel.render({
                     elem: '.weadmin-shortcut'
@@ -425,20 +494,59 @@
                 });
 
                  */
-                alert("执行到了这")
-                layer.msg("sss")
-                $.ajax({
-                    url: "/getAllArgsFromConfig",
-                    method: "get",
-                    datatype:"json",
-                    async:false,
-                    success:function(datas){//jsonstr 格式
-                        alert("announcementView成功")
-                    },error:function(){
-                        alert("announcementViewfail")
-                    }
-                });
+
             });
+
+            // 格式化日期方法
+            // 对Date的扩展，将 Date 转化为指定格式的String
+            // 月(M)、日(d)、小时(h)、分(m)、秒(s)、季度(q) 可以用 1-2 个占位符，
+            // 年(y)可以用 1-4 个占位符，毫秒(S)只能用 1 个占位符(是 1-3 位的数字)
+            // 例子：
+            // (new Date()).Format("yyyy-MM-dd hh:mm:ss.S") ==> 2006-07-02 08:09:04.423
+            // (new Date()).Format("yyyy-M-d h:m:s.S")      ==> 2006-7-2 8:9:4.18
+            Date.prototype.Format = function (fmt) {
+                var o = {
+                    "M+": this.getMonth() + 1, //月份
+                    "d+": this.getDate(), //日
+                    "H+": this.getHours(), //小时
+                    "m+": this.getMinutes(), //分
+                    "s+": this.getSeconds(), //秒
+                    "q+": Math.floor((this.getMonth() + 3) / 3), //季度
+                    "S": this.getMilliseconds() //毫秒
+                };
+                if (/(y+)/.test(fmt)) fmt = fmt.replace(RegExp.$1, (this.getFullYear() + "").substr(4 - RegExp.$1.length));
+                for (var k in o)
+                if (new RegExp("(" + k + ")").test(fmt)) fmt = fmt.replace(RegExp.$1, (RegExp.$1.length == 1) ? (o[k]) : (("00" + o[k]).substr(("" + o[k]).length)));
+                return fmt;
+            }
+
+            //首页信息统计，表格显示
+            layui.use('table', function(){
+                  var table = layui.table;
+
+                  // 获取当前时间， “e2020-01-01”这种格式
+                  var currenttime = new Date().Format("yyyy-MM-dd")
+                  console.log("=================当前时间" + currenttime)
+                  table.render({
+                    elem: '#countByProject'
+                    ,url:'/getBugCountByProject'
+                    ,method: 'get'
+                    ,loading: true //是否显示加载条（默认：true）
+                    ,where: {startTime: '2000-01-01', endTime: currenttime}
+                    , response: {
+                        statusCode: 200
+                    }
+                    ,cols: [[
+                      {field:'project', width:"16.6%", title: '项目'}
+                      ,{field:'addNumByProject', width:"16.6%", title: '新增'}
+                      ,{field:'closeNumByProject', width:"16.6%", title: '关闭'}
+                      ,{field:'regressionNumByProject', width:"16.6%", title: '回归'}
+                      ,{field:'delayNumByProject', width:"16.6%", title: '延迟'} //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
+                      ,{field:'totalNumByProject', width:"16.6%", title: '汇总'}
+                    ]]
+                    ,even: true  //是否 开启隔行 背景
+                  });
+                });
         </script>
     </body>
 </html>

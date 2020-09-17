@@ -39,7 +39,7 @@
             <button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>-->
             <button class="layui-btn layui-btn-sm" onclick="WeAdminShow('添加用户','./add.html')"><i class="layui-icon"></i>添加</button>
             <button class="layui-btn layui-btn-sm  layui-btn-danger" onclick="delAll()">批量删除</button>
-            <span style="float: right">数据库共有数据：xx 条</span>
+            <span style="float: right">数据库共有数据：<span id="userTotalNum">88</span> 条</span>
             </div>
 
             <div id="rowBar" hidden>
@@ -51,7 +51,7 @@
                 <!--<a title="编辑" onclick="WeAdminShow('编辑','./edit.html')" href="javascript:;"><i class="layui-icon">&#xe642;</i></a>-->
                 <!--<a title="删除" onclick="member_del(this,'要删除的id')" href="javascript:;"><i class="layui-icon">&#xe640;</i></a> -->
                 <!--<a title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>-->
-                <a class="layui-btn layui-btn-xs" lay-event="rowSubmit" title="单行编辑提交">单行编辑提交</a>
+                <a class="layui-btn layui-btn-xs" lay-event="rowSubmit" title="单行编辑提交">单行提交</a>
                 <a class="layui-btn layui-btn-xs" lay-event="edit" >编辑</a>
                 <a class="layui-btn layui-btn-danger layui-btn-xs" title="删除" lay-event="del">删除</a>
             </div>
@@ -107,6 +107,7 @@
                       ,{field:'user_level', title: '用户等级', sort:true, edit: 'text'}
                       ,{field:'create_time', title: '创建时间', sort: true ,placeholder: "格式:YYYY-MM-DD", edit: 'text'}
                       ,{field:'session', title: '用户缓存', sort: true, edit: 'text'}
+                      ,{field:'roleId', title: '角色ID', sort: true, edit: 'text'}
                       ,{title:'操作', toolbar: '#rowBar', width: '15%'}
                     ]]
                     ,id: 'tableRenderReloadId' //给渲染制定一个id,共其他监听调用
@@ -121,6 +122,24 @@
                     reload: function(){
                       var tableReloadBtn = $('#tableReloadBtn'); //指向按钮的id
 
+                      // 重载的时候重新请求用户总数
+                      $.ajax({
+                            type: "get", //请求方法
+                            url: "/userTotalNum", //请求地址
+                            datatype: "json",
+                            async: false,
+                            success: function (datas) {
+                                //解析返回数据
+                                //转成json对象
+                                var datasJsonObj = $.parseJSON(datas)
+                                var userTotalNum = datasJsonObj.count
+                                console.log("用户列表，点击搜索获取总数成功，用户总数=" + userTotalNum);
+                                $("#userTotalNum").html(userTotalNum)
+                            },
+                            error: function () {
+                                console.log("用户列表，点击搜索获取总数异常error");
+                            }
+                        });
 
                       //执行重载
                       table.reload('tableRenderReloadId', { //指向render 自定义的id

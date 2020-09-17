@@ -15,15 +15,15 @@
 9）左侧导航树bug统计图归到bug管理下，系统统计不需要 √
 10）去掉bug列表的严重等级一栏的描述 √
 11）去掉bug统计图的严重等级一栏的描述 √
-12）bug列表，清空数据库功能只有超级管理员可操作
+12）bug列表，清空数据库功能只有超级管理员可操作 √
 13）bug列表，清空数据库点击后的提示信息“真的删除行么”修改为“是否已备份，确认要清空数据库？” √
 14）bug列表，清空数据库后数据库共有数据：88条 √,次数据目前只是刷新页面的时候才会请求后台，点击搜索按钮是不起作用的 √
 15）bug列表，上传数据选择为非1808的数据源，导入的仍然为1808数据 上传文件最好命名为template.xlsx,用其他的名字也可以， √但是上传文件里的sheet必须叫sheet1 √
 16）bug列表，添加bug可以整个作为一个菜单，改名为“bug记录”； √
 17）bug列表，添加bug下的表格编辑bug支持tab键，光标tab到新增按钮回车可增加一行，最下面有个提交按钮，指提交当前编辑的所有bug，  添加bug成功，需要删除该行吗？·
-可以限制10条为一次提交的最大量，当回车增加超过10提示“请先完成当前十条数据的提交，避免数据丢失”
+可以限制10条为一次提交的最大量，当回车增加超过10提示“请先完成当前十条数据的提交，避免数据丢失”  x 暂不知如何处理
 18）bug列表，添加bug（bug记录）可以统一在上面定义提交时间、项目、软件版本、软件模块，
-表格内只需要可编辑描述、严重等级、优先级、难度，bugid自动生成、关闭情况自动置为处理，其他字段自动置空；
+表格内只需要可编辑描述、严重等级、优先级、难度，bugid自动生成、关闭情况自动置为处理，其他字段自动置空； x 暂不知如何处理
 19）bug列表，bug列表的添加功能需完成；√ （单条添加）
 20）bug列表，bug列表的编辑按钮是准备做成什么功能，单个bug的编辑界面吗？想法不错。2 暂时不弄，隐藏 x
 21）bug列表，翻页功能不可用，不能看到下一页。√
@@ -46,6 +46,35 @@
 32）导出的时候把 关闭情况从 数字 --》文字了
 33）趋势图可以根据
 34） 加载曲线，加加载框
+25） pyinstaller -F app.py 打包报错：    exec(code, run_globals)
+  File "E:\venv\venv_bugcount\Scripts\pyinstaller.exe\__main__.py", line 7, in <module>
+  File "e:\venv\venv_bugcount\lib\site-packages\PyInstaller\__main__.py", line 114, in run
+    run_build(pyi_config, spec_file, **vars(args))
+  File "e:\venv\venv_bugcount\lib\site-packages\PyInstaller\__main__.py", line 65, in run_build
+    PyInstaller.building.build_main.main(pyi_config, spec_file, **kwargs)
+  File "e:\venv\venv_bugcount\lib\site-packages\PyInstaller\building\build_main.py", line 720, in main
+    build(specfile, kw.get('distpath'), kw.get('workpath'), kw.get('clean_build'))
+  File "e:\venv\venv_bugcount\lib\site-packages\PyInstaller\building\build_main.py", line 667, in build
+    exec(code, spec_namespace)
+  File "E:\software\C_workspace\pycharm_64\bugcount_flask\app.spec", line 20, in <module>
+    exe = EXE(pyz,
+  File "e:\venv\venv_bugcount\lib\site-packages\PyInstaller\building\api.py", line 434, in __init__
+    self.pkg = PKG(self.toc, cdict=kwargs.get('cdict', None),
+  File "e:\venv\venv_bugcount\lib\site-packages\PyInstaller\building\api.py", line 200, in __init__
+    self.__postinit__()
+  File "e:\venv\venv_bugcount\lib\site-packages\PyInstaller\building\datastruct.py", line 160, in __postinit__
+    self.assemble()
+  File "e:\venv\venv_bugcount\lib\site-packages\PyInstaller\building\api.py", line 260, in assemble
+    fnm = checkCache(fnm, strip=self.strip_binaries,
+  File "e:\venv\venv_bugcount\lib\site-packages\PyInstaller\building\utils.py", line 213, in checkCache
+    digest = cacheDigest(fnm, redirects)
+  File "e:\venv\venv_bugcount\lib\site-packages\PyInstaller\building\utils.py", line 358, in cacheDigest
+    with open(fnm, "rb") as f:
+FileNotFoundError: [Errno 2] No such file or directory: ''
+
+26) dell电脑打包错误，分析与代码无关，与环境有关
+27) 添加用户加字段roleId！！！！！！！！！！！！！！
+
 
 
 ！！！！！！！！！！！！！！！！遗留3个
@@ -100,7 +129,7 @@
 27. 关闭时间需晚于起始时间
 28. 折线图数据量大卡顿，界面卡顿+ 图卡顿，优化
 29. 优化前端打印报错与警告
-
+30. 做出一款，像excel一样操作数据网页版
 //////代办
 1. 用户权限最后改
 2. 清空数据库后自动刷新表格

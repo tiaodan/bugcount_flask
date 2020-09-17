@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<title>欢迎页面</title>
+		<meta name="renderer" content="webkit">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+		<link rel="stylesheet" href="../static/css/font.css">
+		<link rel="stylesheet" href="../static/css/weadmin.css">
+
+
+	</head>
+
+	<body>
+		<div class="weadmin-body">
+			<blockquote class="layui-elem-quote">欢迎使用bug count v1.0</blockquote>
+
+        <div class="layui-fluid" style="overflow: hidden;">
+            <div class="layui-row layui-col-space15">
+                <div class="layui-col-md8">
+                    <div class="layui-card">
+                        <div class="layui-card-header">快捷方式</div>
+                        <div class="layui-card-body">
+                            <div class="layui-carousel weadmin-shortcut" lay-filter="shortcut" lay-indicator="inside" lay-arrow="none" style="width: 100%; height: 280px;">
+                                <div carousel-item="">
+                                    <ul class="layui-row layui-col-space10 layui-this">
+                                        <li class="layui-col-xs3">
+                                            <a href="../pages/doc/userManual.html" target="_blank">
+                                                <i class="layui-icon">&#xe705;</i>
+                                                <cite>使用手册-网页版</cite>
+<!--													<p><span>链接1 说明</span></p>-->
+                                            </a>
+                                            <a href="../doc/bug统计系统说明.docx"   target="_blank"><cite>使用手册-Word版</cite></a>
+                                        </li>
+                                        <li class="layui-col-xs3">
+                                            <a href="../pages/doc/bugDefineRule.html" target="_blank">
+                                                <i class="layui-icon">&#xe705;</i>
+                                                <cite>缺陷级别定义及规则</cite>
+<!--													<p><span>链接2 说明</span></p>-->
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs3">
+                                            <a href="#" id="testlink_quick_link" target="_blank">
+                                                <i class="layui-icon">&#xe64c;</i>
+                                                <cite>testlink 网址</cite>
+                                                <p><span>测试用例管理</span></p>
+                                            </a>
+                                        </li>
+                                        <li class="layui-col-xs3">
+<!--												<a href="http://task.sunkaisens.com:3000" target="_blank">-->
+                                            <a href="#" id="redmine_quick_link" target="_blank">
+                                                <i class="layui-icon">&#xe64c;</i>
+                                                <cite>redmine 网址</cite>
+                                                <p><span>项目管理</span></p>
+                                            </a>
+                                        </li>
+                                    </ul>
+
+                                    <ul class="layui-row layui-col-space10">
+                                        <li class="layui-col-xs3">
+                                            <a href="#" id="oa_quick_link" target="_blank">
+                                                <i class="layui-icon">&#xe64c;</i>
+                                                <cite>OA 网址</cite>
+                                                <p><span>办公管理</span></p>
+                                            </a>
+                                        </li>
+
+                                        <li class="layui-col-xs3">
+                                            <a href="#" id="enterprise_email_quick_link" target="_blank">
+                                                <i class="layui-icon">&#xe618;</i>
+                                                <cite>企业邮箱</cite>
+                                            </a>
+                                        </li>s
+                                    </ul>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="layui-col-md4">
+                    <div class="layui-card">
+                        <div class="layui-card-header">
+                            介绍
+                            <i class="layui-icon" style="color: #FF5722;">&#xe756;</i>
+                        </div>
+                        <div class="layui-card-body layui-text weadmin-text">
+                            <p>
+                                bug统计脚本主要实现功能：<br>
+                                <div style="margin-left: 3em">
+                                1. bug记录表的导入导出<br>
+                                2. bug记录的增删改查<br>
+                                3. 一段时间内，项目纬度、开发纬度的bug统计情况趋势图<br>
+                                </div>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="layui-col-lg12 layui-collapse" style="border: none;">
+            <div class="layui-col-lg6 layui-col-md12">
+
+
+                <!--统计信息展示-->
+                <fieldset class="layui-elem-field" style="padding: 5px;">
+                    <!--WeAdmin公告-->
+                    <div class="layui-card">
+                        <div class="layui-card-header layui-elem-quote">公告</div>
+                        <div class="layui-card-body">
+                            <div class="layui-carousel weadmin-notice" lay-filter="notice" lay-indicator="inside" lay-arrow="none" style="width: 100%; height: 280px;">
+                                <div carousel-item="">
+                                    <div class="">
+                                        <a href="" target="_blank" class="layui-bg-red">公告1</a>
+                                    </div>
+                                    <div class="">
+                                        <a href="" target="_blank" class="layui-bg-blue">公告2</a>
+                                    </div>
+                                    <div class="">
+                                        <a href="" target="_blank" class="layui-bg-green">公告3</a>
+                                    </div>
+
+                                </div>
+                                <div class="layui-carousel-ind">
+                                    <ul>
+                                        <li class="layui-this"></li>
+                                        <li></li>
+                                    </ul>
+                                </div>
+                                <!--<button class="layui-icon layui-carousel-arrow" lay-type="sub"></button>
+                                <button class="layui-icon layui-carousel-arrow" lay-type="add"></button>-->
+                            </div>
+
+                        </div>
+                    </div>
+                    <!--<legend>信息统计</legend>-->
+                    <blockquote class="layui-elem-quote font16">信息统计</blockquote>
+                    <div class="">
+                        <table class="layui-table" lay-even>
+                            <thead>
+                                <tr>
+                                    <th>统计</th>
+                                    <th>资讯库</th>
+                                    <th>图片库</th>
+                                    <th>产品库</th>
+                                    <th>用户</th>
+                                    <th>管理员</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>总数</td>
+                                    <td>92</td>
+                                    <td>9</td>
+                                    <td>0</td>
+                                    <td>8</td>
+                                    <td>20</td>
+                                </tr>
+                                <tr>
+                                    <td>今日</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                </tr>
+                                <tr>
+                                    <td>昨日</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                </tr>
+                                <tr>
+                                    <td>本周</td>
+                                    <td>2</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                </tr>
+                                <tr>
+                                    <td>本月</td>
+                                    <td>2</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                    <td>0</td>
+                                </tr>
+                            </tbody>
+                        </table>
+<!--                        服务器信息 start-->
+                        <!--<table class="layui-table">
+                            <thead>
+                                <tr>
+                                    <th colspan="2" scope="col">服务器信息</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <th width="30%">服务器计算机名</th>
+                                    <td><span id="lbServerName">hp-01</span></td>
+                                </tr>
+                                <tr>
+                                    <td>服务器IP地址</td>
+                                    <td>192.16.0.174</td>
+                                </tr>
+                                <tr>
+                                    <td>服务器域名</td>
+                                    <td>www.sunkaisens.com</td>
+                                </tr>
+                                <tr>
+                                    <td>服务器端口 </td>
+                                    <td>80</td>
+                                </tr>
+                                <tr>
+                                    <td>本文件所在文件夹 </td>
+                                    <td>/opt/project/bugcount</td>
+                                </tr>
+                                <tr>
+                                    <td>当前时间 </td>
+&lt;!&ndash;										<td id="firstTime">2018-01-03 13:14:00</td>&ndash;&gt;
+                                    <td id="currentTime"></td>
+                                </tr>
+                                &lt;!&ndash;<tr>
+                                    <td>上次更新时间 </td>
+                                    <td id="lastTime">7210分钟</td>
+                                </tr>&ndash;&gt;
+                            </tbody>
+                        </table>-->
+ <!--                        服务器信息 end-->
+                    </div>
+                </fieldset>
+            </div>
+            <!--				发展历程 start-->
+            <div class="layui-col-lg6 layui-col-md12">
+                <fieldset class="layui-elem-field we-changelog" style="padding: 5px;">
+                    <!--更新日志-->
+                    <blockquote class="layui-elem-quote font16">更新日志</blockquote>
+                    <ul class="layui-timeline" style="height: 729px; overflow-y: auto;">
+                        <!--<li class="layui-timeline-item">
+                            <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                            <div class="layui-timeline-content layui-text">
+                                <div class="layui-timeline-title">
+                                    <h3>日志初始化模板</h3>
+                                    <span class="layui-badge-rim">2018-01-01</span>
+                                </div>
+                                <p></p>
+                            </div>
+                        </li>-->
+                        <li class="layui-timeline-item">
+                            <i class="layui-icon layui-timeline-axis">&#xe63f;</i>
+                            <div class="layui-timeline-content layui-text">
+                                <div class="layui-timeline-title">
+                                    <h3>更新记录1</h3>
+                                    <span class="layui-badge-rim">2020-06-01</span>
+                                </div>
+                                <ul>
+                                    <li>bugcount v1.0</li>
+                                </ul>
+                            </div>
+                        </li>
+
+                    </ul>
+                </fieldset>
+            </div>
+            <!--				发展历程 end-->
+        </div>
+
+
+        <div style="clear: both;overflow: hidden; margin-top: 10px;">
+            <blockquote class="layui-elem-quote">感谢
+                <a href="" target="_blank"></a>
+            </blockquote>
+        </div>
+    </div>
+
+        <!--	<script type="text/javascript" src="../lib/layui/layui.js" charset="utf-8"></script>-->
+        <script type="text/javascript" src="../lib/layui-v2.5.6/layui.all.js" charset="utf-8"></script>
+        <script type="text/javascript">
+            var $ = layui.jquery;
+            //获取欢迎界面快捷链接地址
+            //读取到数据后，将数据写入缓存，第一次获取才去服务器获取，之后都在缓存中获取 / 写入配置 object
+                //获取配置文件参数
+            let configDataJsonStr = sessionStorage.getItem("configDataJsonStr");
+            //如果session 里没有存 配置文件，就去后台获取
+            if(configDataJsonStr == null){
+                console.log("获取配置 if ==null")
+                console.log("sessionStorage里未获取到配置文件，从后台获取。。");
+                let configDataJsonObj = {"db_host": "", "db_user": "", "db_passwd": "", "db_dbname": "",
+                "testlink_quick_link": "", "redmine_quick_link": "", "oa_quick_link": "", "enterprise_email_quick_link": ""};
+
+                $.ajax({
+                    url: "/getAllArgsFromConfig",
+                    method: "get",
+                    datatype:"json",
+                    async:false,
+                    success:function(josnstr){//jsonstr 格式
+                        console.log("获取_--------------配置  --- 后台数据成功，解析数据");
+                        console.log("获取后台数据成功，解析数据datas="+ josnstr);
+                        console.log("获取后台数据成功，解析数据datas.type="+ typeof(josnstr));
+                        var returnDataJsonObj = $.parseJSON(josnstr);
+                        console.log("，returnDataJson="+ returnDataJsonObj);
+                        console.log(returnDataJsonObj);
+                        console.log("，returnDataJsonObj.type="+ typeof(returnDataJsonObj));
+
+                        //循环获取[{xx,xx}, {xx,xx}] json中的数据
+                        $.each(returnDataJsonObj.data,function (index, item) {
+                            console.log('i+item=' + index + " "+item);
+                            console.log(item);
+                            configDataJsonObj.db_host = item.db_host
+                            configDataJsonObj.db_user = item.db_user
+                            configDataJsonObj.db_passwd = item.db_passwd
+                            configDataJsonObj.db_dbname = item.db_dbname
+                            configDataJsonObj.testlink_quick_link = item.testlink_quick_link
+                            configDataJsonObj.redmine_quick_link = item.redmine_quick_link
+                            configDataJsonObj.oa_quick_link = item.oa_quick_link
+                            configDataJsonObj.enterprise_email_quick_link = item.enterprise_email_quick_link
+                        });
+
+                    },error:function(){
+                        console.log("获取配置文件失败");
+                        layer.msg("获取配置文件失败，请刷新页面重新获取")
+                    }
+                });
+
+                 console.log("最终的 configDataJson=== 下一行" + configDataJsonObj)
+                 console.log( configDataJsonObj);
+
+                 //将后台读取的数据存储到缓存种
+                 console.log("写入缓存");
+                 sessionStorage.setItem("configDataJsonStr", JSON.stringify(configDataJsonObj));
+                 // console.log(sessionStorage.getItem("configDataJsonStr"))
+                 console.log(JSON.stringify(configDataJsonObj))
+            }
+
+            //再次从缓存种读取数据，用来给网页赋值
+            configDataJsonStr = sessionStorage.getItem("configDataJsonStr")
+            configDataJsonObj = JSON.parse(configDataJsonStr);
+
+            document.getElementById("testlink_quick_link").href = "http://" + configDataJsonObj.testlink_quick_link;
+            console.log(document.getElementById("testlink_quick_link").href)
+            document.getElementById("redmine_quick_link").href = "http://" + configDataJsonObj.redmine_quick_link;
+            document.getElementById("oa_quick_link").href = "http://" + configDataJsonObj.oa_quick_link;
+            document.getElementById("enterprise_email_quick_link").href = "http://" + configDataJsonObj.enterprise_email_quick_link;
+
+
+            //layui相关
+            layui.extend({
+                admin: '{/}../static/js/admin',
+            });
+            layui.use(['jquery', 'element','util', 'admin', 'carousel'], function() {
+                var element = layui.element,
+                    $ = layui.jquery,
+                    carousel = layui.carousel,
+                    util = layui.util,
+                    admin = layui.admin;
+                //建造实例
+                carousel.render({
+                    elem: '.weadmin-shortcut'
+                    ,width: '100%' //设置容器宽度
+                    ,arrow: 'none' //始终显示箭头
+                    ,trigger: 'hover'
+                    ,autoplay:false
+                });
+
+                carousel.render({
+                    elem: '.weadmin-notice'
+                    ,width: '100%' //设置容器宽度
+                    ,arrow: 'none' //始终显示箭头
+                    ,trigger: 'hover'
+                    ,autoplay:true
+                });
+
+                $(function(){
+                    //网页一启动 设置时间
+                    // setTimeAgo(2018,0,1,13,14,0,'#firstTime');
+                    // setTimeAgo(2019,5,20,16,0,0,'#lastTime');
+                    var currentTimeStr = getCurrentTime();
+                    $('#currentTime').html(currentTimeStr);
+                });
+
+                function setTimeAgo(y, M, d, H, m, s,id){
+                    var str = util.timeAgo(new Date(y, M||0, d||1, H||0, m||0, s||0));
+                    $(id).html(str);
+                    console.log(str);
+                 }
+
+                function getCurrentTime(){
+                    var currentTime = GMTToStr(new Date());
+                    return currentTime;
+                    }
+
+                function GMTToStr(time){
+                    var arrWeek = new Array("星期日", "星期一", "星期二", "星期三", "星期四", "星期五", "星期六"); //规范星期的输入
+                    let date = new Date(time);
+                    let Str=date.getFullYear() + '-' +
+                        (date.getMonth() + 1) + '-' +
+                        date.getDate() + ' ' +
+                        date.getHours() + ':' +
+                        date.getMinutes() + ':' +
+                        date.getSeconds() + ' ' +
+                        arrWeek[date.getDay()];
+
+                    return Str
+                }
+
+                //测试
+                /*
+                var $ = layui.jquery;
+                $("h1").html("武汉感染人数");
+
+                $("button[id='btn_submit']").click(function () {
+                    console.log('前台点击了按钮')
+                });
+
+                 */
+
+            });
+        </script>
+    </body>
+</html>

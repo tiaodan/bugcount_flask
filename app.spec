@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['app.py'],
-             pathex=['D:\\A_software\\C_wokspace\\pycharm_64\\v8_bug_count_flask'],
+             pathex=['E:\\software\\C_workspace\\pycharm_64\\bugcount_flask'],
              binaries=[],
              datas=[],
              hiddenimports=[],

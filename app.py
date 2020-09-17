@@ -1231,20 +1231,44 @@ def getAllArgsFromConfig():
 
 
 # 获取用户权限 getPrivilge getPermission
-@app.route('/getPrivilge', methods=['POST', 'GET'])
+@app.route('/getPrivilge', methods=['GET'])
 def getprivilge():
     print('获取用户权限，进入app.py 方法')
     print(request.values)
     privilgeint = 0  # 没有权限
+    currentuser = request.values.get("currentuser")
+    print('获取用户权限currentuser= ', currentuser)
 
     # 默认使用 get 请求
     if request.method == "GET":
         print('get请求 获取用户权限')
-        sql = 'SELECT COUNT(privilegeId) FROM bugcount.role_privilege WHERE roleId = 2 AND privilegeId = 38 '
-        privilgeint = dbutils.execute_onesql_returnjson_privilege(sql)
-        print('《app.py》get请求 获取用户权限, 返回jsonStr=====', privilgeint)
+        sql = "SELECT COUNT(privilegeId=38 OR NULL) FROM bugcount.role_privilege WHERE roleId = (SELECT roleId FROM USER WHERE username = %s)"
+        jsonstr = dbutils.execute_onesql_returnjson_privilege(sql, currentuser)
+        print('《app.py》get请求 获取用户权限, 返回jsonStr=====', jsonstr)
 
-    return privilgeint
+    return jsonstr
+
+
+# 修改普通用户权限 getPrivilge getPermission
+@app.route('/editNomalUserPrivilege', methods=['POST'])
+def edit_nomaluser_privilege():
+    print('修改普通用户权限，进入app.py 方法')
+    print(request.values)
+    isTruncateTableFlag = int(request.values.get("isTruncateTableFlag"))
+    print('======类型', type(isTruncateTableFlag))
+
+    # 默认使用 get 请求
+    if request.method == "POST":
+        print('get请求 修改普通用户权限')
+        if isTruncateTableFlag == 1:  # 有权限
+            sql = "insert into bugcount.role_privilege (roleId,privilegeId) values(2,38) on duplicate key update privilegeId = 38 "
+        else:
+            sql = "delete from bugcount.role_privilege where roleId=2 and privilegeId=38"
+        print('修改普通用户权限sql，', sql)
+        jsonstr = dbutils.execute_onesql_returnjson(sql)
+        print('《app.py》get请求 修改普通用户权限, 返回jsonStr=====', jsonstr)
+
+    return jsonstr
 
 
 # #########################  系统启动相关 end ############################################################################

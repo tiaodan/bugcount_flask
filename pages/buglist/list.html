@@ -94,7 +94,7 @@
                     <input class="layui-input" name="id" id="tableReloadBtn" autocomplete="off" placeholder=" 搜索ID">
                   </div>
                   <button class="layui-btn" data-type="reload">搜索 <i class="layui-icon">&#xe615;</i></button>
-                  <button id="truncateTableBuglist" class="layui-btn layui-btn-danger">清空数据库</button>
+                  <span id="truncateBugSpan" hidden><button  id="truncateTableBuglist" class="layui-btn layui-btn-danger">清空数据库</button></span>
                   <button id="uploadBuglist" class="layui-btn">上传数据</button>
                   <!--<button id="downloadBuglistTemplate" class="layui-btn "><a href="../../excel_upload/template.xlsx"  target="_blank">下载模板</a></button> -->
                   <a href="../../excel_upload/template/template.xlsx" target="_blank"><button id="downloadBuglistTemplate" class="layui-btn ">下载模板</button></a>
@@ -264,14 +264,14 @@
                                 var datasJsonObj = $.parseJSON(datas);
                                 var privilege = datasJsonObj.privilege_int;
                                 console.log("bug列表，获取权限成功，清空数据库权限=" + privilege);
-                                if (privilege != 1){
-                                    $("#truncateTableBuglist").hide();
+                                if (privilege > 0){
+                                    $("#truncateBugSpan").show();
                                 }
                             },
                             error: function () {
                                 console.log("bug列表，获取权限异常error");
                             }
-                        });
+                 });
 
 
                       //执行重载
@@ -698,20 +698,27 @@
 						}
 					});
 
-                // 刚启动网页获取 权限
+                // 刚启动网页获取 权限(先从缓存中读取，没有请求后台，根据临时缓存的用户名来查)
+                //1. 读取sessionStorage中的【currentuser】
+                currentuser = sessionStorage.getItem("currentuser")
+                // layer.msg('当前用户' + currentuser)
+                //2. 请求后台数据，参数用户名
+
                 $.ajax({
                             type: "get", //请求方法
                             url: "/getPrivilge", //请求地址
                             datatype: "json",
                             async: false,
+                            // data:{"currentuser": currentuser},
+                            data: {"currentuser":currentuser},
                             success: function (datas) {
                                 //解析返回数据
                                 //转成json对象
                                 var datasJsonObj = $.parseJSON(datas);
                                 var privilege = datasJsonObj.privilege_int;
                                 console.log("bug列表，获取权限成功，清空数据库权限=" + privilege);
-                                if (privilege != 1){
-                                    $("#truncateTableBuglist").hide();
+                                if (privilege > 0){
+                                    $("#truncateBugSpan").show();
                                 }
                             },
                             error: function () {

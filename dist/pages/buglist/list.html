@@ -23,7 +23,7 @@
 
 	<body>
         <!--  顶行 文字 start-->
-		<div class="weadmin-nav">
+		<!--<div class="weadmin-nav">
         <span class="layui-breadcrumb">
         <a href="">首页</a>
         <a href="">bug管理</a>
@@ -31,7 +31,7 @@
         </span>
         <a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:5px;float:right" href="javascript:location.replace(location.href);" title="刷新">
 				<i class="layui-icon" style="line-height:30px">ဂ</i></a>
-		</div>
+		</div>-->
         <!--  顶行 文字 start-->
 
             <div class="layui-btn-container" id="toolbarId" hidden>
@@ -44,7 +44,7 @@
             <button class="layui-btn layui-btn-sm  layui-btn-danger" onclick="layer.msg('待开发')">批量删除</button>
 
             <!-- <button id="no" class="layui-btn layui-btn-sm  layui-btn-danger" >清空数据表</button> -->
-            <span style="float: right">数据库共有数据：88 条</span>
+                <span style="float: right">数据库共有数据：<span id="bugTotalNum">88</span> 条</span>
             </div>
         <!-- dody div end-->
 			<!-- 搜索栏 start-->
@@ -98,6 +98,7 @@
                   <button id="uploadBuglist" class="layui-btn">上传数据</button>
                   <!--<button id="downloadBuglistTemplate" class="layui-btn "><a href="../../excel_upload/template.xlsx"  target="_blank">下载模板</a></button> -->
                   <a href="../../excel_upload/template/template.xlsx" target="_blank"><button id="downloadBuglistTemplate" class="layui-btn ">下载模板</button></a>
+                  <button id="exportAllBug" class="layui-btn" onclick="exportAllBugs()">导出所有</button>
             </div>
             <!--  表格搜索框 end-->
 
@@ -105,22 +106,8 @@
           </div>
             <!-- dody demoTable-->
 
-            <div class="layui-collapse" lay-filter="test">
-              <div class="layui-colla-item">
-                <h2 class="layui-colla-title">添加bug</h2>
-                <div class="layui-colla-content">
-                    <!-- 用来进行添加操作的table -->
-                    <table  id="tableBugAdd" lay-filter="tableBugAdd"></table>
-                </div>
-              </div>
-              <div class="layui-colla-item">
-                <h2 class="layui-colla-title">bug列表</h2>
-                <div class="layui-colla-content">
-                    <!-- 用来进行 查询的的table -->
-                    <table class="layui-hide" id="tableBug" lay-filter="tableBug"></table>
-                </div>
-              </div>
-            </div>
+            <!-- 用来进行 查询的的table -->
+            <table class="layui-hide" id="tableBug" lay-filter="tableBug"></table>
 
             <!-- 自定义的 start-->
             <div id="bugAddRowBar" hidden>
@@ -136,24 +123,20 @@
                 <!--<a title="编辑" onclick="WeAdminShow('编辑','./edit.html')" href="javascript:;"><i class="layui-icon">&#xe642;</i></a>-->
                 <!--<a title="删除" onclick="member_del(this,'要删除的id')" href="javascript:;"><i class="layui-icon">&#xe640;</i></a> -->
                 <!--<a title="删除" lay-event="del"><i class="layui-icon">&#xe640;</i></a>-->
-                <a class="layui-btn layui-btn-xs" lay-event="rowSubmit" title="单行编辑提交">单行编辑提交</a>
-                <a class="layui-btn layui-btn-xs" lay-event="edit" >编辑</a>
+                <a class="layui-btn layui-btn-xs" lay-event="rowSubmit" title="单行提交">单行提交</a>
+<!--                <a class="layui-btn layui-btn-xs" lay-event="edit" >编辑</a>-->
                 <a class="layui-btn layui-btn-danger layui-btn-xs" title="删除" lay-event="del">删除</a>
             </div>
             <!-- 自定义的 end-->
 
             <!-- dody div end-->
         <!-- 以下为脚本：：：===================================================================================== -->
-        <script>
-
-        </script>
 
         <!--  渲染table estart-->
              <script>
                  // 刚启动网页获取信息 start
-                 userPermissions = sessionStorage.getItem("")
+                 userPermissions = sessionStorage.getItem("");
                  // 刚启动网页获取信息 end
-
 
                 layui.use('table', function(){
                   var table = layui.table;
@@ -163,12 +146,13 @@
                       elem: '#tableBugAdd',
                       id: 'tableAddRenderReloadId',
                       url: '../../json/test_buglist.json',
-                      height: 400,
+                      // height: 'full-140',
+                      height: 300,
                       cols: [[
                       {type:'numbers',fixed: 'left' }//, fixed: true
                       ,{checkbox: true, fixed: true}  //{type: 'checkbox'}
                       ,{field:'bugid', title: 'bugid', sort: true, width: 80}
-                      ,{field:'bug_submit_date', title: '提交时间',sort: true, edit: 'text', width: 120}
+                      ,{field:'bug_submit_date', title: '提交日期',sort: true, edit: 'text', width: 120}
                       ,{field:'project', title: '项目', sort:true, edit: 'text', width: 80}
                       ,{field:'software', title: '软件类', edit: 'text', width: 80}
                       ,{field:'test_version', title: '测试版本', edit: 'text', width: 170 }
@@ -184,15 +168,6 @@
                       ,{field:'intermediate_situation', title: '中间情况', edit: 'text', width: 100}
                       ,{field:'developer', title: '开发者', sort: true, edit: 'text', width: 100}
                       ,{field:'remark', title: '备注', edit: 'text', width: 100}
-                      ,{field:'first_bug_regression_date', title: '第一次回归时间', sort: true, edit: 'text', width: 140}
-                      ,{field:'first_bug_regression_status', title: '第一次回归结果', edit: 'text', width: 140}
-                      ,{field:'first_bug_regression_remark', title: '第一次回归备注', edit: 'text', width: 140}
-                      ,{field:'second_bug_regression_date', title: '第二次回归时间', sort: true, edit: 'text', width: 140}
-                      ,{field:'second_bug_regression_status', title: '第二次回归结果', edit: 'text', width: 140}
-                      ,{field:'second_bug_regression_remark', title: '第二次回归备注', edit: 'text', width: 140}
-                      ,{field:'third_bug_regression_date', title: '第三次回归时间', sort: true, edit: 'text', width: 140}
-                      ,{field:'third_bug_regression_status', title: '第三次回归结果', edit: 'text', width: 140}
-                      ,{field:'third_bug_regression_remark', title: '第三次回归备注', edit: 'text', width: 140}
                       ,{title:'操作', toolbar: '#bugAddRowBar', width: '8%', fixed:'right'}
                       // ,{title:'操作', toolbar: '#bugAddRowBar', width: '8%', fixed:'right'}
                     ]],
@@ -206,6 +181,7 @@
                   table.render({
                     elem: '#tableBug' //指向table的id
                     ,toolbar: '#toolbarId' //开启头部工具栏，并为其绑定左侧模板 - >对应自定义toolbar id
+                    // ,toolbar: true //开启头部工具栏，并为其绑定左侧模板 - >对应自定义toolbar id
                     ,url: '/getBugList' //render只需要json data里的数据，所以只返回data就行
                     //,url: '../../json/test_buglist.json' //render只需要json data里的数据，所以只返回data就行
                     //,data: [] //数据前段直接处理数组，分页生效， data和url不能公用
@@ -218,40 +194,34 @@
                     ,cols: [[
                       {type:'numbers',fixed: 'left' }//, fixed: true
                       ,{checkbox: true, fixed: true}  //{type: 'checkbox'}
-                      ,{field:'bugid', title: 'bugid', sort: true, width: 80}
-                      ,{field:'bug_submit_date', title: '提交时间',sort: true, edit: 'text', width: 120}
+                      ,{field:'bugid', title: 'bugid', width: 70}
+                      ,{field:'bug_submit_date', title: '提交日期',sort: true, edit: 'text', width: 120}
                       ,{field:'project', title: '项目', edit: 'text', width: 80, style:'background-color: #009688; color: #fff;', filter:true}
                       ,{field:'software', title: '软件类', edit: 'text', width: 80}
                       ,{field:'test_version', title: '测试版本', edit: 'text', width: 170 }
                       ,{field:'bug_description', title: '描述', edit: 'text', width: 200} //暂时先200
-                      ,{field:'severity_level', title: '严重等级', sort: true, edit: 'text', width: 100}
-                      ,{field:'priority', title: '优先级', sort: true, edit: 'text', width: 80}
-                      ,{field:'bug_difficulty', title: '难度', sort: true, edit: 'text', width: 80}
+                      ,{field:'severity_level', title: '严重等级', edit: 'text', width: 100}
+                      ,{field:'priority', title: '优先级', edit: 'text', width: 80}
+                      ,{field:'bug_difficulty', title: '难度', edit: 'text', width: 80}
                       ,{field:'bug_status', title: '关闭情况',  edit: 'text', width: 100}
-                      ,{field:'bug_close_date', title: '关闭日期', sort: true, edit: 'text', width: 120}
-                      ,{field:'close_version', title: '关闭版本', sort: true, edit: 'text', width: 170}
+                      ,{field:'bug_close_date', title: '关闭日期', edit: 'text', width: 120}
+                      ,{field:'close_version', title: '关闭版本', edit: 'text', width: 170}
                       ,{field:'cause_analysis', title: '原因分析', edit: 'text', width: 120}
                       ,{field:'bug_img', title: '图片', edit: 'text', width: 80}
                       ,{field:'intermediate_situation', title: '中间情况', edit: 'text', width: 100}
                       ,{field:'developer', title: '开发者', sort: true, edit: 'text', width: 100}
                       ,{field:'remark', title: '备注', edit: 'text', width: 100}
-                      ,{field:'first_bug_regression_date', title: '第一次回归时间', sort: true, edit: 'text', width: 140}
-                      ,{field:'first_bug_regression_status', title: '第一次回归结果', edit: 'text', width: 140}
-                      ,{field:'first_bug_regression_remark', title: '第一次回归备注', edit: 'text', width: 140}
-                      ,{field:'second_bug_regression_date', title: '第二次回归时间', sort: true, edit: 'text', width: 140}
-                      ,{field:'second_bug_regression_status', title: '第二次回归结果', edit: 'text', width: 140}
-                      ,{field:'second_bug_regression_remark', title: '第二次回归备注', edit: 'text', width: 140}
-                      ,{field:'third_bug_regression_date', title: '第三次回归时间', sort: true, edit: 'text', width: 140}
-                      ,{field:'third_bug_regression_status', title: '第三次回归结果', edit: 'text', width: 140}
-                      ,{field:'third_bug_regression_remark', title: '第三次回归备注', edit: 'text', width: 140}
-                      ,{title:'操作', toolbar: '#rowBar', width: '15%', fixed:'right'}
+                      ,{field:'regression_times', title: '回归次数', edit: 'text', width: 100}
+                      ,{field:'reopen_times', title: '重开次数', edit: 'text', width: 100}
+                      ,{field:'submitterindex', title: '提交者标识', edit: 'text', width: 100}
+                      ,{title:'操作', toolbar: '#rowBar', width: '10%', fixed:'right'}
                       //,{title:'操作', toolbar: '#rowBar', fixed:'right'} //没有左右框
                     ]]
                     ,id: 'tableRenderReloadId' //给渲染制定一个id,共其他监听调用
                     ,page: true
-                    //,limit: 10     // 每页显示的条数（默认：10）,url请求方式此条没用
+                    ,limit: 10     // 每页显示的条数（默认：10）,url请求方式此条没用
                     ,limits: [1,10,15,20,25,30,100,200,500,1000]  //每页条数的选择项，默认：[10,20,30,40,50,60,70,80,90]
-                    ,height: 'full-300'
+                    ,height: 'full-100'
                     //,height: 300
 
                   });
@@ -262,6 +232,46 @@
                   var $ = layui.$, active = {
                     reload: function(){
                       var tableReloadBtn = $('#tableReloadBtn'); //指向按钮的id
+
+                      // 重载的时候重新请求bug总数
+                      $.ajax({
+                            type: "get", //请求方法
+                            url: "/buglistTotalNum", //请求地址
+                            datatype: "json",
+                            async: false,
+                            success: function (datas) {
+                                //解析返回数据
+                                //转成json对象
+                                var datasJsonObj = $.parseJSON(datas)
+                                var bugTotalNum = datasJsonObj.count
+                                console.log("bug列表，点击搜索获取总数成功，bug总数=" + bugTotalNum);
+                                $("#bugTotalNum").html(bugTotalNum)
+                            },
+                            error: function () {
+                                console.log("bug列表，点击搜索获取总数异常error");
+                            }
+                        });
+
+                      // 刚启动网页获取 权限
+                $.ajax({
+                            type: "get", //请求方法
+                            url: "/getPrivilge", //请求地址
+                            datatype: "json",
+                            async: false,
+                            success: function (datas) {
+                                //解析返回数据
+                                //转成json对象
+                                var datasJsonObj = $.parseJSON(datas);
+                                var privilege = datasJsonObj.privilege_int;
+                                console.log("bug列表，获取权限成功，清空数据库权限=" + privilege);
+                                if (privilege != 1){
+                                    $("#truncateTableBuglist").hide();
+                                }
+                            },
+                            error: function () {
+                                console.log("bug列表，获取权限异常error");
+                            }
+                        });
 
 
                       //执行重载
@@ -669,6 +679,46 @@
 					elem: '#end' //指定元素
 				});
 
+				//网页启动获取bug总数
+                $.ajax({
+						type: "get", //请求方法
+						url: "/buglistTotalNum", //请求地址
+						datatype: "json",
+                        async: false,
+						success: function (datas) {
+						    //解析返回数据
+                            //转成json对象
+                            var datasJsonObj = $.parseJSON(datas)
+                            var bugTotalNum = datasJsonObj.count
+							console.log("bug列表，获取总数成功，bug总数=" + bugTotalNum);
+                            $("#bugTotalNum").html(bugTotalNum)
+						},
+						error: function () {
+							console.log("bug列表，获取总数异常error");
+						}
+					});
+
+                // 刚启动网页获取 权限
+                $.ajax({
+                            type: "get", //请求方法
+                            url: "/getPrivilge", //请求地址
+                            datatype: "json",
+                            async: false,
+                            success: function (datas) {
+                                //解析返回数据
+                                //转成json对象
+                                var datasJsonObj = $.parseJSON(datas);
+                                var privilege = datasJsonObj.privilege_int;
+                                console.log("bug列表，获取权限成功，清空数据库权限=" + privilege);
+                                if (privilege != 1){
+                                    $("#truncateTableBuglist").hide();
+                                }
+                            },
+                            error: function () {
+                                console.log("bug列表，获取权限异常error");
+                            }
+                        });
+
 			});
 			
 		</script>
@@ -731,11 +781,13 @@
                         console.log(datas);
                         if (datas.code == 200) {
                             layer.msg('上传成功，导入数据中');
-                            //判断是否有索引重复
-                            if(datas.isrepeat == 1){ //有重复
-                                alert(datas.msg + ":" + datas.repeatlist)
-                            }else{
-                                //异步请求导入数据
+                            //判断bug索引是否有重复
+
+                            // 加载动画
+                            var loading = layer.load(0, {     //0,1,2 只有这3中动画
+                                shade: false,
+                                time: 15*1000 //嘴上等待时间 单位：毫秒
+                            });
                             //异步请求导入数据:
                             $.ajax({
                                 url:"/importMysqlByExcel",
@@ -754,12 +806,20 @@
                                     console.log("msg--type==" + typeof(returnMsg))
                                     returnCount = datasJson.count
                                     returnData = datasJson.data
+                                    isrepeat = datasJson.isrepeat
+                                    repeatlist = datasJson.repeatlist
                                     //判断跳转
                                     if(returnCode == 500 ){ //== 字符串
-                                        console.log("导入数据 失败");
-                                        layer.msg("导入数据 失败")
-                                    }
-                                    if(returnCode == 200){
+                                        console.log("is==========" + isrepeat)
+                                        if(isrepeat == 1){  //有重复项
+                                            alert(returnMsg + ":\n" + repeatlist)
+                                        }else{
+                                            layer.msg(returnMsg)
+                                        }
+                                        console.log(returnMsg);
+
+                                    }else {
+                                        layer.close(loading);  //关闭加载动画
                                         console.log("导入数据 成功,请手动刷新当前页面");
                                         layer.msg("导入数据 成功,请手动刷新当前页面")
                                     }
@@ -768,9 +828,7 @@
                                     alert("导入数据请求post 失败")
                                 }
                             });
-                            }
                         }
-
                         //如果上传失败
                         if (datas.code == 500) {
                             layer.msg('上传失败');
@@ -821,6 +879,45 @@
                 //ajax end
 
             })
+
+            //监听 导出数据
+            $("button[id='exportAllBug']").click(function () {
+                     console.log('前台点击了按钮,导出所有数据');
+                     $.ajax({
+                            url:"/exportAllBug",
+                            type:"post",
+                            success:function (datas) {
+                                console.log(typeof(datas)); //返回的json是str
+                                console.log("导出所有数据 请求成功，返回内容如下：");
+                                //转成json
+                                datasJson = $.parseJSON(datas)
+                                console.log("返回结果" + datas);
+                                console.log(datasJson.code);
+
+                                returnCode = datasJson.code
+                                returnMsg = datasJson.msg
+                                console.log("msg--type==" + typeof(returnMsg))
+                                returnCount = datasJson.count
+                                returnData = datasJson.data
+                                //判断跳转
+                                if(returnCode == 500 ){ //== 字符串
+                                    console.log("导出所有数据 失败");
+                                    layer.msg("导出所有数据 失败");
+                                }
+                                if(returnCode == 200){
+                                    console.log("导出成功，存储在项目目录--> excel_upload\\export\\buglist.xlsx");
+                                    layer.msg("导出成功，存储在-->项目目录 excel_upload\\export\\buglist.xlsx",{
+                                        icon:1,
+                                        time:4000  ////默认是3秒
+                                    });
+                                }
+                            },error:function () {
+                                alert("导出所有数据，请求异常")
+                            }
+                        });
+                    //ajax end
+
+            });
 
         </script>
 
