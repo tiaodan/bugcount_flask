@@ -141,41 +141,6 @@
                 layui.use('table', function(){
                   var table = layui.table;
 
-                  //渲染添加的 table
-                  table.render({
-                      elem: '#tableBugAdd',
-                      id: 'tableAddRenderReloadId',
-                      url: '../../json/test_buglist.json',
-                      // height: 'full-140',
-                      height: 300,
-                      cols: [[
-                      {type:'numbers',fixed: 'left' }//, fixed: true
-                      ,{checkbox: true, fixed: true}  //{type: 'checkbox'}
-                      ,{field:'bugid', title: 'bugid', sort: true, width: 80}
-                      ,{field:'bug_submit_date', title: '提交日期',sort: true, edit: 'text', width: 120}
-                      ,{field:'project', title: '项目', sort:true, edit: 'text', width: 80}
-                      ,{field:'software', title: '软件类', edit: 'text', width: 80}
-                      ,{field:'test_version', title: '测试版本', edit: 'text', width: 170 }
-                      ,{field:'bug_description', title: '描述', edit: 'text', width: 200} //暂时先200
-                      ,{field:'severity_level', title: '严重等级', sort: true, edit: 'text', width: 100}
-                      ,{field:'priority', title: '优先级', sort: true, edit: 'text', width: 80}
-                      ,{field:'bug_difficulty', title: '难度', sort: true, edit: 'text', width: 80}
-                      ,{field:'bug_status', title: '关闭情况',  edit: 'text', width: 100}
-                      ,{field:'bug_close_date', title: '关闭日期', sort: true, edit: 'text', width: 120}
-                      ,{field:'close_version', title: '关闭版本', sort: true, edit: 'text', width: 170}
-                      ,{field:'cause_analysis', title: '原因分析', edit: 'text', width: 120}
-                      ,{field:'bug_img', title: '图片', edit: 'text', width: 80}
-                      ,{field:'intermediate_situation', title: '中间情况', edit: 'text', width: 100}
-                      ,{field:'developer', title: '开发者', sort: true, edit: 'text', width: 100}
-                      ,{field:'remark', title: '备注', edit: 'text', width: 100}
-                      ,{title:'操作', toolbar: '#bugAddRowBar', width: '8%', fixed:'right'}
-                      // ,{title:'操作', toolbar: '#bugAddRowBar', width: '8%', fixed:'right'}
-                    ]],
-                      response: {
-                        statusCode: 200
-                      }
-                  });
-
                   <!-- ,url: '/demo/table/user/???' -->
                   //方法级渲染7
                   table.render({
@@ -214,7 +179,7 @@
                       ,{field:'regression_times', title: '回归次数', edit: 'text', width: 100}
                       ,{field:'reopen_times', title: '重开次数', edit: 'text', width: 100}
                       ,{field:'submitterindex', title: '提交者标识', edit: 'text', width: 100}
-                      ,{title:'操作', toolbar: '#rowBar', width: '10%', fixed:'right'}
+                      ,{title:'操作', toolbar: '#rowBar', width: '12%', fixed:'right'}
                       //,{title:'操作', toolbar: '#rowBar', fixed:'right'} //没有左右框
                     ]]
                     ,id: 'tableRenderReloadId' //给渲染制定一个id,共其他监听调用

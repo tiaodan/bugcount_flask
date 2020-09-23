@@ -132,7 +132,7 @@
                                         <div class="layui-tab-item">
                                             <!--3) 项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；-->
 <!--                                            <div id="AddBugAddAndCloseStatusMapWithProject" style="height: 400px;width: 1590px;"></div>-->
-                                            <div id="AddBugAddAndCloseStatusMapWithProject" style="height: 800px;width: 1390px;"></div>
+                                            <div id="AddBugAddAndCloseStatusMapWithProject" style="height: 400px;width: 1390px;"></div>
                                         </div>
                                         <div class="layui-tab-item">
                                             <!--4）项目维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制全部bug增长曲线和关闭曲线； + bug剩余情况	；-->
@@ -288,16 +288,18 @@
                             , response: {
                                 statusCode: 200
                             }
+                            ,totalRow: true //是否开启合计行
+                            ,toolbar: true
                             , cols: [[
                             {type: 'numbers', fixed: 'left'}//, fixed: true
                             , {checkbox: true, fixed: true}  //{type: 'checkbox'}
-                            , {field: 'bug_submit_date', title: '时间', sort: true, width: 120}
-                            , {field: 'project', title: '项目', sort: true, width: 80, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add', title: '新增', sort: true, width: 80}
-                            , {field: 'close', title: '关闭', sort: true, width: 80}
-                            , {field: 'regression', title: '回归', sort: true, width: 80}
-                            , {field: 'delay', title: '延迟', width: 80}
-                            , {field: 'reopen', title: '重开', width: 80}
+                            , {field: 'bug_submit_date', title: '时间', sort: true, width: 120, totalRowText: '合计'}
+                            , {field: 'project', title: '项目', width: 80, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'add', title: '新增', sort: true, width: 80, totalRow: true}
+                            , {field: 'close', title: '关闭', sort: true, width: 80, totalRow: true}
+                            , {field: 'regression', title: '回归', sort: true, width: 80, totalRow: true}
+                            , {field: 'delay', title: '延迟', width: 80, totalRow: true}
+                            , {field: 'reopen', title: '重开', width: 80, totalRow: true}
 
                             , {field: 'add12', title: '新增(1-2级) ', sort: true, width: 120}
                             , {field: 'close12', title: '关闭(1-2级)', sort: true,  width: 120} //暂时先200
@@ -308,105 +310,133 @@
                             , {field: 'total12', title: '总数(1-2级)', sort: true, width: 120}
                             , {field: 'bugCloseRate', title: 'bug解决率', sort: true, width: 120}
                             , {field: 'rank', title: '排名', sort: true, width: 80}
-                            , {field: 'totalNum', title: '总数', sort: true, width: 80}
+                            , {field: 'totalNum', title: '总数', sort: true, width: 80, totalRow: true}
 
                             , {field: 'project0', title: '项目0名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_project0', title: '项目0新增', sort: true, width: 120}
-                            , {field: 'close_project0', title: '项目0关闭', sort: true, width: 120}
-                            , {field: 'regression_project0', title: '项目0回归', sort: true, width: 120}
-                            , {field: 'delay_project0', title: '项目0延迟', sort: true, width: 120}
-                            , {field: 'reopen_project0', title: '项目0重开', sort: true, width: 120}
+                            , {field: 'add_project0', title: '项目0新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_project0', title: '项目0关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_project0', title: '项目0回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_project0', title: '项目0延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_project0', title: '项目0重开', sort: true, width: 120, totalRow: true}
 
                             , {field: 'project1', title: '项目1名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_project1', title: '项目1新增', sort: true, width: 120}
-                            , {field: 'close_project1', title: '项目1关闭', sort: true, width: 120}
-                            , {field: 'regression_project1', title: '项目1回归', sort: true, width: 120}
-                            , {field: 'delay_project1', title: '项目1延迟', sort: true, width: 120}
-                            , {field: 'reopen_project1', title: '项目1重开', sort: true, width: 120}
+                            , {field: 'add_project1', title: '项目1新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_project1', title: '项目1关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_project1', title: '项目1回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_project1', title: '项目1延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_project1', title: '项目1重开', sort: true, width: 120, totalRow: true}
 
                             , {field: 'project2', title: '项目2名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_project2', title: '项目2新增', sort: true, width: 120}
-                            , {field: 'close_project2', title: '项目2关闭', sort: true, width: 120}
-                            , {field: 'regression_project2', title: '项目2回归', sort: true, width: 120}
-                            , {field: 'delay_project2', title: '项目2延迟', sort: true, width: 120}
-                            , {field: 'reopen_project2', title: '项目2重开', sort: true, width: 120}
+                            , {field: 'add_project2', title: '项目2新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_project2', title: '项目2关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_project2', title: '项目2回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_project2', title: '项目2延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_project2', title: '项目2重开', sort: true, width: 120, totalRow: true}
 
                             , {field: 'project3', title: '项目3名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_project3', title: '项目3新增', sort: true, width: 120}
-                            , {field: 'close_project3', title: '项目3关闭', sort: true, width: 120}
-                            , {field: 'regression_project3', title: '项目3回归', sort: true, width: 120}
-                            , {field: 'delay_project3', title: '项目3延迟', sort: true, width: 120}
-                            , {field: 'reopen_project3', title: '项目3重开', sort: true, width: 120}
+                            , {field: 'add_project3', title: '项目3新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_project3', title: '项目3关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_project3', title: '项目3回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_project3', title: '项目3延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_project3', title: '项目3重开', sort: true, width: 120, totalRow: true}
 
                             , {field: 'project4', title: '项目4名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_project4', title: '项目4新增', sort: true, width: 120}
-                            , {field: 'close_project4', title: '项目4关闭', sort: true, width: 120}
-                            , {field: 'regression_project4', title: '项目4回归', sort: true, width: 120}
-                            , {field: 'delay_project4', title: '项目4延迟', sort: true, width: 120}
-                            , {field: 'reopen_project4', title: '项目4重开', sort: true, width: 120}
+                            , {field: 'add_project4', title: '项目4新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_project4', title: '项目4关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_project4', title: '项目4回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_project4', title: '项目4延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_project4', title: '项目4重开', sort: true, width: 120, totalRow: true}
 
                             , {field: 'project5', title: '项目5名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_project5', title: '项目5新增', sort: true, width: 120}
-                            , {field: 'close_project5', title: '项目5关闭', sort: true, width: 120}
-                            , {field: 'regression_project5', title: '项目5回归', sort: true, width: 120}
-                            , {field: 'delay_project5', title: '项目5延迟', sort: true, width: 120}
-                            , {field: 'reopen_project5', title: '项目5重开', sort: true, width: 120}
+                            , {field: 'add_project5', title: '项目5新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_project5', title: '项目5关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_project5', title: '项目5回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_project5', title: '项目5延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_project5', title: '项目5重开', sort: true, width: 120, totalRow: true}
 
                             , {field: 'project6', title: '项目6名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_project6', title: '项目6新增', sort: true, width: 120}
-                            , {field: 'close_project6', title: '项目6关闭', sort: true, width: 120}
-                            , {field: 'regression_project6', title: '项目6回归', sort: true, width: 120}
-                            , {field: 'delay_project6', title: '项目6延迟', sort: true, width: 120}
-                            , {field: 'reopen_project6', title: '项目6重开', sort: true, width: 120}
+                            , {field: 'add_project6', title: '项目6新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_project6', title: '项目6关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_project6', title: '项目6回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_project6', title: '项目6延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_project6', title: '项目6重开', sort: true, width: 120, totalRow: true}
 
                             , {field: 'project7', title: '项目7名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_project7', title: '项目7新增', sort: true, width: 120}
-                            , {field: 'close_project7', title: '项目7关闭', sort: true, width: 120}
-                            , {field: 'regression_project7', title: '项目7回归', sort: true, width: 120}
-                            , {field: 'delay_project7', title: '项目7延迟', sort: true, width: 120}
-                            , {field: 'reopen_project7', title: '项目7重开', sort: true, width: 120}
+                            , {field: 'add_project7', title: '项目7新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_project7', title: '项目7关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_project7', title: '项目7回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_project7', title: '项目7延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_project7', title: '项目7重开', sort: true, width: 120, totalRow: true}
 
                             , {field: 'project8', title: '项目8名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_project8', title: '项目8新增', sort: true, width: 120}
-                            , {field: 'close_project8', title: '项目8关闭', sort: true, width: 120}
-                            , {field: 'regression_project8', title: '项目8回归', sort: true, width: 120}
-                            , {field: 'delay_project8', title: '项目8延迟', sort: true, width: 120}
-                            , {field: 'reopen_project8', title: '项目8重开', sort: true, width: 120}
+                            , {field: 'add_project8', title: '项目8新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_project8', title: '项目8关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_project8', title: '项目8回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_project8', title: '项目8延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_project8', title: '项目8重开', sort: true, width: 120, totalRow: true}
 
                             , {field: 'project9', title: '项目9名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_project9', title: '项目9新增', sort: true, width: 120}
-                            , {field: 'close_project9', title: '项目9关闭', sort: true, width: 120}
-                            , {field: 'regression_project9', title: '项目9回归', sort: true, width: 120}
-                            , {field: 'delay_project9', title: '项目9延迟', sort: true, width: 120}
-                            , {field: 'reopen_project9', title: '项目9重开', sort: true, width: 120}
+                            , {field: 'add_project9', title: '项目9新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_project9', title: '项目9关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_project9', title: '项目9回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_project9', title: '项目9延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_project9', title: '项目9重开', sort: true, width: 120, totalRow: true}
 
                             , {field: 'project10', title: '项目10名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_project10', title: '项目10新增', sort: true, width: 120}
-                            , {field: 'close_project10', title: '项目10关闭', sort: true, width: 120}
-                            , {field: 'regression_project10', title: '项目10回归', sort: true, width: 120}
-                            , {field: 'delay_project10', title: '项目10延迟', sort: true, width: 120}
-                            , {field: 'reopen_project10', title: '项目10重开', sort: true, width: 120}
+                            , {field: 'add_project10', title: '项目10新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_project10', title: '项目10关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_project10', title: '项目10回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_project10', title: '项目10延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_project10', title: '项目10重开', sort: true, width: 120, totalRow: true}
 
                             , {field: 'project11', title: '项目11名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_project11', title: '项目11新增', sort: true, width: 120}
-                            , {field: 'close_project11', title: '项目11关闭', sort: true, width: 120}
-                            , {field: 'regression_project11', title: '项目11回归', sort: true, width: 120}
-                            , {field: 'delay_project11', title: '项目11延迟', sort: true, width: 120}
-                            , {field: 'reopen_project11', title: '项目11重开', sort: true, width: 120}
+                            , {field: 'add_project11', title: '项目11新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_project11', title: '项目11关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_project11', title: '项目11回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_project11', title: '项目11延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_project11', title: '项目11重开', sort: true, width: 120, totalRow: true}
 
                             , {field: 'project12', title: '项目12名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_project12', title: '项目12新增', sort: true, width: 120}
-                            , {field: 'close_project12', title: '项目12关闭', sort: true, width: 120}
-                            , {field: 'regression_project12', title: '项目12回归', sort: true, width: 120}
-                            , {field: 'delay_project12', title: '项目12延迟', sort: true, width: 120}
-                            , {field: 'reopen_project12', title: '项目12重开', sort: true, width: 120}
+                            , {field: 'add_project12', title: '项目12新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_project12', title: '项目12关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_project12', title: '项目12回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_project12', title: '项目12延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_project12', title: '项目12重开', sort: true, width: 120, totalRow: true}
 
                             , {field: 'project13', title: '项目13名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_project13', title: '项目13新增', sort: true, width: 120}
-                            , {field: 'close_project13', title: '项目13关闭', sort: true, width: 120}
-                            , {field: 'regression_project13', title: '项目13回归', sort: true, width: 120}
-                            , {field: 'delay_project13', title: '项目13延迟', sort: true, width: 120}
-                            , {field: 'reopen_project13', title: '项目13重开', sort: true, width: 120}
+                            , {field: 'add_project13', title: '项目13新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_project13', title: '项目13关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_project13', title: '项目13回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_project13', title: '项目13延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_project13', title: '项目13重开', sort: true, width: 120, totalRow: true}
+
+                            , {field: 'project14', title: '项目14名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'add_project14', title: '项目14新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_project14', title: '项目14关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_project14', title: '项目14回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_project14', title: '项目14延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_project14', title: '项目14重开', sort: true, width: 120, totalRow: true}
+
+                            , {field: 'project15', title: '项目15名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'add_project15', title: '项目15新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_project15', title: '项目15关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_project15', title: '项目15回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_project15', title: '项目15延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_project15', title: '项目15重开', sort: true, width: 120, totalRow: true}
+
+                            , {field: 'project16', title: '项目16名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'add_project16', title: '项目16新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_project16', title: '项目16关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_project16', title: '项目16回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_project16', title: '项目16延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_project16', title: '项目16重开', sort: true, width: 120, totalRow: true}
+
+                            , {field: 'project17', title: '项目17名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
+                            , {field: 'add_project17', title: '项目17新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_project17', title: '项目17关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_project17', title: '项目17回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_project17', title: '项目17延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_project17', title: '项目17重开', sort: true, width: 120, totalRow: true}
                         ]]
                             , id: argTableRenderId //给渲染制定一个id,共其他监听调用
                             , page: false
@@ -1373,7 +1403,16 @@
                     require([
                         'echarts'/*, 'map/js/china' */
                     ], function (echarts) {
-
+                        //初始化 默认选中的标题
+                        selectedLegendList = {};
+                        for(var i=0;i<legendData.length;i++){
+                            if(i>1){
+                                selectedLegendList[legendData[i]] = false;
+                            }
+                        }
+                        console.log('默认选中的数据 ' + selectedLegendList)
+                        console.log('/////////////////////////////////////////////////////////////////////////////////////////')
+                        console.log(selectedLegendList)
                         var option = {
                             tooltip: {
                                 trigger: 'axis',
@@ -1385,6 +1424,7 @@
                                 }
                             },
                             toolbox: {
+                                top: 40,
                                 feature: {
                                     dataView: {show: true, readOnly: false},
                                     magicType: {show: true, type: ['line', 'bar']},
@@ -1392,9 +1432,16 @@
                                     saveAsImage: {show: true}
                                 }
                             },
+                            grid:{//折线图内容
+                                top: 100
+                            },
                             legend: {
                                 //data:['1808','LJG','ZG','test']
+                                type: 'scroll',
+                                left: 10,
+                                right: 10,
                                 data: legendData,
+                                selected: selectedLegendList  // 新增 关闭
                             },
                             xAxis: [
                                 {
@@ -1431,7 +1478,8 @@
 
                             ],
                             //series: seriesData
-                            series: seriesData
+                            series: seriesData,
+                            animationDuration: 300  //有用，折线图绘制总时间
                         };
 
                         //获取已经存在的dom 并销毁
@@ -1469,8 +1517,6 @@
                             var div=document.getElementById("AddBugAddAndCloseStatusMapWithProject");
                             // div.style.width = "100%";
                             div.style.width = 1390 + "px";
-                            div.style.height = 800 + "px";
-
                             myChart.resize();
                             // div.resize();
                         });
@@ -1662,6 +1708,13 @@
                     require([
                         'echarts'/*, 'map/js/china' */
                     ], function (echarts) {
+                        //初始化 默认选中的标题
+                        selectedLegendList = {};
+                        for(var i=0;i<legendData.length;i++){
+                            if(i>2){
+                                selectedLegendList[legendData[i]] = false;
+                            }
+                        }
 
                         var option = {
                             tooltip: {
@@ -1674,6 +1727,7 @@
                                 }
                             },
                             toolbox: {
+                                top: 40,
                                 feature: {
                                     dataView: {show: true, readOnly: false},
                                     magicType: {show: true, type: ['line', 'bar']},
@@ -1683,7 +1737,16 @@
                             },
                             legend: {
                                 //data:['1808','LJG','ZG','test']
+                                type: 'scroll',
+                                left: 20,
+                                right: 20,
+                                //right: 200,
+                                //orient: 'vertical', //垂直还是水平
                                 data: legendData,
+                                selected: selectedLegendList
+                            },
+                            grid: {
+                                top: 100
                             },
                             xAxis: [
                                 {
@@ -1826,13 +1889,13 @@
                                     developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + i] = new Array();  //项目0 新增
                                     //console.log("类型" + typeof(developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + i]));
                                     developerArgsKeyValue['closeNumArrWithDeveloperAllBugFromServerDeveloper' + i] = new Array(); //项目0 关闭
-                                    developerArgsKeyValue['lastNumArrWithDeveloperAllBugFromServerDeveloper' + i] = new Array(); //项目0 剩余
+                                    // developerArgsKeyValue['lastNumArrWithDeveloperAllBugFromServerDeveloper' + i] = new Array(); //项目0 剩余
                                     developerArgsKeyValue['totalNumArrWithDeveloperAllBugFromServerDeveloper' + i] = new Array(); //项目0 总数
 
                                     console.log("定义项目参数键值对 ");
                                     console.log(developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + i]);
                                     console.log(developerArgsKeyValue['closeNumArrWithDeveloperAllBugFromServerDeveloper' + i]);
-                                    console.log(developerArgsKeyValue['lastNumArrWithDeveloperAllBugFromServerDeveloper' + i]);
+                                    // console.log(developerArgsKeyValue['lastNumArrWithDeveloperAllBugFromServerDeveloper' + i]);
                                     console.log(developerArgsKeyValue['totalNumArrWithDeveloperAllBugFromServerDeveloper' + i]);
                                 }
                                 console.log("developerArgsKeyValue == 以下：");
@@ -1848,7 +1911,7 @@
                                     xAxisDataWithDeveloperAllBugFromServer.push(item['bug_submit_date']); //日期
                                     addNumArrWithDeveloperAllBugFromServer.push(item.add);  //新增
                                     closeNumArrWithDeveloperAllBugFromServer.push(item.close); //关闭
-                                    lastNumArrWithDeveloperAllBugFromServer.push(item.last); //剩余bug情况
+                                    // lastNumArrWithDeveloperAllBugFromServer.push(item.last); //剩余bug情况
 
                                     /*
                                     addNumArrWithDeveloperAllBugFromServerDeveloper0.push(item.add_developer0); //add_developer0
@@ -1868,7 +1931,7 @@
                                         console.log("item.add_developer=====================后");
                                         console.log(item['add_developer' + i]);
                                         developerArgsKeyValue['closeNumArrWithDeveloperAllBugFromServerDeveloper' + i].push(item['close_developer' + i]);
-                                        developerArgsKeyValue['lastNumArrWithDeveloperAllBugFromServerDeveloper' + i].push(item['last_developer' + i]);
+                                        // developerArgsKeyValue['lastNumArrWithDeveloperAllBugFromServerDeveloper' + i].push(item['last_developer' + i]);
                                     }
 
 
@@ -1878,31 +1941,31 @@
 
                                 //这里未完成，要有项目‘1808’-新增 == add_Developer0 close_Developer0
                                 //var legendDataWithDeveloperAllBug = ["新增","关闭","剩余","add_developer0","close_developer0", "last_developer0"];
-                                var legendDataWithDeveloperAllBug = ["新增","关闭","剩余"];
+                                var legendDataWithDeveloperAllBug = ["新增","关闭"];
                                 //循环添加上折线图标签栏
                                 for(var a=0;a<developerNum;a++) {
                                     legendDataWithDeveloperAllBug.push(returnDataJson.data[0]['developer' + a] + "新增");
                                     legendDataWithDeveloperAllBug.push(returnDataJson.data[0]['developer' + a] + "关闭");
-                                    legendDataWithDeveloperAllBug.push(returnDataJson.data[0]['developer' + a] + "剩余");
+                                    // legendDataWithDeveloperAllBug.push(returnDataJson.data[0]['developer' + a] + "剩余");
                                 }
 
                                 var xAxisDataWithDeveloperAllBug = xAxisDataWithDeveloperAllBugFromServer;
 
                                 addNumArrWithDeveloperAllBug = addNumArrWithDeveloperAllBugFromServer;
                                 closeNumArrWithDeveloperAllBug = closeNumArrWithDeveloperAllBugFromServer;
-                                lastNumArrWithDeveloperAllBug = lastNumArrWithDeveloperAllBugFromServer;
+                                // lastNumArrWithDeveloperAllBug = lastNumArrWithDeveloperAllBugFromServer;
                                 /*
                                 addNumArrWithDeveloperAllBugDeveloper0 = addNumArrWithDeveloperAllBugFromServerDeveloper0;
                                 closeNumArrWithDeveloperAllBugDeveloper0 = closeNumArrWithDeveloperAllBugFromServerDeveloper0;
                                 lastNumArrWithDeveloperAllBugDeveloper0 = lastNumArrWithDeveloperAllBugFromServerDeveloper0;
                                  */
                                 //var seriesDataJsonWithDeveloperAllBug = {"add": addNumArrWithDeveloperAllBug, "close": closeNumArrWithDeveloperAllBug, "last":lastNumArrWithDeveloperAllBug, "add_developer0":addNumArrWithDeveloperAllBugDeveloper0, "close_developer0":closeNumArrWithDeveloperAllBugDeveloper0, "last_developer0":lastNumArrWithDeveloperAllBugDeveloper0};
-                                var seriesDataJsonWithDeveloperAllBug = {"add": addNumArrWithDeveloperAllBug, "close": closeNumArrWithDeveloperAllBug, "last":lastNumArrWithDeveloperAllBug};
+                                var seriesDataJsonWithDeveloperAllBug = {"add": addNumArrWithDeveloperAllBug, "close": closeNumArrWithDeveloperAllBug};
 
                                 for(var b=0;b<developerNum;b++){
                                     seriesDataJsonWithDeveloperAllBug['add_developer' + b] = developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + b]; //对应一个数组
                                     seriesDataJsonWithDeveloperAllBug['close_developer' + b] = developerArgsKeyValue['closeNumArrWithDeveloperAllBugFromServerDeveloper' + b];
-                                    seriesDataJsonWithDeveloperAllBug['last_developer' + b] = developerArgsKeyValue['lastNumArrWithDeveloperAllBugFromServerDeveloper' + b];
+                                    // seriesDataJsonWithDeveloperAllBug['last_developer' + b] = developerArgsKeyValue['lastNumArrWithDeveloperAllBugFromServerDeveloper' + b];
                                 }
 
                                 json_obj.legendData = legendDataWithDeveloperAllBug;
@@ -1929,7 +1992,8 @@
             返回值： json_str            : 返回值
              */
             function renderMapWithDeveloperByTimeAlongtimeAddBugAddAndClose(legendData, xAxisData, seriesDataJson){
-                    console.log("legendData=，xAxisData，seriesDataJson" +  legendData);
+                    console.log("开发维度，新增bug趋势legendData=，xAxisData，seriesDataJson" +  legendData);
+                    console.log('///////////////////////////////////////////////////////////////////////////////////////////开发维度，新增bug趋势')
                     console.log(legendData);
                     console.log(xAxisData);
                     console.log(seriesDataJson);
@@ -2000,7 +2064,15 @@
                     require([
                         'echarts'/*, 'map/js/china' */
                     ], function (echarts) {
-
+                        //初始化 默认选中的标题
+                        selectedLegendList = {};
+                        for(var i=0;i<legendData.length;i++){
+                            if(i>1){
+                                selectedLegendList[legendData[i]] = false;
+                            }
+                        }
+                        console.log('///////////////////////////////////selectedLegendList');
+                        console.log(selectedLegendList);
                         var option = {
                             tooltip: {
                                 trigger: 'axis',
@@ -2012,6 +2084,7 @@
                                 }
                             },
                             toolbox: {
+                                top: 40,
                                 feature: {
                                     dataView: {show: true, readOnly: false},
                                     magicType: {show: true, type: ['line', 'bar']},
@@ -2021,7 +2094,14 @@
                             },
                             legend: {
                                 //data:['1808','LJG','ZG','test']
+                                type: 'scroll',
+                                left: 10,
+                                right: 10,
                                 data: legendData,
+                                selected: selectedLegendList
+                            },
+                            grid: {
+                                top: 100
                             },
                             xAxis: [
                                 {
@@ -2056,7 +2136,8 @@
 
                             ],
                             //series: seriesData
-                            series: seriesData
+                            series: seriesData,
+                            animationDuration: 300  //有用，折线图绘制总时间
                         };
 
                         /*chart = myChart = testHelper.create(echarts, 'AddBugAddAndCloseStatusMapWithDeveloper', {
@@ -2356,7 +2437,7 @@
                                 lastNumArrWithDeveloperAllBugDeveloper0 = lastNumArrWithDeveloperAllBugFromServerDeveloper0;
                                  */
                                 //var seriesDataJsonWithDeveloperAllBug = {"add": addNumArrWithDeveloperAllBug, "close": closeNumArrWithDeveloperAllBug, "last":lastNumArrWithDeveloperAllBug, "add_developer0":addNumArrWithDeveloperAllBugDeveloper0, "close_developer0":closeNumArrWithDeveloperAllBugDeveloper0, "last_developer0":lastNumArrWithDeveloperAllBugDeveloper0};
-                                var seriesDataJsonWithDeveloperAllBug = {"add": addNumArrWithDeveloperAllBug, "close": closeNumArrWithDeveloperAllBug, "last":lastNumArrWithDeveloperAllBug};
+                                var seriesDataJsonWithDeveloperAllBug = {"add": addNumArrWithDeveloperAllBug, "close": closeNumArrWithDeveloperAllBug, "last": lastNumArrWithDeveloperAllBug};
 
                                 for(var b=0;b<developerNum;b++){
                                     seriesDataJsonWithDeveloperAllBug['add_developer' + b] = developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + b]; //对应一个数组
@@ -2459,6 +2540,13 @@
                     require([
                         'echarts'/*, 'map/js/china' */
                     ], function (echarts) {
+                        //初始化 默认选中的标题
+                        selectedLegendList = {};
+                        for(var i=0;i<legendData.length;i++){
+                            if(i>2){
+                                selectedLegendList[legendData[i]] = false;
+                            }
+                        }
 
                         var option = {
                             tooltip: {
@@ -2471,6 +2559,7 @@
                                 }
                             },
                             toolbox: {
+                                top: 40,
                                 feature: {
                                     dataView: {show: true, readOnly: false},
                                     magicType: {show: true, type: ['line', 'bar']},
@@ -2480,7 +2569,14 @@
                             },
                             legend: {
                                 //data:['1808','LJG','ZG','test']
+                                type: 'scroll',
+                                left: 10,
+                                right: 10,
                                 data: legendData,
+                                selected: selectedLegendList
+                            },
+                            grid: {
+                                top: 100
                             },
                             xAxis: [
                                 {
@@ -2515,7 +2611,8 @@
 
                             ],
                             //series: seriesData
-                            series: seriesData
+                            series: seriesData,
+                            animationDuration: 300  //有用，折线图绘制总时间
                         };
 
                         /*chart = myChart = testHelper.create(echarts, 'allBugStatusMapWithDeveloper', {
@@ -2892,6 +2989,13 @@
                     require([
                         'echarts'/*, 'map/js/china' */
                     ], function (echarts) {
+                        //初始化 默认选中的标题
+                        selectedLegendList = {};
+                        for(var i=0;i<legendData.length;i++){
+                            if(i>0){
+                                selectedLegendList[legendData[i]] = false;
+                            }
+                        }
 
                         var option = {
                             tooltip: {
@@ -2904,6 +3008,7 @@
                                 }
                             },
                             toolbox: {
+                                top: 40,
                                 feature: {
                                     dataView: {show: true, readOnly: false},
                                     magicType: {show: true, type: ['line', 'bar']},
@@ -2913,7 +3018,14 @@
                             },
                             legend: {
                                 //data:['1808','LJG','ZG','test']
+                                type: 'scroll',
+                                left: 10,
+                                right: 10,
                                 data: legendData,
+                                selected: selectedLegendList
+                            },
+                            grid: {
+                                top: 100
                             },
                             xAxis: [
                                 {
@@ -2948,7 +3060,8 @@
 
                             ],
                             //series: seriesData
-                            series: seriesData
+                            series: seriesData,
+                            animationDuration: 300  //有用，折线图绘制总时间
                         };
 
                         /*chart = myChart = testHelper.create(echarts, 'easyBugStatusMapWithDeveloper', {
@@ -3279,6 +3392,13 @@
                     require([
                         'echarts'/*, 'map/js/china' */
                     ], function (echarts) {
+                        //初始化 默认选中的标题
+                        selectedLegendList = {};
+                        for(var i=0;i<legendData.length;i++){
+                            if(i>1){
+                                selectedLegendList[legendData[i]] = false;
+                            }
+                        }
 
                         var option = {
                             tooltip: {
@@ -3291,6 +3411,7 @@
                                 }
                             },
                             toolbox: {
+                                top: 40,
                                 feature: {
                                     dataView: {show: true, readOnly: false},
                                     magicType: {show: true, type: ['line', 'bar']},
@@ -3300,7 +3421,14 @@
                             },
                             legend: {
                                 //data:['1808','LJG','ZG','test']
+                                type: 'scroll',
+                                left: 10,
+                                right: 10,
                                 data: legendData,
+                                selected: selectedLegendList
+                            },
+                            grid: {
+                                top: 100
                             },
                             xAxis: [
                                 {
@@ -3335,7 +3463,8 @@
 
                             ],
                             //series: seriesData
-                            series: seriesData
+                            series: seriesData,
+                            animationDuration: 300  //有用，折线图绘制总时间
                         };
 
 

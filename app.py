@@ -195,6 +195,7 @@ def login():
     print('??????????????code type=', type(code))
     msg = '登录失败，请重新尝试'
     count = 0
+    userlevel = 2  # 普通用户
     login_sql_return_json_data = list()
 
     # json数据
@@ -235,6 +236,7 @@ def login():
                 msg = login_return_json_loads['msg']
                 count = login_return_json_loads['count']
                 login_sql_return_json_data = login_return_json_loads['data']
+                userlevel = login_return_json_loads['userlevel']
                 # 返回200 ok 并且查询到用户（count>0 ）才算成功
                 if code == 200 and count > 0:
                     msg = '登录成功'
@@ -250,6 +252,7 @@ def login():
                     # return app.send_static_file('index.html')
                     # return redirect('/indexView')
 
+
                 if login_return_json_loads['code'] == 500:
                     msg = login_return_json_loads['msg']  # 此用户已存在
 
@@ -263,6 +266,7 @@ def login():
     data['msg'] = msg
     data['count'] = count
     data['data'] = login_sql_return_json_data
+    data['userlevel'] = userlevel
     print('未转化json前的数据， ===', data)
 
     # 转化下查询结果为{},{},{}这种格式======================
@@ -1096,11 +1100,6 @@ def getTableForDrawMapWithDeveloperALongtimeAllBug():
         json_str = buglist.get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, endTime, timeDifference)
         print('《app.py，开发维度》全部bug折线图,获取全部bug 一段时间内的的增长和关闭情况, 返回json==jsonStr=====', json_str)
 
-    if request.method == "POST":
-        print('post请求')
-        json_str = buglist.get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, endTime, timeDifference)
-        print('《app.py，开发维度》全部bug折线图,获取全部bug 一段时间内的的增长和关闭情况, 返回json==jsonStr=====', json_str)
-
     return json_str
 
 
@@ -1120,11 +1119,6 @@ def getTableForDrawMapWithDeveloperALongtimeAddBugAddAndClose():
     # 默认使用 get 请求
     if request.method == "GET":
         print('get请求')
-        json_str = buglist.get_alldeveloperdata_withdeveloper_alongtime_addandclosebug_orderby_date(startTime, endTime, timeDifference)
-        print('《app.py，开发维度》新增bug增长曲线和关闭曲线 一段时间内的的增长和关闭情况, 返回json==jsonStr=====', json_str)
-
-    if request.method == "POST":
-        print('post请求')
         json_str = buglist.get_alldeveloperdata_withdeveloper_alongtime_addandclosebug_orderby_date(startTime, endTime, timeDifference)
         print('《app.py，开发维度》新增bug增长曲线和关闭曲线 一段时间内的的增长和关闭情况, 返回json==jsonStr=====', json_str)
 

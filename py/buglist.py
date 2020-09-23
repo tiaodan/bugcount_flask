@@ -702,11 +702,13 @@ def get_bugcount_by_project(startTime, endTime):
               "count(bug_status = 2 or null) as 'close'," \
               "count(bug_status = 3 or null) as 'regression', " \
               "count(bug_status = 4 or null) as 'delay', " \
+              "count(bug_status = 5 or null) as 'reopen', " \
               "count(bug_status = 1 and severity_level <= 2 or null) as 'add12', " \
               "count(bug_status = 2 and severity_level <= 2 or null) as 'close12', " \
               "count(bug_status = 3 and severity_level <= 2 or null) as 'regression12', " \
               "count(bug_status = 4 and severity_level <= 2 or null) as 'delay12', " \
-              "count(severity_level <= 2 or null) as 'delay12', " \
+              "count(bug_status = 5 and severity_level <= 2 or null) as 'reopen12', " \
+              "count(severity_level <= 2 or null) as 'total12', " \
               "convert( count(bug_status = 2 or null)/count(bugid or null),decimal(10,2) ) as 'rate', " \
               "count(bugid or null) as 'totalNum' from bugcount.buglist " \
               "where (bug_submit_date >= %s and  bug_submit_date <= %s ) group by project order by rate desc;"
@@ -738,14 +740,17 @@ def get_bugcount_by_project(startTime, endTime):
             bug['closeNumByProject'] = r[3]  # 关闭
             bug['regressionNumByProject'] = r[4]  # 回归
             bug['delayNumByProject'] = r[5]  # 延迟
-            bug['addLeve12NumByProject'] = r[6]  # 12级bug新增
-            bug['closeLevel12NumByProject'] = r[7]  # 1-2级bug关闭
-            bug['regressionLeve12NumByProject'] = r[8]  # 1-2级bug回归
-            bug['delayLeve12NumByProject'] = r[9]  # 1-2级bug延迟
-            bug['totalLevel12NumByProject'] = r[10]  # 1-2级bug总数
-            bug['bugCloseRateByProject'] = float(r[11])  # bug解决率(关闭/总数) 是decimall类型，转成float
+            bug['reopenNumByProject'] = r[6]  # 重开
+
+            bug['addLeve12NumByProject'] = r[7]  # 12级bug新增
+            bug['closeLevel12NumByProject'] = r[8]  # 1-2级bug关闭
+            bug['regressionLeve12NumByProject'] = r[9]  # 1-2级bug回归
+            bug['delayLeve12NumByProject'] = r[10]  # 1-2级bug延迟
+            bug['reoepnLeve12NumByProject'] = r[11]  # 1-2级bug重开
+            bug['totalLevel12NumByProject'] = r[12]  # 1-2级bug总数
+            bug['bugCloseRateByProject'] = float(r[13])  # bug解决率(关闭/总数) 是decimall类型，转成float
             bug['rankByProjectByProject'] = rank  #排名 sql未查出来，自己算,因为sql查出来是根据 解决率 倒序的，第一个是排名第1
-            bug['totalNumByProject'] = r[12]  # 总数
+            bug['totalNumByProject'] = r[14]  # 总数
             rank += 1
             # print('==============循环person==', bug)
 
@@ -1814,7 +1819,7 @@ def get_allprojectdata_withproject_alongtime_newbug_addandclose_orderby_date(sta
             # print(f'绘制新增bug增长曲线和关闭曲线，当前循环{index}, 值{i}, 值类型{type(i)}, str值{str(i)} ')
             startTime = bug_submit_date_list[index]
             endTime = bug_submit_date_list[index + 1]
-            print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
+            # print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
 
             cursor.execute(search_sql, [startTime, endTime])
             # 提交到数据库执行
@@ -1993,7 +1998,7 @@ def get_allprojectdata_withproject_alongtime_allbug_orderby_date(startTime, endT
             # print(f'绘制新增bug增长曲线和关闭曲线，当前循环{index}, 值{i}, 值类型{type(i)}, str值{str(i)} ')
 
             endTime = bug_submit_date_list[index + 1]
-            print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
+            # print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
 
             # 新增数 ，其实是查的一段时间内，提交过的bug数量，不是bugstatus=1 的数量
             # 第一个[startTime, endTime] 给add 用，第2个[startTime, endTime] 给add12 用，第N个[startTime, endTime] 给where参数 用，
@@ -2434,7 +2439,7 @@ def get_table_withdeveloper_orderby_date(startTime, endTime, timeDifference):
             # print(f'绘制新增bug增长曲线和关闭曲线，当前循环{index}, 值{i}, 值类型{type(i)}, str值{str(i)} ')
             startTime = bug_submit_date_list[index]
             endTime = bug_submit_date_list[index + 1]
-            print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
+            # print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
 
             # 新增数 ，其实是查的一段时间内，提交过的bug数量，不是bugstatus=1 的数量
             # 第一个[startTime, endTime] 给add 用，第2个[startTime, endTime] 给add12 用，第N个[startTime, endTime] 给where参数 用，
@@ -2569,7 +2574,7 @@ def get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, 
     try:
         # 拿到各种想要的参数
         # 1. 获取有几个developer
-        get_developer_sql = 'select developer from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date <= %s ) group by developer'
+        get_developer_sql = 'select developer from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date <= %s ) and developer != "" group by developer'
         cursor.execute(get_developer_sql, [startTime, endTime])
         conn.commit()
         #     获取developer tuple
@@ -2661,7 +2666,7 @@ def get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, 
             # 绘制累计关闭的开始时间 从最早开始算
             startTimeSumClose = bug_submit_date_list[0]
             endTime = bug_submit_date_list[index + 1]
-            print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
+            # print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
 
             # 新增数 ，其实是查的一段时间内，提交过的bug数量，不是bugstatus=1 的数量
             # # 第一个[startTime, endTime] 给add 用，第2个[startTime, endTime] 给add12 用，第N个[startTime, endTime] 给where参数 用，
@@ -2806,7 +2811,7 @@ def get_alldeveloperdata_withdeveloper_alongtime_addandclosebug_orderby_date(sta
     try:
         # 拿到各种想要的参数
         # 1. 获取有几个developer
-        get_developer_sql = 'select developer from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date <= %s ) group by developer'
+        get_developer_sql = 'select developer from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date <= %s ) and developer != "" group by developer'
         cursor.execute(get_developer_sql, [startTime, endTime])
         conn.commit()
         #     获取developer tuple
@@ -2893,7 +2898,7 @@ def get_alldeveloperdata_withdeveloper_alongtime_addandclosebug_orderby_date(sta
             # 绘制累计关闭的开始时间 从最早开始算
             startTimeSumClose = bug_submit_date_list[0]
             endTime = bug_submit_date_list[index + 1]
-            print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
+            # print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
 
             # 新增数 ，其实是查的一段时间内，提交过的bug数量，不是bugstatus=1 的数量
             # # 第一个[startTime, endTime] 给add 用，第2个[startTime, endTime] 给add12 用，第N个[startTime, endTime] 给where参数 用，
@@ -3272,7 +3277,7 @@ def get_easybug_table_fordrawmap_withdeveloper_orderby_date(startTime, endTime, 
             # print(f'按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线，当前循环{index}, 值{i}, 值类型{type(i)}, str值{str(i)} ')
             startTime = bug_submit_date_list[index]
             endTime = bug_submit_date_list[index + 1]
-            print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
+            # print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
 
             # 2. 执行sql语句
             cursor.execute(search_sql, [startTime, endTime])
@@ -3473,7 +3478,7 @@ def get_bugsolverate_table_fordrawmap_withdeveloper_orderby_date(startTime, endT
             # print(f'按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线，当前循环{index}, 值{i}, 值类型{type(i)}, str值{str(i)} ')
             startTime = bug_submit_date_list[index]
             endTime = bug_submit_date_list[index + 1]
-            print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
+            # print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
 
             # 2. 执行sql语句
             start_time_add_timediffrence_date = datetime.datetime.strptime(startTime, '%Y-%m-%d')

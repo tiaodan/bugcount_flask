@@ -46,6 +46,16 @@
 32）导出的时候把 关闭情况从 数字 --》文字了
 33）趋势图可以根据
 34） 加载曲线，加加载框
+35) 数据表格组合搜索，类似excel透视图那样
+36） 找市面上有没有纯excel操作的网页软件，框架等
+37) table.reder如果有100个项目怎么办？？？
+38） 注册的只能是普通用户 √
+39） 普通用户只能看bug,不能看”管理员权限“ √
+40） 长时间加载tablerender不显示加载条
+41） 折线图随着数量的多少自己变化
+42） 记录做项目中遇到的问题，记录原因及解决办法
+
+
 25） pyinstaller -F app.py 打包报错：    exec(code, run_globals)
   File "E:\venv\venv_bugcount\Scripts\pyinstaller.exe\__main__.py", line 7, in <module>
   File "e:\venv\venv_bugcount\lib\site-packages\PyInstaller\__main__.py", line 114, in run
@@ -78,7 +88,7 @@ FileNotFoundError: [Errno 2] No such file or directory: ''
 
 
 ！！！！！！！！！！！！！！！！遗留3个
-1. 权限管理
+1. 权限管理 √
 2. 添加bug
 3. 趋势图
 4. 打包成linux(使用于所有系统)
@@ -91,9 +101,11 @@ FileNotFoundError: [Errno 2] No such file or directory: ''
 索引变中文
 0. 导入为空的时候，可以导入数据库 √
 0.1 导入数据时间为空时，可以导入数据 √
+1. table不编辑edit子多了，仍然可以自动看
 
 1. 配置数据库用户名密码后，尝试一下，如果不通提示用户链接不上数据库
 2. 登录默认，关闭浏览器就算退出了。（长时间不用退出）
+3. 开启合计行之后，数字如果后2位为0,则显示整数
 
 第一次启动系统需要去后台获取配置
 修改了后台配置，重启后台的时候，需要去后台重新获取配置/更新配置
@@ -120,6 +132,7 @@ FileNotFoundError: [Errno 2] No such file or directory: ''
 
 21. 去除所有标签页的第一行，文本内容
 22. 登录缓存逻辑
+23. 给所有的统计加一个汇总，总计
 
 2222.最后要优化一下所有页面跳转，读取配置文件等
 23. ！！！！！测试索引相同有什么影响 （测试通过）√

@@ -126,7 +126,13 @@
 					admin = layui.admin,
 					menu = layui.menu;
 				$(function(){
-					menu.getMenu('./json/menu.json');
+					//读取缓存中用户权限，判断显示什么功能
+					userlevel = sessionStorage.getItem('userlevel')
+					if(userlevel == 2){
+						menu.getMenu('./json/nomalUserMenu.json');
+					}else{
+						menu.getMenu('./json/menu.json');
+					}
 					/*
 					var login = JSON.parse(localStorage.getItem("login"));
 					if(login){
