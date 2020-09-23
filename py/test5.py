@@ -18,5 +18,7 @@ from py import utils
 # dbutils.wirte2excelfile_returnjson("excel_upload\\export\\test1.xlsx", sql, True)
 # print(utils.is_valid_date("2020-01-01", "%Y-%m-%d"))
 
-sql = 'hah ""'
-print(sql)
+a = utils.get_bug_submit_date_list('2020-01-01', '2020-01-15', 7)
+b = utils.get_bug_submit_date_list_return_countsqltime('2020-01-01', '2020-01-15', 7)
+print('a', a)
+print('b', b)

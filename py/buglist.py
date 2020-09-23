@@ -1767,8 +1767,10 @@ def get_allprojectdata_withproject_alongtime_newbug_addandclose_orderby_date(sta
         project_tuple = cursor.fetchall()
 
         # 2.获取有多少时间点 list
-        bug_submit_date_list = utils.get_bug_submit_date_list(startTime, endTime, timeDifference)
+        bug_submit_date_list = utils.get_bug_submit_date_list_return_countsqltime(startTime, endTime, timeDifference)
+        bug_submit_date_list_rel = utils.get_bug_submit_date_list(startTime, endTime, timeDifference)
         print('获取时间列表 bug_submit_date_list', bug_submit_date_list)
+        print('获取时间列表 bug_submit_date_list_rel', bug_submit_date_list)
         # print('获取时间列表。type bug_submit_date_list.type = ', type(bug_submit_date_list))
 
         # 3.循环执行sql语句,获取bug_submit_date_list 中时间节点的数据
@@ -1776,7 +1778,7 @@ def get_allprojectdata_withproject_alongtime_newbug_addandclose_orderby_date(sta
         # 1. 拼接sql查询语句
         searchsql_not_complete = "select bug_submit_date, project,count(bug_status = 1 or null) as 'add', " \
                                  "count(bug_status = 2 or null) as 'close'"
-        searchsql_end = " from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date <= %s )"
+        searchsql_end = " from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date < %s )"
 
         search_sql_middle_about_project = ""
         # 循环拼接字符串
@@ -1817,11 +1819,12 @@ def get_allprojectdata_withproject_alongtime_newbug_addandclose_orderby_date(sta
                 break
 
             # print(f'绘制新增bug增长曲线和关闭曲线，当前循环{index}, 值{i}, 值类型{type(i)}, str值{str(i)} ')
-            startTime = bug_submit_date_list[index]
-            endTime = bug_submit_date_list[index + 1]
+            starttime_forsql = bug_submit_date_list[index]
+            endtime_forsql = bug_submit_date_list[index + 1]
+            endtime = bug_submit_date_list_rel[index + 1]  # 真实的结束时间
             # print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
 
-            cursor.execute(search_sql, [startTime, endTime])
+            cursor.execute(search_sql, [starttime_forsql, endtime_forsql])
             # 提交到数据库执行
             conn.commit()
             # 执行语句，返回结果, 包括：时间,项目，新增，关闭，项目0，项目0新增，项目0关闭，项目1。。。。
@@ -1834,7 +1837,8 @@ def get_allprojectdata_withproject_alongtime_newbug_addandclose_orderby_date(sta
             print(f'buglist.py.绘制新增bug趋势,tuple[0]', sql_return_result_tuple[0])
             print(f'buglist.py.绘制新增bug趋势,tuple[0][0]', sql_return_result_tuple[0][0])
             print(f'buglist.py.绘制新增bug趋势,tuple[0][1]', sql_return_result_tuple[0][1])
-            bug['bug_submit_date'] = str(endTime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
+
+            bug['bug_submit_date'] = str(endtime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
             bug['project'] = sql_return_result_tuple[0][1]  # 项目名称
             bug['add'] = sql_return_result_tuple[0][2]  # 新增
             bug['close'] = sql_return_result_tuple[0][3]  # 关闭
