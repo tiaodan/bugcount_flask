@@ -74,13 +74,26 @@
 							<option  value="21">三周</option>
 						</select>
                   </div>
-                  <div class="layui-inline"><input class="layui-input" name="" id="" autocomplete="off" placeholder=" 搜索 BugID"></div>
+<!--                  <div class="layui-inline"><input class="layui-input" name="" id="" autocomplete="off" placeholder=" 搜索 BugID"></div>-->
 
                   <button class="layui-btn" lay-submit lay-filter="search">搜索 <i class="layui-icon">&#xe615;</i></button>
                  <a class="layui-btn layui-btn-sm" style="line-height:1.6em;margin-top:3px;float:right" href="javascript:location.replace(location.href);" title="刷新">
 				    <i class="layui-icon" style="line-height:30px">ဂ</i></a>
              </form>
              <!--  表格搜索框 end-->
+
+            <!-- 自定义标题            -->
+            <div class="layui-btn-container" id="title_everyday_developer" hidden>
+<!--                <span style="float: left">数据库共有数据：<span id="userTotalNum">88</span> 条</span>-->
+            <span style="float: left">每日数据：</span>
+            </div>
+            <div class="layui-btn-container" id="title_easybug_rate" hidden>
+            <span style="float: left">易bug产生率：</span>
+            </div>
+            <div class="layui-btn-container" id="title_bugclose_rate" hidden>
+            <span style="float: left">bug解决率：</span>
+            </div>
+
 
             <!--  项目和开发维度的选项卡 start-->
             <div name="projectAndDeveloper">
@@ -176,25 +189,10 @@
 <!--                                            <li>bug解决率数据</li>-->
                                       </ul>
                                       <div class="layui-tab-content">
-                                            <div class="layui-tab-item layui-show">
-                                                    <blockquote class="layui-elem-quote" hidden><div align="center">每日数据</div></blockquote>
-                                                    <div class="layui-row">
-                                                        <table class="layui-hide" id="tableWithDevelope" lay-filter="tableWithDeveloper"></table>
-                                                    </div>
-
-                                                    <div class="layui-tab-item layui-show">
-                                                        <blockquote class="layui-elem-quote" hidden><div align="center">易bug产生比率数据</div></blockquote>
-                                                        <div class="layui-row">
-                                                            <table class="layui-hide" id="easyBugTableWithDeveloper" lay-filter="easyBugTableWithDeveloper"></table>
-                                                        </div>
-                                                    </div>
-
-                                                    <div class="layui-tab-item layui-show">
-                                                            <blockquote class="layui-elem-quote" hidden><div align="center">bug解决率数据</div></blockquote>
-                                                            <div class="layui-row">
-                                                                <table class="layui-hide" id="bugSolveRateTableWithDeveloper" lay-filter="bugSolveRateTableWithDeveloper"></table>
-                                                            </div>
-                                                    </div>
+                                            <div class="layui-tab-item layui-show" style="height: 980px">
+                                                <table class="layui-hide" id="tableWithDevelope" lay-filter="tableWithDeveloper"></table>
+                                                <table style="margin-top: 300px" class="layui-hide" id="easyBugTableWithDeveloper" lay-filter="easyBugTableWithDeveloper"></table>
+                                                <table class="layui-hide" id="bugSolveRateTableWithDeveloper" lay-filter="bugSolveRateTableWithDeveloper"></table>
                                             </div>
 
                                             <div class="layui-tab-item">
@@ -281,6 +279,7 @@
                         table.render(   {
                             elem: '#' + argElem //指向table的id
                             , url: argUrl
+                            // , toolbar: toolbarId
                             //, url: '../../../../json/test_project_map_allargs.json'
                             , method: 'get'
                             , loading: true //是否显示加载条（默认：true）
@@ -1852,6 +1851,7 @@
 
                 $.ajax({
                             url: "/getTableForDrawMapWithDeveloperALongtimeAddBugAddAndClose",
+                            // url: "/getTableWithDeveloper",
                             method: "get",
                             data:{"startTime":startTimeFromForm,"endTime":endTimeFromForm, "timeDifference":timeDifferenceFromForm},
                             datatype:"json",
@@ -1865,8 +1865,9 @@
 
                                 returnDataJsonData0Num = Object.keys(returnDataJson.data[0]).length;
                                 console.log("有多少个开发json_obj.data 数据 长度= " + returnDataJsonData0Num);
-                                developerNum = (returnDataJsonData0Num -14) / 7;
-                                console.log("有多少个开发,换算后" + developerNum);
+                                developerNum = (returnDataJsonData0Num -15) / 7;
+                                // developerNum = returnDataJson.developernum;
+                                console.log("////////////////////有多少个开发,换算后" + developerNum);
                                     console.log("，returnDataJson==============");
                                 console.log(returnDataJson);
                                 console.log("，returnDataJson.type="+ typeof(returnDataJson));
@@ -1886,11 +1887,11 @@
                                 console.log("developerArgsKeyValue == 最初：");
                                 console.log(developerArgsKeyValue);
                                 for(var i=0;i<developerNum;i++){
-                                    developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + i] = new Array();  //项目0 新增
+                                    developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + i] = new Array();  //开发0 新增
                                     //console.log("类型" + typeof(developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + i]));
-                                    developerArgsKeyValue['closeNumArrWithDeveloperAllBugFromServerDeveloper' + i] = new Array(); //项目0 关闭
-                                    // developerArgsKeyValue['lastNumArrWithDeveloperAllBugFromServerDeveloper' + i] = new Array(); //项目0 剩余
-                                    developerArgsKeyValue['totalNumArrWithDeveloperAllBugFromServerDeveloper' + i] = new Array(); //项目0 总数
+                                    developerArgsKeyValue['closeNumArrWithDeveloperAllBugFromServerDeveloper' + i] = new Array(); //开发0 关闭
+                                    // developerArgsKeyValue['lastNumArrWithDeveloperAllBugFromServerDeveloper' + i] = new Array(); //开发0 剩余
+                                    developerArgsKeyValue['totalNumArrWithDeveloperAllBugFromServerDeveloper' + i] = new Array(); //开发0 总数
 
                                     console.log("定义项目参数键值对 ");
                                     console.log(developerArgsKeyValue['addNumArrWithDeveloperAllBugFromServerDeveloper' + i]);
@@ -1948,6 +1949,8 @@
                                     legendDataWithDeveloperAllBug.push(returnDataJson.data[0]['developer' + a] + "关闭");
                                     // legendDataWithDeveloperAllBug.push(returnDataJson.data[0]['developer' + a] + "剩余");
                                 }
+                                // console.log("//////////////////////新增bug developer 图例")
+                                // console.log(legendDataWithDeveloperAllBug)
 
                                 var xAxisDataWithDeveloperAllBug = xAxisDataWithDeveloperAllBugFromServer;
 
@@ -2017,28 +2020,23 @@
                                     type:'line',
                                     data:seriesDataJson['close']
                                 };
-                    /*var lastSeriesDataNotComplete = {
-                                    name:legendData[2],
-                                    type:'line',
-                                    data:seriesDataJson['last']
-                                };*/
 
                     var seriesData = []; //最终数据，放在option里的
                     seriesData.push(addSeriesDataNotComplete);
                     seriesData.push(closeSeriesDataNotComplete);
                     // seriesData.push(lastSeriesDataNotComplete);
-                    for(var i=0; i< legendData.length/3 -1; i++) {
+                    for(var i=0; i< legendData.length/2 -1; i++) {
                         console.log("legendData.length" + legendData.length);
                         console.log("renderMapWithDeveloperByTimeAlongtimeAddBugAddAndClose, 获取折线图option,循环=" + i + legendData[i] );
                         var add_seriesDeveloperN =
                                 {
-                                    name:legendData[i*3+3],  //add_developer0 close_developer0
+                                    name:legendData[i*2+2],  //add_developer0 close_developer0
                                     type:'line',
                                     data:seriesDataJson['add_developer' + i]
                                 };
                         var  close_seriesDeveloperN   =
                                 {
-                                    name:legendData[i*3+4],   //add_developer0 close_developer0
+                                    name:legendData[i*2+3],   //add_developer0 close_developer0
                                     type:'line',
                                     data:seriesDataJson['close_developer' + i]
                                 };
@@ -2178,8 +2176,9 @@
                         table.render(   {
                             elem: '#' + argElem //指向table的id
                             , url: argUrl
+                             ,toolbar: '#title_everyday_developer' //开启头部工具栏，并为其绑定左侧模板
                             , method: 'get'
-                            , toolbar: true //显示工具栏
+                            // , toolbar: true //显示工具栏
                             , loading: true //是否显示加载条（默认：true）
                             , where: {startTime: argStartTime, endTime: argEndTime,timeDifference: argTimeDifference}
                             , response: {
@@ -2189,120 +2188,137 @@
                             {type: 'numbers', fixed: 'left'}//, fixed: true
                             , {checkbox: true, fixed: true}  //{type: 'checkbox'}
                             , {field: 'bug_submit_date', title: '时间', sort: true, width: 120}
-                            , {field: 'project', title: '项目', sort: true, width: 80, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add', title: '新增', sort: true, width: 80}
-                            , {field: 'close', title: '关闭', sort: true, width: 80}
-                            , {field: 'regression', title: '回归', sort: true, width: 80}
-                            , {field: 'delay', title: '延迟', width: 80}
+                            , {field: 'project', title: '项目', sort: true, width: 80, style:'background-color: #009688; color: #fff;', totalRowText: '合计'}
+                            , {field: 'add', title: '新增', sort: true, width: 80, totalRow: true}
+                            , {field: 'close', title: '关闭', sort: true, width: 80, totalRow: true}
+                            , {field: 'regression', title: '回归', sort: true, width: 80, totalRow: true}
+                            , {field: 'delay', title: '延迟', width: 80, totalRow: true, totalRow: true}
+                            , {field: 'reopen', title: '重开', width: 80, totalRow: true, totalRow: true}
                             , {field: 'add12', title: '新增(1-2级) ', sort: true, width: 120}
                             , {field: 'close12', title: '关闭(1-2级)', sort: true,  width: 120} //暂时先200
                             , {field: 'regression12', title: '回归(1-2级)', sort: true, width: 120}
                             , {field: 'delay12', title: '延迟(1-2级)', sort: true, width: 120}
+                            , {field: 'reopen12', title: '重开(1-2级)', sort: true, width: 120}
                             , {field: 'total12', title: '总数(1-2级)', sort: true, width: 120}
                             , {field: 'bug_close_rate', title: 'bug解决率', sort: true, width: 120}
                             , {field: 'rank', title: '排名', sort: true, width: 80}
-                            , {field: 'totalNum', title: '总数', sort: true, width: 80}
+                            , {field: 'totalNum', title: '总数', sort: true, width: 80, totalRow: true}
 
                             , {field: 'developer0', title: '开发0名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_developer0', title: '开发0新增', sort: true, width: 120}
-                            , {field: 'close_developer0', title: '开发0关闭', sort: true, width: 120}
-                            , {field: 'regression_developer0', title: '开发0回归', sort: true, width: 120}
-                            , {field: 'delay_developer0', title: '开发0延迟', sort: true, width: 120}
-                            , {field: 'total_developer0', title: '开发0总数', sort: true, width: 120}
+                            , {field: 'add_developer0', title: '开发0新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_developer0', title: '开发0关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_developer0', title: '开发0回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_developer0', title: '开发0延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_developer0', title: '开发0重开', sort: true, width: 120, totalRow: true}
+                            , {field: 'total_developer0', title: '开发0总数', sort: true, width: 120, totalRow: true}
 
                             , {field: 'developer1', title: '开发1名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_developer1', title: '开发1新增', sort: true, width: 120}
-                            , {field: 'close_developer1', title: '开发1关闭', sort: true, width: 120}
-                            , {field: 'regression_developer1', title: '开发1回归', sort: true, width: 120}
-                            , {field: 'delay_developer1', title: '开发1延迟', sort: true, width: 120}
-                            , {field: 'total_developer1', title: '开发1总数', sort: true, width: 120}
+                            , {field: 'add_developer1', title: '开发1新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_developer1', title: '开发1关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_developer1', title: '开发1回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_developer1', title: '开发1延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_developer1', title: '开发1重开', sort: true, width: 120, totalRow: true}
+                            , {field: 'total_developer1', title: '开发1总数', sort: true, width: 120, totalRow: true}
 
                             , {field: 'developer2', title: '开发2名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_developer2', title: '开发2新增', sort: true, width: 120}
-                            , {field: 'close_developer2', title: '开发2关闭', sort: true, width: 120}
-                            , {field: 'regression_developer2', title: '开发2回归', sort: true, width: 120}
-                            , {field: 'delay_developer2', title: '开发2延迟', sort: true, width: 120}
-                            , {field: 'total_developer2', title: '开发2总数', sort: true, width: 120}
+                            , {field: 'add_developer2', title: '开发2新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_developer2', title: '开发2关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_developer2', title: '开发2回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_developer2', title: '开发2延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_developer2', title: '开发2重开', sort: true, width: 120, totalRow: true}
+                            , {field: 'total_developer2', title: '开发2总数', sort: true, width: 120, totalRow: true}
 
                             , {field: 'developer3', title: '开发3名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_developer3', title: '开发3新增', sort: true, width: 120}
-                            , {field: 'close_developer3', title: '开发3关闭', sort: true, width: 120}
-                            , {field: 'regression_developer3', title: '开发3回归', sort: true, width: 120}
-                            , {field: 'delay_developer3', title: '开发3延迟', sort: true, width: 120}
-                            , {field: 'total_developer3', title: '开发3总数', sort: true, width: 120}
+                            , {field: 'add_developer3', title: '开发3新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_developer3', title: '开发3关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_developer3', title: '开发3回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_developer3', title: '开发3延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_developer3', title: '开发3重开', sort: true, width: 120, totalRow: true}
+                            , {field: 'total_developer3', title: '开发3总数', sort: true, width: 120, totalRow: true}
 
                             , {field: 'developer4', title: '开发4名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_developer4', title: '开发4新增', sort: true, width: 120}
-                            , {field: 'close_developer4', title: '开发4关闭', sort: true, width: 120}
-                            , {field: 'regression_developer4', title: '开发4回归', sort: true, width: 120}
-                            , {field: 'delay_developer4', title: '开发4延迟', sort: true, width: 120}
-                            , {field: 'total_developer4', title: '开发4总数', sort: true, width: 120}
+                            , {field: 'add_developer4', title: '开发4新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_developer4', title: '开发4关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_developer4', title: '开发4回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_developer4', title: '开发4延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_developer4', title: '开发4重开', sort: true, width: 120, totalRow: true}
+                            , {field: 'total_developer4', title: '开发4总数', sort: true, width: 120, totalRow: true}
 
                             , {field: 'developer5', title: '开发5名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_developer5', title: '开发5新增', sort: true, width: 120}
-                            , {field: 'close_developer5', title: '开发5关闭', sort: true, width: 120}
-                            , {field: 'regression_developer5', title: '开发5回归', sort: true, width: 120}
-                            , {field: 'delay_developer5', title: '开发5延迟', sort: true, width: 120}
-                            , {field: 'total_developer5', title: '开发5总数', sort: true, width: 120}
+                            , {field: 'add_developer5', title: '开发5新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_developer5', title: '开发5关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_developer5', title: '开发5回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_developer5', title: '开发5延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_developer5', title: '开发5重开', sort: true, width: 120, totalRow: true}
+                            , {field: 'total_developer5', title: '开发5总数', sort: true, width: 120, totalRow: true}
 
                             , {field: 'developer6', title: '开发6名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_developer6', title: '开发6新增', sort: true, width: 120}
-                            , {field: 'close_developer6', title: '开发6关闭', sort: true, width: 120}
-                            , {field: 'regression_developer6', title: '开发6回归', sort: true, width: 120}
-                            , {field: 'delay_developer6', title: '开发6延迟', sort: true, width: 120}
-                            , {field: 'total_developer6', title: '开发6总数', sort: true, width: 120}
+                            , {field: 'add_developer6', title: '开发6新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_developer6', title: '开发6关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_developer6', title: '开发6回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_developer6', title: '开发6延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_developer6', title: '开发6重开', sort: true, width: 120, totalRow: true}
+                            , {field: 'total_developer6', title: '开发6总数', sort: true, width: 120, totalRow: true}
 
                             , {field: 'developer7', title: '开发7名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_developer7', title: '开发7新增', sort: true, width: 120}
-                            , {field: 'close_developer7', title: '开发7关闭', sort: true, width: 120}
-                            , {field: 'regression_developer7', title: '开发7回归', sort: true, width: 120}
-                            , {field: 'delay_developer7', title: '开发7延迟', sort: true, width: 120}
-                            , {field: 'total_developer7', title: '开发7总数', sort: true, width: 120}
+                            , {field: 'add_developer7', title: '开发7新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_developer7', title: '开发7关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_developer7', title: '开发7回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_developer7', title: '开发7延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_developer7', title: '开发7重开', sort: true, width: 120, totalRow: true}
+                            , {field: 'total_developer7', title: '开发7总数', sort: true, width: 120, totalRow: true}
 
                             , {field: 'developer8', title: '开发8名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_developer8', title: '开发8新增', sort: true, width: 120}
-                            , {field: 'close_developer8', title: '开发8关闭', sort: true, width: 120}
-                            , {field: 'regression_developer8', title: '开发8回归', sort: true, width: 120}
-                            , {field: 'delay_developer8', title: '开发8延迟', sort: true, width: 120}
-                            , {field: 'total_developer8', title: '开发8总数', sort: true, width: 120}
+                            , {field: 'add_developer8', title: '开发8新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_developer8', title: '开发8关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_developer8', title: '开发8回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_developer8', title: '开发8延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_developer8', title: '开发8重开', sort: true, width: 120, totalRow: true}
+                            , {field: 'total_developer8', title: '开发8总数', sort: true, width: 120, totalRow: true}
 
                             , {field: 'developer9', title: '开发9名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_developer9', title: '开发9新增', sort: true, width: 120}
-                            , {field: 'close_developer9', title: '开发9关闭', sort: true, width: 120}
-                            , {field: 'regression_developer9', title: '开发9回归', sort: true, width: 120}
-                            , {field: 'delay_developer9', title: '开发9延迟', sort: true, width: 120}
-                            , {field: 'total_developer9', title: '开发9总数', sort: true, width: 120}
+                            , {field: 'add_developer9', title: '开发9新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_developer9', title: '开发9关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_developer9', title: '开发9回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_developer9', title: '开发9延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_developer9', title: '开发9重开', sort: true, width: 120, totalRow: true}
+                            , {field: 'total_developer9', title: '开发9总数', sort: true, width: 120, totalRow: true}
 
                             , {field: 'developer10', title: '开发10名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_developer10', title: '开发10新增', sort: true, width: 120}
-                            , {field: 'close_developer10', title: '开发10关闭', sort: true, width: 120}
-                            , {field: 'regression_developer10', title: '开发10回归', sort: true, width: 120}
-                            , {field: 'delay_developer10', title: '开发10延迟', sort: true, width: 120}
-                            , {field: 'total_developer10', title: '开发10总数', sort: true, width: 120}
+                            , {field: 'add_developer10', title: '开发10新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_developer10', title: '开发10关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_developer10', title: '开发10回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_developer10', title: '开发10延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_developer10', title: '开发10重开', sort: true, width: 120, totalRow: true}
+                            , {field: 'total_developer10', title: '开发10总数', sort: true, width: 120, totalRow: true}
 
                             , {field: 'developer11', title: '开发11名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_developer11', title: '开发11新增', sort: true, width: 120}
-                            , {field: 'close_developer11', title: '开发11关闭', sort: true, width: 120}
-                            , {field: 'regression_developer11', title: '开发11回归', sort: true, width: 120}
-                            , {field: 'delay_developer11', title: '开发11延迟', sort: true, width: 120}
-                            , {field: 'total_developer11', title: '开发11总数', sort: true, width: 120}
+                            , {field: 'add_developer11', title: '开发11新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_developer11', title: '开发11关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_developer11', title: '开发11回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_developer11', title: '开发11延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_developer11', title: '开发11重开', sort: true, width: 120, totalRow: true}
+                            , {field: 'total_developer11', title: '开发11总数', sort: true, width: 120, totalRow: true}
 
                             , {field: 'developer12', title: '开发12名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_developer12', title: '开发12新增', sort: true, width: 120}
-                            , {field: 'close_developer12', title: '开发12关闭', sort: true, width: 120}
-                            , {field: 'regression_developer12', title: '开发12回归', sort: true, width: 120}
-                            , {field: 'delay_developer12', title: '开发12延迟', sort: true, width: 120}
-                            , {field: 'total_developer12', title: '开发12总数', sort: true, width: 120}
+                            , {field: 'add_developer12', title: '开发12新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_developer12', title: '开发12关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_developer12', title: '开发12回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_developer12', title: '开发12延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_developer12', title: '开发12重开', sort: true, width: 120, totalRow: true}
+                            , {field: 'total_developer12', title: '开发12总数', sort: true, width: 120, totalRow: true}
 
                             , {field: 'developer13', title: '开发13名称', sort: true, width: 120, style:'background-color: #009688; color: #fff;'}
-                            , {field: 'add_developer13', title: '开发13新增', sort: true, width: 120}
-                            , {field: 'close_developer13', title: '开发13关闭', sort: true, width: 120}
-                            , {field: 'regression_developer13', title: '开发13回归', sort: true, width: 120}
-                            , {field: 'delay_developer13', title: '开发13延迟', sort: true, width: 120}
-                            , {field: 'total_developer13', title: '开发13总数', sort: true, width: 120}
+                            , {field: 'add_developer13', title: '开发13新增', sort: true, width: 120, totalRow: true}
+                            , {field: 'close_developer13', title: '开发13关闭', sort: true, width: 120, totalRow: true}
+                            , {field: 'regression_developer13', title: '开发13回归', sort: true, width: 120, totalRow: true}
+                            , {field: 'delay_developer13', title: '开发13延迟', sort: true, width: 120, totalRow: true}
+                            , {field: 'reopen_developer13', title: '开发13重开', sort: true, width: 120, totalRow: true}
+                            , {field: 'total_developer13', title: '开发13总数', sort: true, width: 120, totalRow: true}
                         ]]
                             , id: argTableRenderId //给渲染制定一个id,共其他监听调用
                             , page: false
+                            , totalRow: true
                             , height: 400
                         });
                 });
@@ -2328,6 +2344,7 @@
                 console.log("进入请求数据方法");
 
                 $.ajax({
+                            // url: "/getTableWithDeveloper",
                             url: "/getTableForDrawMapWithDeveloperALongtimeAllBug",
                             method: "get",
                             data:{"startTime":startTimeFromForm,"endTime":endTimeFromForm, "timeDifference":timeDifferenceFromForm},
@@ -2592,7 +2609,7 @@
                                     type: 'value',
                                     name: 'bug数量',
                                     min: 0,
-                                    max: 500,
+                                    max: 1200,
                                     interval: 100,
                                     axisLabel: {
                                         formatter: '{value} 个'
@@ -2602,7 +2619,7 @@
                                     type: 'value',
                                     name: 'bug数量',
                                     min: 0,
-                                    max: 500,
+                                    max: 1200,
                                     interval: 100,
                                     axisLabel: {
                                         formatter: '{value} 个 '
@@ -2741,7 +2758,8 @@
                             elem: '#' + argElem //指向table的id
                             , url: argUrl
                             , method: 'get'
-                            , toolbar: true //显示工具栏
+                            // , toolbar: true //显示工具栏
+                            , toolbar: '#title_easybug_rate' //显示工具栏
                             , loading: true //是否显示加载条（默认：true）
                             , where: {startTime: argStartTime, endTime: argEndTime, timeDifference: argTimeDifference}
                             , response: {
@@ -3108,7 +3126,8 @@
                             elem: '#' + argElem //指向table的id
                             , url: argUrl
                             , method: 'get'
-                            , toolbar: true //显示工具栏
+                            // , toolbar: true //显示工具栏
+                            , toolbar: '#title_bugclose_rate' //显示工具栏
                             , loading: true //是否显示加载条（默认：true）
                             , where: {startTime: argStartTime, endTime: argEndTime, timeDifference: argTimeDifference}
                             , response: {
@@ -3522,7 +3541,11 @@
 
                 //监听提交
                   form.on('submit(search)', function(data){ // 对应lay-filter
-                        var loadingMap = layer.load(1); //添加laoding,0-2两种方式 加载动画
+                        var loadingMap = layer.load(0,{    //0,1,2 只有这3中动画
+                                         shade: false,
+                                         time: 10*1000
+                        }); //添加laoding,0-2两种方式 加载动画
+
                         startTimeFromForm = document.getElementById('startTime').value;
                         endTimeFromForm =  document.getElementById('endTime').value;
                         //timeDifference =  document.getElementById('timeDifference').value;
@@ -3548,8 +3571,8 @@
                         // renderTableForDrawMapWithProjectALongtimeAllBug('tableForDrawMapWithProjectALongtimeAllBug', '/getTableForDrawMapWithProjectALongtimeAllBug', startTimeFromForm, endTimeFromForm, timeDifferenceFromForm, 'tableForDrawMapWithProjectALongtimeAllBugId');
 
                         ///////////////////////////开发维度
-                        // 渲染table - 所有bug and 1-2bug
-                        renderTableAllBugDeveloper('tableWithDevelope', '/getTableWithDeveloper', startTimeFromForm, endTimeFromForm, timeDifferenceFromForm,'tableWithDeveloperId');
+                        // 每日数据
+                        renderTableAllBugDeveloper('tableWithDevelope', '/getTableWithDeveloper', startTimeFromForm, endTimeFromForm, timeDifferenceFromForm, 'tableWithDeveloperId');
 
                         // 9）开发维度，按时间（时间可自定义）统计软件自测考量：相比较这段时间产生的所有bug，易bug产生比率；
                         // renderTableEasyBugDeveloper('easyBugTableWithDeveloper', '/getEasyBugTableWithDeveloper', startTimeFromForm, endTimeFromForm, 'easyBugTableWithDeveloperId');
@@ -3557,7 +3580,6 @@
 
                         // 10）开发维度，按时间（时间可自定义）统计bug解决的及时性考量：一二级bug一定时间内（可自定义）的解决率，三四级bug一定时间内（可自定义时间）
                         renderTableBugSolveRateALongtimeDeveloper('bugSolveRateTableWithDeveloper', '/getBugSolveRateTableForDrawMapALongtimeWithDeveloper', startTimeFromForm, endTimeFromForm, timeDifferenceFromForm, 'bugSolveRateTableWithDeveloperId');
-
 
                         /*
                         $.ajax({
@@ -3703,9 +3725,9 @@
                             var allBugAlongtimeProjectLegendData = allBugAlongtimeProjectJsonObj.legendData;
                             var allBugAlongtimeProjectXAxisData = allBugAlongtimeProjectJsonObj.xAxisData;
                             var allBugAlongtimeProjectSeriesDataJson = allBugAlongtimeProjectJsonObj.seriesDataJson;
-                            console.log("allBugAlongtimeProjectLegendData=====" + JSON.stringify(allBugAlongtimeProjectLegendData));
-                            console.log("allBugAlongtimeProjectXAxisData=====" + JSON.stringify(allBugAlongtimeProjectXAxisData));
-                            console.log("allBugAlongtimeProjectSeriesDataJson=====" + JSON.stringify(allBugAlongtimeProjectSeriesDataJson));
+                            console.log("新增bug LegendData=====" + JSON.stringify(allBugAlongtimeProjectLegendData));
+                            console.log("新增bug XAxisData=====" + JSON.stringify(allBugAlongtimeProjectXAxisData));
+                            console.log("新增bug SeriesDataJson=====" + JSON.stringify(allBugAlongtimeProjectSeriesDataJson));
                             renderMapWithProjectByTimeAlongtimeAllBug(allBugAlongtimeProjectLegendData, allBugAlongtimeProjectXAxisData, allBugAlongtimeProjectSeriesDataJson);
 
                          //7）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线； 新增bug趋势

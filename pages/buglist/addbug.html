@@ -22,7 +22,11 @@
 	<body>
 <!--			表格上方功能框start-->
 			<div class="layui-btn-container" id="toolbarId" hidden>
-            <button class="layui-btn layui-btn-sm" onclick="layer.msg('待开发')"><i class="layui-icon"></i>批量添加</button>
+<!--            <button class="layui-btn layui-btn-sm" onclick="layer.msg('待开发')" lay-event="getCheckData"><i class="layui-icon"></i>批量添加</button>-->
+            <button class="layui-btn layui-btn-sm" lay-event="batchAdd"><i class="layui-icon"></i>批量添加</button>
+			<button class="layui-btn layui-btn-sm" lay-event="getCheckData">获取选中行数据</button>
+			<button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>
+			<button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>
 <!--            <button class="layui-btn layui-btn-sm  layui-btn-danger" onclick="layer.msg('待开发')">批量删除</button>-->
             </div>
 <!--			表格上方功能框end-->
@@ -59,13 +63,13 @@
                       ,{checkbox: true, fixed: true}  //{type: 'checkbox'}
                       ,{field:'bugid', title: 'bugid', width: 80}
                       ,{field:'bug_submit_date', title: '提交日期', edit: 'text', width: 120}
-                      ,{field:'project', title: '项目', sort:true, edit: 'text', width: 80}
+                      ,{field:'project', title: '项目', edit: 'text', width: 80}
                       ,{field:'software', title: '软件类', edit: 'text', width: 80}
                       ,{field:'test_version', title: '测试版本', edit: 'text', width: 170 }
-                      ,{field:'bug_description', title: '描述', edit: 'text', width: 200} //暂时先200
-                      ,{field:'severity_level', title: '严重等级', edit: 'text', width: 100}
-                      ,{field:'priority', title: '优先级', edit: 'text', width: 80}
-                      ,{field:'bug_difficulty', title: '难度', edit: 'text', width: 80}
+                      ,{field:'bug_description', title: '描述', edit: 'text', width: 200, style:'background-color: #009688; color: #fff;'} //暂时先200
+                      ,{field:'severity_level', title: '严重等级', edit: 'text', width: 100, style:'background-color: #009688; color: #fff;'}
+                      ,{field:'priority', title: '优先级', edit: 'text', width: 80, style:'background-color: #009688; color: #fff;'}
+                      ,{field:'bug_difficulty', title: '难度', edit: 'text', width: 80, style:'background-color: #009688; color: #fff;'}
                       ,{field:'bug_status', title: '关闭情况',  edit: 'text', width: 100}
                       ,{field:'bug_close_date', title: '关闭日期', edit: 'text', width: 120}
                       ,{field:'close_version', title: '关闭版本',  edit: 'text', width: 170}
@@ -278,6 +282,98 @@
                     ,field = obj.field; //得到字段
                     layer.msg('[ID: '+ data.userid +'] ' + field + ' 字段更改为：'+ value);
                   });
+
+                  //头工具栏事件
+				  table.on('toolbar(tableBugAdd)', function(obj){
+						var checkStatus = table.checkStatus(obj.config.id);
+						switch(obj.event){
+							  case 'getCheckData':
+								var data = checkStatus.data;
+								layer.alert(JSON.stringify(data));
+							  break;
+							  case 'getCheckLength':
+								var data = checkStatus.data;
+								layer.msg('选中了：'+ data.length + ' 个');
+							  break;
+							  case 'isAll':
+								layer.msg(checkStatus.isAll ? '全选': '未全选');
+							  break;
+
+							  //自定义头工具栏右侧图标 - 提示
+							  case 'LAYTABLE_TIPS':
+								layer.alert('这是工具栏右侧自定义的一个图标按钮');
+							  break;
+
+							  case 'batchAdd':
+							  	layer.msg('待开发');
+							  	$.ajax({
+                                type: "post", //请求方法
+                                url: "/addBug", //请求地址
+								async: false,
+                                data: xxx,
+                                datatype: "json",
+                                success: function (datas) {
+
+                                    console.log(typeof (datas)); //返回的json是str
+                                    console.log("发送新增 bug 请求成功，返回内容如下：");
+                                    //转成json
+                                    datasJson = $.parseJSON(datas)
+                                    console.log("返回结果" + datas);
+                                    console.log(datasJson.code);
+
+                                    var returnCode = datasJson.code
+									var returnErrorCode = datasJson.errorcode
+                                    var returnMsg = datasJson.msg
+                                    console.log("msg--type==" + typeof (returnMsg))
+                                    var returnCount = datasJson.count
+                                    var returnData = datasJson.data
+                                    //判断跳转
+									switch (returnCode) {
+                                    	case 500:
+											console.log(returnMsg);
+                                        	layer.msg(returnMsg);
+											break;
+										case 200:
+											console.log(returnMsg);
+                                        	layer.msg(returnMsg);
+											break;
+									}
+									if (returnCode == 500){
+										// 判断错误码
+										switch(returnErrorCode) {
+											 case 1062:
+											 	returnMsg = "’提交者标注‘列 重复，请检查"
+												 layer.msg(returnMsg);
+												break;
+											 default:  // 与case 不同时执行
+												console.log(returnMsg);
+												layer.msg(returnMsg);
+										}
+									}else if (returnCode == 200) {
+                                        console.log("新增 bug 成功,请手动重载。。");
+                                        layer.msg("新增 bug 成功")
+                                        /*
+                                            //添加div消失
+                                            // 获得frame索引
+                                            var index = parent.layer.getFrameIndex(window.name);
+                                            //关闭当前frame
+                                            parent.layer.close(index);
+
+                                             */
+                                        //是否要重载一下？？？？？？？？？？？？？？
+                                        console.log("执行重载，失败了，之后再处理")
+                                        //table.reload('tableRenderReloadId')
+                                    }
+
+                                },
+                                error: function () {
+                                    console.log("前台点击 新增bug  add-bug，发送请求失败");
+                                }
+                            });
+							  break;
+
+						};
+				  });
 
                 //layui.user(table) 结束之前的所有方法
                 });

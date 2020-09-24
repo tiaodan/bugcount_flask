@@ -43,9 +43,9 @@ def get_announcement():
         sql_return_result_tuple = cursor.fetchall()
 
         # 转换查询结果为[{},{},{}]这种格式的
-        print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
-        print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
-        print("sql语句执行成功")
+        # print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
+        # print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
+        # print("sql语句执行成功")
 
         # 转化下查询结果为{},{},{}这种格式======================
         for r in sql_return_result_tuple:
@@ -105,9 +105,9 @@ def edit_announcement(argsjsonstr):
     announcement1_text = argsjsonstr["announcement1_text"]
     announcement2_text = argsjsonstr["announcement2_text"]
     announcement3_text = argsjsonstr["announcement3_text"]
-    print(announcement1_text)
-    print(announcement2_text)
-    print(announcement3_text)
+    # print(announcement1_text)
+    # print(announcement2_text)
+    # print(announcement3_text)
 
     # 打开数据库连接
     conn = pymysql.connect(db_host, db_user, db_passwd, db_dbname)

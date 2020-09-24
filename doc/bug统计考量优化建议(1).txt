@@ -20,10 +20,10 @@
 14）bug列表，清空数据库后数据库共有数据：88条 √,次数据目前只是刷新页面的时候才会请求后台，点击搜索按钮是不起作用的 √
 15）bug列表，上传数据选择为非1808的数据源，导入的仍然为1808数据 上传文件最好命名为template.xlsx,用其他的名字也可以， √但是上传文件里的sheet必须叫sheet1 √
 16）bug列表，添加bug可以整个作为一个菜单，改名为“bug记录”； √
-17）bug列表，添加bug下的表格编辑bug支持tab键，光标tab到新增按钮回车可增加一行，最下面有个提交按钮，指提交当前编辑的所有bug，  添加bug成功，需要删除该行吗？·
-可以限制10条为一次提交的最大量，当回车增加超过10提示“请先完成当前十条数据的提交，避免数据丢失”  x 暂不知如何处理
+17）bug列表，添加bug下的表格编辑bug支持tab键，光标tab到新增按钮回车可增加一行，最下面有个提交按钮，指提交当前编辑的所有bug，  添加bug成功，需要删除该行吗，该行变颜色？·
+可以限制10条为一次提交的最大量，当回车增加超过10提示“请先完成当前十条数据的提交，避免数据丢失”  x 暂不知如何处理 -改成复选框提交
 18）bug列表，添加bug（bug记录）可以统一在上面定义提交时间、项目、软件版本、软件模块，
-表格内只需要可编辑描述、严重等级、优先级、难度，bugid自动生成、关闭情况自动置为处理，其他字段自动置空； x 暂不知如何处理
+表格内只需要可编辑描述、严重等级、优先级、难度，bugid自动生成、关闭情况自动置为处理，其他字段自动置空； x 暂不知如何处理 √
 19）bug列表，bug列表的添加功能需完成；√ （单条添加）
 20）bug列表，bug列表的编辑按钮是准备做成什么功能，单个bug的编辑界面吗？想法不错。2 暂时不弄，隐藏 x
 21）bug列表，翻页功能不可用，不能看到下一页。√
@@ -36,7 +36,7 @@
 25）bug统计图，XXX曲线重命名为XXX趋势，比如“新增bug增长关闭曲线”修改为“新增bug趋势”，“全部bug增长关闭曲线”修改为“累计bug趋势”。 √
 26）bug统计图，全部bug增长关闭曲线，绘制数据模型应该有问题，指累计的bug，bug应该是不断增加的，关闭也是不断增加的，剩余bug是指现存没关闭的。 x 属于项目的数据不对 √
 27）bug统计图，开发维度，易bug产生比率数据和bug解决率数据应该都放到每日数据里。√
-28）bug统计图，开发维度，新增bug增长关闭曲线不呈现剩余，全部bug增长关闭曲线呈现剩余。x 数据不正确！！-需要检查
+28）bug统计图，开发维度，新增bug增长关闭曲线不呈现剩余，全部bug增长关闭曲线呈现剩余。x 数据不正确！！-需要检查 √
 29）bug统计图，曲线图呈现比较慢，要缩在左侧不显示很久。 √(呈现慢设置animationDuration: 300 毫秒) √
 
 30) bug数据中有null值，怎么统计？？没考虑到 project不能==0 developer不能==null √
@@ -54,6 +54,9 @@
 40） 长时间加载tablerender不显示加载条
 41） 折线图随着数量的多少自己变化
 42） 记录做项目中遇到的问题，记录原因及解决办法
+43)  上传报错 bug truncate by bug_description
+44)  table某些列默认隐藏？？？如何做
+45） 批量删除 未实现
 
 
 25） pyinstaller -F app.py 打包报错：    exec(code, run_globals)
@@ -84,13 +87,38 @@ FileNotFoundError: [Errno 2] No such file or directory: ''
 
 26) dell电脑打包错误，分析与代码无关，与环境有关
 27) 添加用户加字段roleId！！！！！！！！！！！！！！
+28) 登录提示
+[2020-09-24 11:34:07,968] ERROR in app: Exception on /login [POST]
+Traceback (most recent call last):
+  File "E:\venv\venv_bugcount\lib\site-packages\flask\app.py", line 2447, in wsgi_app
+    response = self.full_dispatch_request()
+  File "E:\venv\venv_bugcount\lib\site-packages\flask\app.py", line 1952, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "E:\venv\venv_bugcount\lib\site-packages\flask\app.py", line 1821, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "E:\venv\venv_bugcount\lib\site-packages\flask\_compat.py", line 39, in reraise
+    raise value
+  File "E:\venv\venv_bugcount\lib\site-packages\flask\app.py", line 1950, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "E:\venv\venv_bugcount\lib\site-packages\flask\app.py", line 1936, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "E:\software\C_workspace\pycharm_64\bugcount_flask\app.py", line 230, in login
+    login_return_json = c_account.login(username, password)
+  File "E:\software\C_workspace\pycharm_64\bugcount_flask\py\c_account.py", line 139, in login
+    userlevel = userlevel_tuple[0]
+TypeError: 'int' object is not subscriptable
+
+29） 开发维度title放在表格左上角,点击搜索后，在打开表格，没有左右拉的框
+30） 切换标签页，需要重新搜索才可以
+31） 登录系统后，切换到别的界面后，无法从缓存中读取数据
+32） 易bug比率 和bug解决率看的是累计的情况，还是每周的情--》就是看的每周的情况√
 
 
 
 ！！！！！！！！！！！！！！！！遗留3个
 1. 权限管理 √
 2. 添加bug
-3. 趋势图
+3. 趋势图 √
 4. 打包成linux(使用于所有系统)
 5. 翻页 √
 6. 日志

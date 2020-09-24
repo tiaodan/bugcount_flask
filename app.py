@@ -1067,7 +1067,7 @@ def getTableWithDeveloper():
     endTime = request.values.get("endTime")
     timeDifference = int(request.values.get("timeDifference"))
     print(f'timeDifference 类型{type(timeDifference)}')  # str
-    print(f"《app.py。开发维度》每日数据，前台传的参数startime={startTime}， endtime={endTime}, timeDifference={timeDifference}")
+    # print(f"《app.py。开发维度》每日数据，前台传的参数startime={startTime}， endtime={endTime}, timeDifference={timeDifference}")
 
     json_str = ''
 
@@ -1090,7 +1090,7 @@ def getTableForDrawMapWithDeveloperALongtimeAllBug():
     endTime = request.values.get("endTime")
     timeDifference = int(request.values.get("timeDifference"))
     print(f'timeDifference 类型{type(timeDifference)}')  # str
-    print(f"《app.py，开发维度》全部bug折线图，前台传的参数startime={startTime}， endtime={endTime}, timeDifference={timeDifference}")
+    # print(f"《app.py，开发维度》全部bug折线图，前台传的参数startime={startTime}， endtime={endTime}, timeDifference={timeDifference}")
 
     json_str = ''
 
@@ -1112,7 +1112,7 @@ def getTableForDrawMapWithDeveloperALongtimeAddBugAddAndClose():
     endTime = request.values.get("endTime")
     timeDifference = int(request.values.get("timeDifference"))
     print(f'timeDifference 类型{type(timeDifference)}')  # str
-    print(f"《app.py，开发维度》新增bug增长曲线和关闭曲线，前台传的参数startime={startTime}， endtime={endTime}, timeDifference={timeDifference}")
+    # print(f"《app.py，开发维度》新增bug增长曲线和关闭曲线，前台传的参数startime={startTime}， endtime={endTime}, timeDifference={timeDifference}")
 
     json_str = ''
 
@@ -1132,7 +1132,7 @@ def getEasyBugTableWithDeveloper():
     print(request.values)
     startTime = request.values.get("startTime")
     endTime = request.values.get("endTime")
-    print(f"《app.py。开发维度》易bug table，前台传的参数startime={startTime}， endtime={endTime}")
+    # print(f"《app.py。开发维度》易bug table，前台传的参数startime={startTime}， endtime={endTime}")
 
     json_str = ''
 
@@ -1158,7 +1158,7 @@ def getEasyBugTableForDrawMapWithDeveloper():
     startTime = request.values.get("startTime")
     endTime = request.values.get("endTime")
     timeDifference = request.values.get("timeDifference")
-    print(f"《app.py。开发维度》易bug table，前台传的参数startime={startTime}， endtime={endTime}")
+    # print(f"《app.py。开发维度》易bug table，前台传的参数startime={startTime}， endtime={endTime}")
 
     json_str = ''
 

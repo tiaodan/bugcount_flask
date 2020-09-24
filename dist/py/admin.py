@@ -52,8 +52,8 @@ def search_users(page, limit):
     try:
         # sql = 'select userid,username,password,user_remark,user_email,user_level,create_time,session from bugcount.user limit 0,40'
         sql = 'select userid,username,password,user_remark,user_email,user_level,create_time,session from bugcount.user limit %s,%s'
-        print(f'sql语句为==', sql)
-        print(f'sql语句参数 *args====  page={page},limit={limit}')
+        # print(f'sql语句为==', sql)
+        # print(f'sql语句参数 *args====  page={page},limit={limit}')
 
         # print('sql语句参数args类型=={args}', type(args))
 
@@ -70,14 +70,14 @@ def search_users(page, limit):
         sql_return_result_tuple = cursor.fetchall()
 
         #转换查询结果为[{},{},{}]这种格式的
-        print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
-        print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
-        print("执行语句返回结果(类型)==", type(sql_return_result_tuple))
-        print("sql语句执行成功")
+        # print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
+        # print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
+        # print("执行语句返回结果(类型)==", type(sql_return_result_tuple))
+        # print("sql语句执行成功")
 
         # 转化下查询结果为{},{},{}这种格式======================
-        print('????????result=', sql_return_result_tuple)
-        print('????????????????????type = ', type(sql_return_result_tuple))
+        # print('????????result=', sql_return_result_tuple)
+        # print('????????????????????type = ', type(sql_return_result_tuple))
 
 
         for r in sql_return_result_tuple:
@@ -95,7 +95,7 @@ def search_users(page, limit):
             """
             person = dict()
             person['userid'] = r[0]
-            print('=============================r=', r)
+            # print('=============================r=', r)
             print('=============================userid=',  person['userid'])
             person['username'] = r[1]
             person['password'] = r[2]

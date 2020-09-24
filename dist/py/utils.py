@@ -241,10 +241,10 @@ def get_bug_submit_date_list(starttime_str, endtime_str, date_diffrent_str):
     # delta = datetime.timedelta(days= time_diffrent_int -1) # 时间差 eg.2020-01-01 + 时间差 = 2020-01-07（一周的日期）
 
     datesub = (end_time - start_time).days + 1  # 起始 终止时间相减
-    print('时间间隔，=', datesub)
+    # print('时间间隔，=', datesub)
 
     fortimes = datesub // date_diffrent_int
-    print('循环了多少次', fortimes)
+    # print('循环了多少次', fortimes)
 
     # 取余>=0 endTime = endtime_x 都= endtime，如果mod >0 多算一段时间 mod=0 不用多算一段时间
     # if datesub % dateDiffrent = 0:
@@ -255,12 +255,12 @@ def get_bug_submit_date_list(starttime_str, endtime_str, date_diffrent_str):
     for i in range(0, fortimes):  # 包左不包右
         # 是起始时间就不 -1
         # 是终止时间就 替换从endtime_x
-        print(f'当前第{i}次循环')
+        # print(f'当前第{i}次循环')
 
         delta = datetime.timedelta(days=date_diffrent_int * (i + 1) - 1)
         bug_submit_time_str = datetime.datetime.strftime((start_time + delta), '%Y-%m-%d')
         date_submit_date.append(bug_submit_time_str)
-        print(date_submit_date)
+        # print(date_submit_date)
 
     if datesub % date_diffrent_int >0:
         date_submit_date.append(endtime_str)

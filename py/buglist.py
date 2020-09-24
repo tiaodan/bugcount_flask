@@ -10,6 +10,7 @@ import json
 #  引入python中的traceback模块，跟踪错误
 import traceback
 from py import utils
+from py import dbutils
 import datetime
 import time
 
@@ -1767,8 +1768,10 @@ def get_allprojectdata_withproject_alongtime_newbug_addandclose_orderby_date(sta
         project_tuple = cursor.fetchall()
 
         # 2.获取有多少时间点 list
-        bug_submit_date_list = utils.get_bug_submit_date_list(startTime, endTime, timeDifference)
+        bug_submit_date_list = utils.get_bug_submit_date_list_return_countsqltime(startTime, endTime, timeDifference)
+        bug_submit_date_list_rel = utils.get_bug_submit_date_list(startTime, endTime, timeDifference)
         print('获取时间列表 bug_submit_date_list', bug_submit_date_list)
+        print('获取时间列表 bug_submit_date_list_rel', bug_submit_date_list)
         # print('获取时间列表。type bug_submit_date_list.type = ', type(bug_submit_date_list))
 
         # 3.循环执行sql语句,获取bug_submit_date_list 中时间节点的数据
@@ -1776,7 +1779,7 @@ def get_allprojectdata_withproject_alongtime_newbug_addandclose_orderby_date(sta
         # 1. 拼接sql查询语句
         searchsql_not_complete = "select bug_submit_date, project,count(bug_status = 1 or null) as 'add', " \
                                  "count(bug_status = 2 or null) as 'close'"
-        searchsql_end = " from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date <= %s )"
+        searchsql_end = " from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date < %s )"
 
         search_sql_middle_about_project = ""
         # 循环拼接字符串
@@ -1808,7 +1811,7 @@ def get_allprojectdata_withproject_alongtime_newbug_addandclose_orderby_date(sta
 
         # for循环拼接sql end
         search_sql = searchsql_not_complete + search_sql_middle_about_project + searchsql_end
-        print(f'buglist.py.绘制新增bug趋势,最终查询sql ==={search_sql}')  # 项目名称并不是从sql语句中读出来的，而是单独查询project sql语句中读出
+        # print(f'buglist.py.绘制新增bug趋势,最终查询sql ==={search_sql}')  # 项目名称并不是从sql语句中读出来的，而是单独查询project sql语句中读出
 
         #  for 执行sql语句,查出结果，循环len(bug_submit_date_list) -1 次,从list取出来直接str设备
         for i in bug_submit_date_list:
@@ -1817,24 +1820,26 @@ def get_allprojectdata_withproject_alongtime_newbug_addandclose_orderby_date(sta
                 break
 
             # print(f'绘制新增bug增长曲线和关闭曲线，当前循环{index}, 值{i}, 值类型{type(i)}, str值{str(i)} ')
-            startTime = bug_submit_date_list[index]
-            endTime = bug_submit_date_list[index + 1]
+            starttime_forsql = bug_submit_date_list[index]
+            endtime_forsql = bug_submit_date_list[index + 1]
+            endtime = bug_submit_date_list_rel[index + 1]  # 真实的结束时间
             # print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
 
-            cursor.execute(search_sql, [startTime, endTime])
+            cursor.execute(search_sql, [starttime_forsql, endtime_forsql])
             # 提交到数据库执行
             conn.commit()
             # 执行语句，返回结果, 包括：时间,项目，新增，关闭，项目0，项目0新增，项目0关闭，项目1。。。。
             sql_return_result_tuple = cursor.fetchall()
-            print(f'buglist.py.绘制新增bug趋势，返回结果=={sql_return_result_tuple}')
+            # print(f'buglist.py.绘制新增bug趋势，返回结果=={sql_return_result_tuple}')
 
             # 3. 解析结果，加入到bugcount list表中，每次只返回一条数据所以不用for循环了
 
             bug = dict()
-            print(f'buglist.py.绘制新增bug趋势,tuple[0]', sql_return_result_tuple[0])
-            print(f'buglist.py.绘制新增bug趋势,tuple[0][0]', sql_return_result_tuple[0][0])
-            print(f'buglist.py.绘制新增bug趋势,tuple[0][1]', sql_return_result_tuple[0][1])
-            bug['bug_submit_date'] = str(endTime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
+            # print(f'buglist.py.绘制新增bug趋势,tuple[0]', sql_return_result_tuple[0])
+            # print(f'buglist.py.绘制新增bug趋势,tuple[0][0]', sql_return_result_tuple[0][0])
+            # print(f'buglist.py.绘制新增bug趋势,tuple[0][1]', sql_return_result_tuple[0][1])
+
+            bug['bug_submit_date'] = str(endtime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
             bug['project'] = sql_return_result_tuple[0][1]  # 项目名称
             bug['add'] = sql_return_result_tuple[0][2]  # 新增
             bug['close'] = sql_return_result_tuple[0][3]  # 关闭
@@ -1860,7 +1865,7 @@ def get_allprojectdata_withproject_alongtime_newbug_addandclose_orderby_date(sta
 
                 # print(f'第{index}次循环结束================================================')
 
-            print(f'buglist.py.绘制新增bug趋势,bug===={bug}')
+            # print(f'buglist.py.绘制新增bug趋势,bug===={bug}')
             bugcount.append(bug)
             # for end
 
@@ -2058,7 +2063,7 @@ def get_allprojectdata_withproject_alongtime_allbug_orderby_date(startTime, endT
             for project in project_tuple:
 
                 # 当前索引
-                print(f'当前 project r=={str(project)}')
+                # print(f'当前 project r=={str(project)}')
                 projectindex = project_tuple.index(project)
                 # print(f'当前索引=={index}')
                 # print(f'第{index}次循环开始================================================')
@@ -2080,7 +2085,7 @@ def get_allprojectdata_withproject_alongtime_allbug_orderby_date(startTime, endT
 
                 # print(f'第{index}次循环结束================================================')
 
-            print(f'绘制新增bug增长曲线和关闭曲线,bug===={bug}')
+            # print(f'绘制新增bug增长曲线和关闭曲线,bug===={bug}')
             bugcount.append(bug)
             # bugcount.append(totalbugtest)
             # for end
@@ -2371,7 +2376,8 @@ def get_table_withdeveloper_orderby_date(startTime, endTime, timeDifference):
         print(developer_tuple)
 
         # 2.获取有多少时间点 list
-        bug_submit_date_list = utils.get_bug_submit_date_list(startTime, endTime, timeDifference)
+        bug_submit_date_list = utils.get_bug_submit_date_list_return_countsqltime(startTime, endTime, timeDifference)
+        bug_submit_date_list_rel = utils.get_bug_submit_date_list(startTime, endTime, timeDifference)
         print('获取时间列表 bug_submit_date_list', bug_submit_date_list)
         # print('获取时间列表。type bug_submit_date_list.type = ', type(bug_submit_date_list))
 
@@ -2379,19 +2385,21 @@ def get_table_withdeveloper_orderby_date(startTime, endTime, timeDifference):
 
         # 1. 拼接sql查询语句
         searchsql_not_complete = "select bug_submit_date, project," \
-                                 "count((bug_submit_date>=%s and bug_submit_date <=%s) or null) as 'add', " \
+                                 "count(bug_status = 1 or null) as 'add', " \
                                  "count(bug_status = 2 or null) as 'close'," \
                                  "count(bug_status = 3 or null) as 'regression', " \
                                  "count(bug_status = 4 or null) as 'delay', " \
-                                 "count((bug_submit_date>=%s and bug_submit_date <=%s) and severity_level <= 2 or null) as 'add12', " \
+                                 "count(bug_status = 5 or null) as 'reopen', " \
+                                 "count(bug_status = 1 and severity_level <= 2 or null) as 'add12', " \
                                  "count(bug_status = 2 and severity_level <= 2 or null) as 'close12', " \
                                  "count(bug_status = 3 and severity_level <= 2 or null) as 'regression12', " \
                                  "count(bug_status = 4 and severity_level <= 2 or null) as 'delay12', " \
+                                 "count(bug_status = 5 and severity_level <= 2 or null) as 'reopen12', " \
                                  "count(severity_level <= 2 or null) as 'total12', " \
                                  "convert( count(bug_status = 2 or null)/count(bugid or null),decimal(10,2) ) as 'rate', " \
                                  "count(bugid or null) as 'totalNum' "
 
-        searchsql_end = " from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date <= %s )"
+        searchsql_end = " from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date < %s )"
 
         search_sql_middle_about_developer = ""
         # 循环拼接字符串
@@ -2412,16 +2420,17 @@ def get_table_withdeveloper_orderby_date(startTime, endTime, timeDifference):
             sql_name_developer = ",developer=" + developer_name + "as developer" + str(index)
             # print('name ==========', sql_name_developer)
 
-            sql_add_num_bydeveloper_belong_developer = ",count((bug_submit_date>=%s and bug_submit_date <=%s) and developer = " + developer_name + "or null) as add_num_developer" + str(index)
+            sql_add_num_bydeveloper_belong_developer = ",count(bug_status=1 and developer = " + developer_name + "or null) as add_num_developer" + str(index)
             sql_close_num_bydeveloper_belong_developer = ",count(bug_status=2 and developer = " + developer_name + "or null) as close_num_developer" + str(index)
             sql_regression_num_bydeveloper_belong_developer = ",count(bug_status=3 and developer = " + developer_name + "or null) as regression_num_developer" + str(index)
             sql_delay_num_bydeveloper_belong_developer = ",count(bug_status=4 and developer = " + developer_name + "or null) as delay_num_developer" + str(index)
+            sql_reopen_num_bydeveloper_belong_developer = ",count(bug_status=5 and developer = " + developer_name + "or null) as delay_num_developer" + str(index)
             sql_total_num_bydeveloper_belong_developer = ",count(developer = " + developer_name + "or null) as total_num_developer" + str(index)
             """
             print('for 循环拼接的sql == ', sql_name_developer + sql_add_num_bydeveloper_belong_developer +sql_close_num_bydeveloper_belong_developer +
                   sql_regression_num_bydeveloper_belong_developer + sql_delay_num_bydeveloper_belong_developer + sql_total_num_bydeveloper_belong_developer)
             """
-            for_sql = sql_name_developer + sql_add_num_bydeveloper_belong_developer + sql_close_num_bydeveloper_belong_developer + sql_regression_num_bydeveloper_belong_developer + sql_delay_num_bydeveloper_belong_developer + sql_total_num_bydeveloper_belong_developer
+            for_sql = sql_name_developer + sql_add_num_bydeveloper_belong_developer + sql_close_num_bydeveloper_belong_developer + sql_regression_num_bydeveloper_belong_developer + sql_delay_num_bydeveloper_belong_developer + sql_reopen_num_bydeveloper_belong_developer + sql_total_num_bydeveloper_belong_developer
             # search_sql_middle_about_developer 基础上拼接
             search_sql_middle_about_developer += for_sql
             # print('项目相关sql 拼接结果==', search_sql_middle_about_developer)
@@ -2437,16 +2446,14 @@ def get_table_withdeveloper_orderby_date(startTime, endTime, timeDifference):
                 break
 
             # print(f'绘制新增bug增长曲线和关闭曲线，当前循环{index}, 值{i}, 值类型{type(i)}, str值{str(i)} ')
-            startTime = bug_submit_date_list[index]
-            endTime = bug_submit_date_list[index + 1]
+            starttime_forsql = bug_submit_date_list[index]
+            endtime_forsql = bug_submit_date_list[index + 1]
+            endtime = bug_submit_date_list_rel[index + 1]
             # print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
 
             # 新增数 ，其实是查的一段时间内，提交过的bug数量，不是bugstatus=1 的数量
             # 第一个[startTime, endTime] 给add 用，第2个[startTime, endTime] 给add12 用，第N个[startTime, endTime] 给where参数 用，
-            sqlargs = [startTime, endTime, startTime, endTime, startTime, endTime]  # list，有几个developer 填几套startTime, endTime
-            for developer in developer_tuple:
-                sqlargs.append(startTime)
-                sqlargs.append(endTime)
+            sqlargs = [starttime_forsql, endtime_forsql]  # list，有几个developer 填几套startTime, endTime
 
             cursor.execute(search_sql, sqlargs)
             # 提交到数据库执行
@@ -2461,26 +2468,28 @@ def get_table_withdeveloper_orderby_date(startTime, endTime, timeDifference):
             print(f'开发维度，按时间（时间可自定义）统计全部 && 12级bug、关闭bug、待回归bug等,tuple[0]', sql_return_result_tuple[0])
             print(f'开发维度，按时间（时间可自定义）统计全部 && 12级bug、关闭bug、待回归bug等,tuple[0][0]', sql_return_result_tuple[0][0])
             print(f'开发维度，按时间（时间可自定义）统计全部 && 12级bug、关闭bug、待回归bug等,tuple[0][1]', sql_return_result_tuple[0][1])
-            bug['bug_submit_date'] = str(endTime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
+            bug['bug_submit_date'] = str(endtime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
             bug['project'] = sql_return_result_tuple[0][1]  # 项目名称
             bug['add'] = sql_return_result_tuple[0][2]  # 新增
             bug['close'] = sql_return_result_tuple[0][3]  # 关闭
             bug['regression'] = sql_return_result_tuple[0][4]  # 回归
             bug['delay'] = sql_return_result_tuple[0][5]  # 延迟
-            bug['add12'] = sql_return_result_tuple[0][6]  # 新增(1-2级)
-            bug['close12'] = sql_return_result_tuple[0][7]  # 关闭(1-2级)
-            bug['regression12'] = sql_return_result_tuple[0][8]  # 回归(1-2级)
-            bug['delay12'] = sql_return_result_tuple[0][9]  # 延迟(1-2级)
-            bug['total12'] = sql_return_result_tuple[0][10]  # 总数(1-2级)
+            bug['reopen'] = sql_return_result_tuple[0][6]  # 重开
+
+            bug['add12'] = sql_return_result_tuple[0][7]  # 新增(1-2级)
+            bug['close12'] = sql_return_result_tuple[0][8]  # 关闭(1-2级)
+            bug['regression12'] = sql_return_result_tuple[0][9]  # 回归(1-2级)
+            bug['delay12'] = sql_return_result_tuple[0][10]  # 延迟(1-2级)
+            bug['reopen12'] = sql_return_result_tuple[0][11]  # 重开(1-2级)
+            bug['total12'] = sql_return_result_tuple[0][12]  # 总数(1-2级)
             # bug解决率有可能出现none的情况
-            if sql_return_result_tuple[0][11] is None:
+            if sql_return_result_tuple[0][13] is None:
                 bug['bug_close_rate'] = float(0)
             else:
-                bug['bug_close_rate'] = float(sql_return_result_tuple[0][11])  #bug解决率
-
+                bug['bug_close_rate'] = float(sql_return_result_tuple[0][13])  # bug解决率
 
             # bug['rank'] = sql_return_result_tuple[0][12]  # 排名不是从数据库读出来的，而是自己算出来的
-            bug['totalNum'] = sql_return_result_tuple[0][12]  # 总数
+            bug['totalNum'] = sql_return_result_tuple[0][14]  # 总数
             bug['last'] = int(bug['totalNum']) - int(bug['close'])   # 剩余情况自己算的
 
             # 后面是项目相关的 关闭情况，有几个项目循环几次
@@ -2494,12 +2503,13 @@ def get_table_withdeveloper_orderby_date(startTime, endTime, timeDifference):
 
                 #   str1808[1:len(str1808)-2] 截取字符串 中 project 名字--》'1808'
                 #   str1808[2:len(str1808)-3] 截取字符串 中 project 名字--》1808 (去掉''格式的)
-                bug['developer' + str(index)] = str(developer)[2:len(str(developer))-3]  # 项目名称并不是从sql语句中读出来的，而是单独查询project sql语句中读出
-                bug['add_developer' + str(index)] = sql_return_result_tuple[0][13 + 6*index + 1]
-                bug['close_developer' + str(index)] = sql_return_result_tuple[0][13 + 6*index + 2]
-                bug['regression_developer' + str(index)] = sql_return_result_tuple[0][13 + 6*index + 3]
-                bug['delay_developer' + str(index)] = sql_return_result_tuple[0][13 + 6*index + 4]
-                bug['total_developer' + str(index)] = sql_return_result_tuple[0][13 + 6*index + 5]
+                bug['developer' + str(index)] = str(developer)[2:len(str(developer))-3]  # 15 项目名称并不是从sql语句中读出来的，而是单独查询project sql语句中读出
+                bug['add_developer' + str(index)] = sql_return_result_tuple[0][16 + 7*index]
+                bug['close_developer' + str(index)] = sql_return_result_tuple[0][17 + 7*index]
+                bug['regression_developer' + str(index)] = sql_return_result_tuple[0][18 + 7*index]
+                bug['delay_developer' + str(index)] = sql_return_result_tuple[0][19 + 7*index]
+                bug['reopen_developer' + str(index)] = sql_return_result_tuple[0][20 + 7*index]
+                bug['total_developer' + str(index)] = sql_return_result_tuple[0][21 + 7*index]
                 bug['last_developer' + str(index)] = int(bug['total_developer' + str(index)]) - int(bug['close_developer' + str(index)])
 
                 # print(f'developer{index}=', bug['developer' + str(index)])  #
@@ -2508,7 +2518,6 @@ def get_table_withdeveloper_orderby_date(startTime, endTime, timeDifference):
 
                 # print(f'第{index}次循环结束================================================')
 
-            print(f'开发维度，按时间（时间可自定义）统计全部 / 12 bug、关闭bug、待回归bug等,bug===={bug}')
             bugcount.append(bug)
             # for end
 
@@ -2525,12 +2534,10 @@ def get_table_withdeveloper_orderby_date(startTime, endTime, timeDifference):
         cursor.close()
         conn.close()
 
-
     #     按顺序执行完，就认为成功了
     code = 200
     msg = 'sql语句执行成功'
     count = len(bugcount)
-
 
     #  返回json格式的数据
     data['code'] = code
@@ -2540,7 +2547,7 @@ def get_table_withdeveloper_orderby_date(startTime, endTime, timeDifference):
 
     # 转化下查询结果为{},{},{}这种格式======================
     json_str = json.dumps(data, ensure_ascii=False)
-    print('<buglist.py> ,开发维度每日数据，按时间（时间可自定义）统计全部  12 bug==jsonStr=====', json_str)
+    print('<buglist.py> ,开发维度每日数据，jsonStr=====', json_str)
 
     print('=================================开发维度，按时间（时间可自定义）统计全部  12 bug、关闭bug、待回归bug等 end ===================================')
     return json_str
@@ -2548,11 +2555,9 @@ def get_table_withdeveloper_orderby_date(startTime, endTime, timeDifference):
 # ####################### 开发维度 start####################################
 # 8) 开发维度，获取所有开发的 获取all bug 一段时间内的增长和关闭情况，为了画折线图project0 - project13(默认给13个开发，没有值默认不返回数据, ！！ 有几个开发返回几个开发的值)
 def get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, endTime, timeDifference):
-    print(
-        '=================================获取all bug 一段时间内的增长和关闭情况 start ===================================')
+    print('=================================获取all bug 一段时间内的增长和关闭情况 start ===================================')
     print('只需要返回新增/关闭/剩余 开发0新增/开发0关闭/开发0剩余 ')
-    print(
-        f'<app.py> get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date, 传的参数{startTime}， {endTime}, {timeDifference}，类型{type(startTime)}， {type(endTime)}, {type(timeDifference)}')
+    print(f'<app.py> get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date, 传的参数{startTime}， {endTime}, {timeDifference}，类型{type(startTime)}， {type(endTime)}, {type(timeDifference)}')
 
     # json数据
     data = {}
@@ -2589,11 +2594,11 @@ def get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, 
 
         # 1. 拼接sql查询语句
         searchsql_not_complete = "select bug_submit_date, project," \
-                                 "count(bugid or null) as 'add', " \
+                                 "count(bug_status = 1 or null) as 'add', " \
                                  "count(bug_status = 2 or null) as 'close'," \
                                  "count(bug_status = 3 or null) as 'regression', " \
                                  "count(bug_status = 4 or null) as 'delay', " \
-                                 "count(severity_level <= 2 or null) as 'add12', " \
+                                 "count(bug_status = 1 and severity_level <= 2 or null) as 'add12', " \
                                  "count(bug_status = 2 and severity_level <= 2 or null) as 'close12', " \
                                  "count(bug_status = 3 and severity_level <= 2 or null) as 'regression12', " \
                                  "count(bug_status = 4 and severity_level <= 2 or null) as 'delay12', " \
@@ -2622,7 +2627,7 @@ def get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, 
             sql_name_developer = ",developer=" + developer_name + "as developer" + str(index)
             # print('name ==========', sql_name_developer)
 
-            sql_add_num_bydeveloper_belong_developer = ",count(developer = " + developer_name + "or null) as add_num_developer" + str(index)
+            sql_add_num_bydeveloper_belong_developer = ",count(bug_status=1 and developer = " + developer_name + "or null) as add_num_developer" + str(index)
             sql_close_num_bydeveloper_belong_developer = ",count(bug_status=2 and developer = " + developer_name + "or null) as close_num_developer" + str(index)
             sql_regression_num_bydeveloper_belong_developer = ",count(bug_status=3 and developer = " + developer_name + "or null) as regression_num_developer" + str(index)
             sql_delay_num_bydeveloper_belong_developer = ",count(bug_status=4 and developer = " + developer_name + "or null) as delay_num_developer" + str(index)
@@ -2640,21 +2645,8 @@ def get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, 
         search_sql = searchsql_not_complete + search_sql_middle_about_developer + searchsql_end
         print(f'开发维度，查询allbug 最终查询sql ==={search_sql}')  # 开发名称并不是从sql语句中读出来的，而是单独查询developer sql语句中读出
 
-        # 2. 获取数据，定义累加参数
-        closenum_developer = 0  # 开发维度累计关闭
-        lastnum_developer = 0  # 开发维度 累计剩余
-        close12num_developer = 0  # 开发维度 累计12级关闭
         sum_args_developer_dict = dict()
-        for developer in developer_tuple:
-            # 当前索引
-            index = developer_tuple.index(developer)
-            sum_args_developer_dict['closenum_developer' + str(index)] = 0
-            sum_args_developer_dict['lastnum_developer' + str(index)] = 0  # 定义累计剩余情况
 
-
-        for developer in developer_tuple:
-            # 当前索引
-            print(f'当前 developer r=={str(developer)}')
         #  for 执行sql语句,查出结果，循环len(bug_submit_date_list) -1 次,从list取出来直接str设备
         for i in bug_submit_date_list:
             index = bug_submit_date_list.index(i)
@@ -2662,11 +2654,10 @@ def get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, 
                 break
 
             # print(f'绘制新增bug增长曲线和关闭曲线，当前循环{index}, 值{i}, 值类型{type(i)}, str值{str(i)} ')
-            startTime = bug_submit_date_list[index]
+            startTime = bug_submit_date_list[0]  # / index
             # 绘制累计关闭的开始时间 从最早开始算
-            startTimeSumClose = bug_submit_date_list[0]
             endTime = bug_submit_date_list[index + 1]
-            # print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
+            # print(f'开发累计bug趋势  起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
 
             # 新增数 ，其实是查的一段时间内，提交过的bug数量，不是bugstatus=1 的数量
             # # 第一个[startTime, endTime] 给add 用，第2个[startTime, endTime] 给add12 用，第N个[startTime, endTime] 给where参数 用，
@@ -2684,25 +2675,23 @@ def get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, 
             conn.commit()
             # 执行语句，返回结果, 包括：时间,开发，新增，关闭，开发0，开发0新增，开发0关闭，开发1。。。。
             sql_return_result_tuple = cursor.fetchall()
-            print(f'绘制新增bug增长曲线和关闭曲线，返回结果=={sql_return_result_tuple}')
+            # print(f'绘制新增bug增长曲线和关闭曲线，返回结果=={sql_return_result_tuple}')
 
             # 3. 解析结果，加入到bugcount list表中，每次只返回一条数据所以不用for循环了
 
             bug = dict()
-            print(f'绘制新增bug增长曲线和关闭曲线,tuple[0]', sql_return_result_tuple[0])
-            print(f'绘制新增bug增长曲线和关闭曲线,tuple[0][0]', sql_return_result_tuple[0][0])
-            print(f'绘制新增bug增长曲线和关闭曲线,tuple[0][1]', sql_return_result_tuple[0][1])
+            # print(f'绘制新增bug增长曲线和关闭曲线,tuple[0]', sql_return_result_tuple[0])
+            # print(f'绘制新增bug增长曲线和关闭曲线,tuple[0][0]', sql_return_result_tuple[0][0])
+            # print(f'绘制新增bug增长曲线和关闭曲线,tuple[0][1]', sql_return_result_tuple[0][1])
             bug['bug_submit_date'] = str(endTime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
             bug['project'] = sql_return_result_tuple[0][1]  # 项目名称
             bug['add'] = sql_return_result_tuple[0][2]  # 新增
-            closenum_developer += sql_return_result_tuple[0][3]
-            bug['close'] = closenum_developer  # 累计关闭，目前是查出来 时间颗粒度 这段时间的close
+            bug['close'] = sql_return_result_tuple[0][3]  # 累计关闭，目前是查出来 时间颗粒度 这段时间的close
             bug['regression'] = sql_return_result_tuple[0][4]  # 回归
             bug['delay'] = sql_return_result_tuple[0][5]  # 延迟
-            bug['add12'] = sql_return_result_tuple[0][6]  # 新增(1-2级)
 
-            close12num_developer += sql_return_result_tuple[0][7]
-            bug['close12'] = close12num_developer  # 累计 关闭(1-2级)
+            bug['add12'] = sql_return_result_tuple[0][6]  # 新增(1-2级)
+            bug['close12'] = sql_return_result_tuple[0][7]  # 累计 关闭(1-2级)
             bug['regression12'] = sql_return_result_tuple[0][8]  # 回归(1-2级)
             bug['delay12'] = sql_return_result_tuple[0][9]  # 延迟(1-2级)
             bug['total12'] = sql_return_result_tuple[0][10]  # 总数(1-2级)
@@ -2715,8 +2704,7 @@ def get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, 
             # bug['rank'] = sql_return_result_tuple[0][12]  # 排名不是从数据库读出来的，而是自己算出来的
             bug['totalNum'] = sql_return_result_tuple[0][12]  # 总数
 
-            lastnum_developer += int(bug['totalNum']) - int(sql_return_result_tuple[0][3])  # 剩余情况自己算的-算一个累计的情况
-            bug['last'] = lastnum_developer
+            bug['last'] = int(bug['totalNum']) - int(bug['close'])  # 剩余情况自己算的-算一个累计的情况
 
             # 后面是开发相关的 关闭情况，有几个开发循环几次
             for developer in developer_tuple:
@@ -2728,15 +2716,13 @@ def get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, 
 
                 #   str1808[1:len(str1808)-2] 截取字符串 中 developer 名字--》'1808'
                 #   str1808[2:len(str1808)-3] 截取字符串 中 developer 名字--》1808 (去掉''格式的)
-                bug['developer' + str(index)] = str(developer)[2:len(str(developer)) - 3]  # 开发名称并不是从sql语句中读出来的，而是单独查询developer sql语句中读出
+                bug['developer' + str(index)] = str(developer)[2:len(str(developer)) - 3]  # 13开发名称并不是从sql语句中读出来的，而是单独查询developer sql语句中读出
                 bug['add_developer' + str(index)] = sql_return_result_tuple[0][13 + 6 * index + 1]
-
-                sum_args_developer_dict['closenum_developer' + str(index)] += sql_return_result_tuple[0][13 + 6 * index + 2]
-                bug['close_developer' + str(index)] = sum_args_developer_dict['closenum_developer' + str(index)]  # 累计关闭
+                bug['close_developer' + str(index)] = sql_return_result_tuple[0][13 + 6 * index + 2]  # 累计关闭
                 bug['regression_developer' + str(index)] = sql_return_result_tuple[0][13 + 6 * index + 3]
                 bug['delay_developer' + str(index)] = sql_return_result_tuple[0][13 + 6 * index + 4]
                 bug['total_developer' + str(index)] = sql_return_result_tuple[0][13 + 6 * index + 5]
-                sum_args_developer_dict['lastnum_developer' + str(index)] += int(bug['total_developer' + str(index)]) - int(sql_return_result_tuple[0][13 + 6 * index + 2])
+                sum_args_developer_dict['lastnum_developer' + str(index)] = int(bug['total_developer' + str(index)]) - int(bug['close_developer' + str(index)])
                 bug['last_developer' + str(index)] = sum_args_developer_dict['lastnum_developer' + str(index)]
 
                 # print(f'developer{index}=', bug['developer' + str(index)])  #
@@ -2745,7 +2731,7 @@ def get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, 
 
                 # print(f'第{index}次循环结束================================================')
 
-            print(f'绘制新增bug增长曲线和关闭曲线,bug===={bug}')
+            # print(f'绘制新增bug增长曲线和关闭曲线,bug===={bug}')
             bugcount.append(bug)
             # for end
 
@@ -2775,9 +2761,7 @@ def get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, 
 
     # 转化下查询结果为{},{},{}这种格式======================
     json_str = json.dumps(data, ensure_ascii=False)
-    print(
-        '<buglist> ,get_alldeveloperdata_withdeveloper_everyday_newbug_addandclose_orderby_date,获取新增bug(status=1) 今天相对昨天的增长和关闭情返回结果==jsonStr=====',
-        json_str)
+    print('<buglist> ,开发维度累计bug趋势 ==jsonStr=====', json_str)
 
     print('=================================获取all bug 一段时间内的增长和关闭情况 end ===================================')
     return json_str
@@ -2785,11 +2769,9 @@ def get_alldeveloperdata_withdeveloper_alongtime_allbug_orderby_date(startTime, 
 
 # 7）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制新增bug增长曲线和关闭曲线；，为了画折线图project0 - project13(默认给13个开发，没有值默认不返回数据, ！！ 有几个开发返回几个开发的值)
 def get_alldeveloperdata_withdeveloper_alongtime_addandclosebug_orderby_date(startTime, endTime, timeDifference):
-    print(
-        '=================================获取新增 bug 一段时间内的增长和关闭情况 start ===================================')
+    print('=================================获取新增 bug 一段时间内的增长和关闭情况 start ===================================')
     print('只需要返回新增/关闭 开发0新增/开发0关闭 ')
-    print(
-        f'<app.py> get_alldeveloperdata_withdeveloper_alongtime_addandclosebug_orderby_date, 传的参数{startTime}， {endTime}, {timeDifference}，类型{type(startTime)}， {type(endTime)}, {type(timeDifference)}')
+    print(f'<app.py> get_alldeveloperdata_withdeveloper_alongtime_addandclosebug_orderby_date, 传的参数{startTime}， {endTime}, {timeDifference}，类型{type(startTime)}， {type(endTime)}, {type(timeDifference)}')
 
     # json数据
     data = {}
@@ -2798,6 +2780,7 @@ def get_alldeveloperdata_withdeveloper_alongtime_addandclosebug_orderby_date(sta
     code = 500  # 默认失败
     msg = 'sql语句执行失败，此时间范围内无数据'
     count = 0  # sql语句执行结果个数
+    developernum = 0  # 开发者个数
 
     # 0. 先获取有多少个开发///////////////////////////////////////////////
     # 打开数据库连接
@@ -2810,6 +2793,9 @@ def get_alldeveloperdata_withdeveloper_alongtime_addandclosebug_orderby_date(sta
     # 使用 execute()  方法执行 SQL 查询
     try:
         # 拿到各种想要的参数
+        sql = 'select count(developer) from bugcount.buglist where developer != "" group by developer'
+        developernum = dbutils.execute_onesql_returnint(sql)
+
         # 1. 获取有几个developer
         get_developer_sql = 'select developer from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date <= %s ) and developer != "" group by developer'
         cursor.execute(get_developer_sql, [startTime, endTime])
@@ -2818,7 +2804,8 @@ def get_alldeveloperdata_withdeveloper_alongtime_addandclosebug_orderby_date(sta
         developer_tuple = cursor.fetchall()
 
         # 2.获取有多少时间点 list
-        bug_submit_date_list = utils.get_bug_submit_date_list(startTime, endTime, timeDifference)
+        bug_submit_date_list = utils.get_bug_submit_date_list_return_countsqltime(startTime, endTime, timeDifference)
+        bug_submit_date_list_rel = utils.get_bug_submit_date_list(startTime, endTime, timeDifference)
         print('获取时间列表 bug_submit_date_list', bug_submit_date_list)
         # print('获取时间列表。type bug_submit_date_list.type = ', type(bug_submit_date_list))
 
@@ -2826,11 +2813,11 @@ def get_alldeveloperdata_withdeveloper_alongtime_addandclosebug_orderby_date(sta
 
         # 1. 拼接sql查询语句
         searchsql_not_complete = "select bug_submit_date, project," \
-                                 "count(bugid or null) as 'add', " \
+                                 "count(bug_status = 1 or null) as 'add', " \
                                  "count(bug_status = 2 or null) as 'close'," \
                                  "count(bug_status = 3 or null) as 'regression', " \
                                  "count(bug_status = 4 or null) as 'delay', " \
-                                 "count(severity_level <= 2 or null) as 'add12', " \
+                                 "count(bug_status = 1 and severity_level <= 2 or null) as 'add12', " \
                                  "count(bug_status = 2 and severity_level <= 2 or null) as 'close12', " \
                                  "count(bug_status = 3 and severity_level <= 2 or null) as 'regression12', " \
                                  "count(bug_status = 4 and severity_level <= 2 or null) as 'delay12', " \
@@ -2838,7 +2825,7 @@ def get_alldeveloperdata_withdeveloper_alongtime_addandclosebug_orderby_date(sta
                                  "convert( count(bug_status = 2 or null)/count(bugid or null),decimal(10,2) ) as 'rate', " \
                                  "count(bugid or null) as 'totalNum' "
 
-        searchsql_end = " from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date <= %s )"
+        searchsql_end = " from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date < %s )"
 
         search_sql_middle_about_developer = ""
         # 循环拼接字符串
@@ -2859,7 +2846,7 @@ def get_alldeveloperdata_withdeveloper_alongtime_addandclosebug_orderby_date(sta
             sql_name_developer = ",developer=" + developer_name + "as developer" + str(index)
             # print('name ==========', sql_name_developer)
 
-            sql_add_num_bydeveloper_belong_developer = ",count(developer = " + developer_name + " or null) as add_num_developer" + str(index)
+            sql_add_num_bydeveloper_belong_developer = ",count(bug_status=1 and developer = " + developer_name + " or null) as add_num_developer" + str(index)
             sql_close_num_bydeveloper_belong_developer = ",count(bug_status=2 and developer = " + developer_name + " or null) as close_num_developer" + str(index)
             sql_regression_num_bydeveloper_belong_developer = ",count(bug_status=3 and developer = " + developer_name + " or null) as regression_num_developer" + str(index)
             sql_delay_num_bydeveloper_belong_developer = ",count(bug_status=4 and developer = " + developer_name + " or null) as delay_num_developer" + str(index)
@@ -2894,11 +2881,13 @@ def get_alldeveloperdata_withdeveloper_alongtime_addandclosebug_orderby_date(sta
             if index == len(bug_submit_date_list) - 1:
                 break
             # print(f'绘制新增bug增长曲线和关闭曲线，当前循环{index}, 值{i}, 值类型{type(i)}, str值{str(i)} ')
-            startTime = bug_submit_date_list[index]
+            starttime_forsql = bug_submit_date_list[index]
             # 绘制累计关闭的开始时间 从最早开始算
-            startTimeSumClose = bug_submit_date_list[0]
-            endTime = bug_submit_date_list[index + 1]
-            # print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
+            # starttime_forsql = bug_submit_date_list[0]  # 第一个时间
+            starttime_forsql = bug_submit_date_list[index]
+            endtime_forsql = bug_submit_date_list[index + 1]
+            endtime = bug_submit_date_list_rel[index + 1]
+            # print(f'///////////////////////////////////起始时间{starttime_forsql}， 终止时间{endtime_forsql}，时间type{type(endTime)}')
 
             # 新增数 ，其实是查的一段时间内，提交过的bug数量，不是bugstatus=1 的数量
             # # 第一个[startTime, endTime] 给add 用，第2个[startTime, endTime] 给add12 用，第N个[startTime, endTime] 给where参数 用，
@@ -2911,20 +2900,20 @@ def get_alldeveloperdata_withdeveloper_alongtime_addandclosebug_orderby_date(sta
             # [startTime, endTime]  # 这是最后 一个时间where startTime >= xxx and endTime <= xxx
 
 
-            cursor.execute(search_sql, [startTime, endTime])
+            cursor.execute(search_sql, [starttime_forsql, endtime_forsql])
             # 提交到数据库执行
             conn.commit()
             # 执行语句，返回结果, 包括：时间,开发，新增，关闭，开发0，开发0新增，开发0关闭，开发1。。。。
             sql_return_result_tuple = cursor.fetchall()
-            print(f'绘制新增bug增长曲线和关闭曲线，返回结果=={sql_return_result_tuple}')
+            # print(f'绘制新增bug增长曲线和关闭曲线，返回结果=={sql_return_result_tuple}')
 
             # 3. 解析结果，加入到bugcount list表中，每次只返回一条数据所以不用for循环了
 
             bug = dict()
-            print(f'绘制新增bug增长曲线和关闭曲线,tuple[0]', sql_return_result_tuple[0])
-            print(f'绘制新增bug增长曲线和关闭曲线,tuple[0][0]', sql_return_result_tuple[0][0])
-            print(f'绘制新增bug增长曲线和关闭曲线,tuple[0][1]', sql_return_result_tuple[0][1])
-            bug['bug_submit_date'] = str(endTime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
+            # print(f'绘制新增bug增长曲线和关闭曲线,tuple[0]', sql_return_result_tuple[0])
+            # print(f'绘制新增bug增长曲线和关闭曲线,tuple[0][0]', sql_return_result_tuple[0][0])
+            # print(f'绘制新增bug增长曲线和关闭曲线,tuple[0][1]', sql_return_result_tuple[0][1])
+            bug['bug_submit_date'] = str(endtime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
             bug['project'] = sql_return_result_tuple[0][1]  # 项目名称
             bug['add'] = sql_return_result_tuple[0][2]  # 新增，时间颗粒度 这段时间的add
             closenum_developer += sql_return_result_tuple[0][3]
@@ -2978,7 +2967,7 @@ def get_alldeveloperdata_withdeveloper_alongtime_addandclosebug_orderby_date(sta
 
                 # print(f'第{index}次循环结束================================================')
 
-            print(f'绘制新增bug增长曲线和关闭曲线,bug===={bug}')
+            # print(f'绘制新增bug增长曲线和关闭曲线,bug===={bug}')
             bugcount.append(bug)
             # for end
 
@@ -3005,12 +2994,11 @@ def get_alldeveloperdata_withdeveloper_alongtime_addandclosebug_orderby_date(sta
     data['msg'] = msg
     data['count'] = count
     data['data'] = bugcount
+    data['developernum'] = developernum
 
     # 转化下查询结果为{},{},{}这种格式======================
     json_str = json.dumps(data, ensure_ascii=False)
-    print(
-        '<buglist> ,get_alldeveloperdata_withdeveloper_alongtime_addandclosebug_orderby_date,获取新增 今天相对昨天的增长和关闭情返回结果==jsonStr=====',
-        json_str)
+    print('<buglist> ,get_alldeveloperdata_withdeveloper_alongtime_addandclosebug_orderby_date,获取新增 今天相对昨天的增长和关闭情返回结果==jsonStr=====',json_str)
 
     print('=================================获取new bug 一段时间内的增长和关闭情况 end ===================================')
     return json_str
@@ -3186,7 +3174,7 @@ def get_easybug_table_withdeveloper_orderby_date(startTime, endTime):
     return json_str
 
 
-# 11）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线；1/2    月/周/季
+# 11）开发维度，按时间（时间可自定义），按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线；1/2    月/周/季 开发易bug数/开发0bug总数
 def get_easybug_table_fordrawmap_withdeveloper_orderby_date(startTime, endTime, timeDifference):
     print('=================================获取所有 开发维度,一定时间颗粒度,易bug产生比率 的数据 start ===================================')
     print(f'app.py 传的参数timeDifference {startTime}， {endTime}, {timeDifference}')
@@ -3217,7 +3205,8 @@ def get_easybug_table_fordrawmap_withdeveloper_orderby_date(startTime, endTime, 
         developer_tuple = cursor.fetchall()
 
         # 2.获取有多少时间点 list
-        bug_submit_date_list = utils.get_bug_submit_date_list(startTime, endTime, timeDifference)
+        bug_submit_date_list = utils.get_bug_submit_date_list_return_countsqltime(startTime, endTime, timeDifference)
+        bug_submit_date_list_rel = utils.get_bug_submit_date_list(startTime, endTime, timeDifference)
         print('获取时间列表 bug_submit_date_list', bug_submit_date_list)
         # print('获取时间列表。type bug_submit_date_list.type = ', type(bug_submit_date_list))
 
@@ -3225,7 +3214,7 @@ def get_easybug_table_fordrawmap_withdeveloper_orderby_date(startTime, endTime, 
         searchsql_not_complete = "select bug_submit_date, project," \
                                  "convert( count(bug_difficulty = 2 or null)/count(bugid or null),decimal(10,2) ) as 'easybug_rate' " \
 
-        searchsql_end = " from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date <= %s )"
+        searchsql_end = " from bugcount.buglist where (bug_submit_date >= %s and  bug_submit_date < %s )"
         # 初始化 sqlc查询参数 total_roject0 add_project0 close_project0
         search_sql_args = list()
         # print('未拼接好的字符串==', searchsql_not_complete + searchsql_end)
@@ -3251,19 +3240,16 @@ def get_easybug_table_fordrawmap_withdeveloper_orderby_date(startTime, endTime, 
             # 执行到这没问题
 
             # sql_easybug_rate_belong_developer = ", count(bug_difficulty = 2 and developer = " + developer_name + " or null) as easybug_rate_developer" + str(index)
-            sql_easybug_rate_belong_developer = ", convert( count(bug_difficulty = 2 and developer = " + developer_name + " or null)/count(bugid or null),decimal(10,2) ) as easybug_rate_developer" + str(index)
+            sql_easybug_rate_belong_developer = ", convert( count(bug_difficulty = 2 and developer = " + developer_name + " or null)/count(developer = " + developer_name + " or null),decimal(10,2) ) as easybug_rate_developer" + str(index)
             # print('for 循环拼接的sql == ', sql_easybug_rate_belong_developer)
 
-            for_sql = sql_easybug_rate_belong_developer
             # search_sql_middle_about_developer 基础上拼接
-            search_sql_middle_about_developer += for_sql
-            # print('开发相关sql 拼接结果==', search_sql_middle_about_developer)
+            search_sql_middle_about_developer += sql_easybug_rate_belong_developer
+            # print('<buglist>> y易bug 拼接结果==', search_sql_middle_about_developer)
 
         # for循环拼接sql end
         search_sql = searchsql_not_complete + search_sql_middle_about_developer + searchsql_end
-        print('最终sql ==', search_sql)
-
-
+        print('<buglist>> y易bug 拼接结果=,最终sql ==', search_sql)
 
         rank = 1  # 排名
         # 3. 整理返回给前端的值,相当于按时间循环
@@ -3275,26 +3261,21 @@ def get_easybug_table_fordrawmap_withdeveloper_orderby_date(startTime, endTime, 
                 break
 
             # print(f'按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线，当前循环{index}, 值{i}, 值类型{type(i)}, str值{str(i)} ')
-            startTime = bug_submit_date_list[index]
-            endTime = bug_submit_date_list[index + 1]
-            # print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
+            starttime_forsql = bug_submit_date_list[index]
+            endtime_forsql = bug_submit_date_list[index + 1]
+            endtime = bug_submit_date_list_rel[index + 1]
+            # print(f'易bug////////////////////////起始时间{starttime_forsql}， 终止时间{endtime_forsql}，时间type{type(endTime)}')
 
             # 2. 执行sql语句
-            cursor.execute(search_sql, [startTime, endTime])
+            cursor.execute(search_sql, [starttime_forsql, endtime_forsql])
             # 提交到数据库执行
             conn.commit()
             # 执行语句，返回结果
             sql_return_result_tuple = cursor.fetchall()
 
-            # 转换查询结果为[{},{},{}]这种格式的
-            # print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
-            # print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
-            # print("执行语句返回结果(类型)==", type(sql_return_result_tuple))
-            # print("sql语句执行成功")
-
             bug = dict()
             # bug['bug_submit_date'] = str(startTime + ' - ' + endTime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable （xx -xx 这种格式）
-            bug['bug_submit_date'] = str(endTime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
+            bug['bug_submit_date'] = str(endtime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
             # print('========================bug_submit_date', bug['bug_submit_date'])
             bug['project'] = r[1]  # 项目名称
             # bug解决率有可能出现none的情况
@@ -3302,7 +3283,7 @@ def get_easybug_table_fordrawmap_withdeveloper_orderby_date(startTime, endTime, 
                 # bug['easy_bug_rate'] = str((float(0) * 100)) + '%'  # 易bug比率
                 bug['easy_bug_rate'] = float(0)  # 易bug比率
             else:
-                bug['easy_bug_rate'] = float(sql_return_result_tuple[0][2]) * 100 # 易bug比率
+                bug['easy_bug_rate'] = float(sql_return_result_tuple[0][2]) * 100  # 易bug比率
 
             # bug['easy_bug_rate'] = str((float(sql_return_result_tuple[0][2]) * 100)) + '%'  # 易bug比率
 
@@ -3316,9 +3297,9 @@ def get_easybug_table_fordrawmap_withdeveloper_orderby_date(startTime, endTime, 
 
                 #   str1808[1:len(str1808)-2] 截取字符串 中developer名字--》'1808'
                 #   str1808[2:len(str1808)-3] 截取字符串 中developer名字--》1808 (去掉''格式的)
-                bug['developer' + str(index)] = str(developer)[2:len(str(developer)) - 3]  # 项目名称并不是从sql语句中读出来的，developer sql语句中读出
+                bug['developer' + str(index)] = str(developer)[2:len(str(developer)) - 3]  # 3项目名称并不是从sql语句中读出来的，developer sql语句中读出
                 # bug解决率有可能出现none的情况
-                if sql_return_result_tuple[0][3 + index] is None:
+                if sql_return_result_tuple[0][3 + index] is None:  # 查询语句中没有带开发人员名字
                     # bug['easy_bug_rate_developer' + str(index)] = str((float(0) * 100)) + '%'  # 易bug比率
                     bug['easy_bug_rate_developer' + str(index)] = float(0) * 100  # 易bug比率
                 else:
@@ -3369,7 +3350,7 @@ def get_easybug_table_fordrawmap_withdeveloper_orderby_date(startTime, endTime, 
     print('<admin.py> 搜索易bug产生比率 type== ', data)
     # json.dumps()用于将dict类型的数据转成str .json.loads():用于将str类型的数据转成dict
     json_str = json.dumps(data, ensure_ascii=False)
-    print('<buglist> get_easybug_table_withdeveloper_orderby_date,返回结果==jsonStr=====', json_str)
+    print('<buglist> 易bug产生率,返回结果==jsonStr=====', json_str)
 
     print('=================================获取所有 开发维度,一定时间颗粒度,易bug产生比率 的数据 的数据 end ===================================')
     # 这些只是从数据库中，查出来的每天的数据，前端需要求和处理
@@ -3407,7 +3388,8 @@ def get_bugsolverate_table_fordrawmap_withdeveloper_orderby_date(startTime, endT
         developer_tuple = cursor.fetchall()
 
         # 2.获取有多少时间点 list
-        bug_submit_date_list = utils.get_bug_submit_date_list(startTime, endTime, timeDifference)
+        bug_submit_date_list = utils.get_bug_submit_date_list_return_countsqltime(startTime, endTime, timeDifference)
+        bug_submit_date_list_rel = utils.get_bug_submit_date_list(startTime, endTime, timeDifference)
         print('获取时间列表 bug_submit_date_list', bug_submit_date_list)
         # print('获取时间列表。type bug_submit_date_list.type = ', type(bug_submit_date_list))
 
@@ -3417,11 +3399,11 @@ def get_bugsolverate_table_fordrawmap_withdeveloper_orderby_date(startTime, endT
                                  " convert( (count(bug_status = 2 and date_add(bug_submit_date, interval %s day) between %s and %s or null))/(count(date_add(bug_submit_date, interval %s day) between %s and %s or null)),decimal(10,2) ) as 'bug_solve_rate' "
         """
         searchsql_not_complete = "select bug_submit_date, project, " \
-                                 " convert( (count(severity_level <= 2 and bug_status = 2 and date_add(bug_submit_date, interval %s day) between %s and %s or null))/(count(severity_level <= 2 and  date_add(bug_submit_date, interval %s day) between %s and %s or null)),decimal(10,2) ) as 'bug_solve_rate' " \
-                                 ", convert( (count(severity_level > 2 and bug_status = 2 and date_add(bug_submit_date, interval %s day) between %s and %s or null))/(count(severity_level > 2 and  date_add(bug_submit_date, interval %s day) between %s and %s or null)),decimal(10,2) ) as 'bug_solve_rate' "
+                                 " convert( (count(severity_level <= 2 and bug_status = 2 or null))/(count(severity_level <= 2 or null)),decimal(10,2) ) as 'bug_solve_rate' " \
+                                 ", convert( (count(severity_level > 2 and bug_status = 2 or null))/(count(severity_level > 2 or null)),decimal(10,2) ) as 'bug_solve_rate' "
 
         # date_add(bug_submit_date, interval 7 day) <=%s <= endTime(最后一个时间) severity_level
-        searchsql_end = " from bugcount.buglist where (bug_submit_date >= %s and bug_submit_date <= %s )"
+        searchsql_end = " from bugcount.buglist where (bug_submit_date >= %s and bug_submit_date < %s )"
 
         # 初始化 sqlc查询参数 total_roject0 add_project0 close_project0
         # "convert( count(date_add(bug_submit_date, interval 7 day) <= '2020-01-17' or null)/count(severity_level <=2 or null),decimal(10,2) ) as 'bug_solve_rate' "
@@ -3449,8 +3431,8 @@ def get_bugsolverate_table_fordrawmap_withdeveloper_orderby_date(startTime, endT
             # 执行到这没问题
 
             # sql_bug_solve_rate_belong_developer = ", convert( count(bug_difficulty = 2 and developer = " + developer_name + " or null)/count(bugid or null),decimal(10,2) ) as easybug_rate_developer" + str(index)
-            sql_bug12_solve_rate_belong_developer = ", convert( (count(severity_level <= 2 and bug_status = 2 and date_add(bug_submit_date, interval %s day) between %s and %s and developer = " + developer_name + " or null))/(count(severity_level <= 2 and  date_add(bug_submit_date, interval %s day) between %s and %s or null)),decimal(10,2) ) as bug12_solve_rate_developer" + str(index)
-            sql_bug34_solve_rate_belong_developer = ", convert( (count(severity_level > 2 and bug_status = 2 and date_add(bug_submit_date, interval %s day) between %s and %s and developer = " + developer_name + " or null))/(count(severity_level > 2 and  date_add(bug_submit_date, interval %s day) between %s and %s or null)),decimal(10,2) ) as bug34_solve_rate_developer" + str(index)
+            sql_bug12_solve_rate_belong_developer = ", convert( (count(severity_level <= 2 and bug_status = 2 and developer = " + developer_name + " or null))/(count(severity_level <= 2 and developer = " + developer_name + " or null)),decimal(10,2) ) as bug12_solve_rate_developer" + str(index)
+            sql_bug34_solve_rate_belong_developer = ", convert( (count(severity_level > 2 and bug_status = 2 and developer = " + developer_name + " or null))/(count(severity_level > 2 and developer = " + developer_name + " or null)),decimal(10,2) ) as bug34_solve_rate_developer" + str(index)
             sql_bug_solve_rate_belong_developer = sql_bug12_solve_rate_belong_developer + sql_bug34_solve_rate_belong_developer
             # print('for 循环拼接的sql == ', sql_bug_solve_rate_belong_developer)
 
@@ -3463,8 +3445,6 @@ def get_bugsolverate_table_fordrawmap_withdeveloper_orderby_date(startTime, endT
         search_sql = searchsql_not_complete + search_sql_middle_about_developer + searchsql_end
         print('get_bugsolverate_table_fordrawmap_withdeveloper_orderby_date,最终sql ==', search_sql)
 
-
-
         rank = 1  # 排名
         # 3. 整理返回给前端的值,相当于按时间循环
         # 返回数据 第几行 第几列xx数据
@@ -3476,11 +3456,13 @@ def get_bugsolverate_table_fordrawmap_withdeveloper_orderby_date(startTime, endT
                 break
 
             # print(f'按照一定时间颗粒度（时间可自定义），绘制易bug产生比率曲线，当前循环{index}, 值{i}, 值类型{type(i)}, str值{str(i)} ')
-            startTime = bug_submit_date_list[index]
-            endTime = bug_submit_date_list[index + 1]
-            # print(f'起始时间{startTime}， 终止时间{endTime}，时间type{type(endTime)}')
+            starttime_forsql = bug_submit_date_list[index]
+            endtime_forsql = bug_submit_date_list[index + 1]
+            endtime = bug_submit_date_list_rel[index + 1]
+            # print(f'起始时间{starttime_forsql}， 终止时间{endtime_forsql}，时间type{type(endTime)}')
 
             # 2. 执行sql语句
+            """
             start_time_add_timediffrence_date = datetime.datetime.strptime(startTime, '%Y-%m-%d')
             end_time_add_timediffrence_date = datetime.datetime.strptime(endTime, '%Y-%m-%d')
             delta = datetime.timedelta(days=int(timeDifference))
@@ -3507,6 +3489,8 @@ def get_bugsolverate_table_fordrawmap_withdeveloper_orderby_date(startTime, endT
                 sql_args.append(end_time_add_timediffrence_str)  # 被除数
             sql_args.append(startTime)  # 加最后时间
             sql_args.append(endTime)  # 加最后时间
+            """
+            sql_args = [starttime_forsql, endtime_forsql]
 
             cursor.execute(search_sql, sql_args)
             # 提交到数据库执行
@@ -3522,7 +3506,7 @@ def get_bugsolverate_table_fordrawmap_withdeveloper_orderby_date(startTime, endT
 
             bug = dict()
             # bug['bug_submit_date'] = str(startTime + ' - ' + endTime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable （xx -xx 这种格式）
-            bug['bug_submit_date'] = str(endTime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
+            bug['bug_submit_date'] = str(endtime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
             # print('========================bug_submit_date', bug['bug_submit_date'])
             bug['project'] = r[1]  # 项目名称
             # bug解决率有可能出现none的情况

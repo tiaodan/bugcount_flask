@@ -1419,7 +1419,7 @@ def get_allprojectdata_withproject_orderby_date(startTime, endTime):
         # 循环拼接字符串
         for project in project_tuple:
             # 当前索引
-            print(f'当前project=={str(project)}')
+            # print(f'当前project=={str(project)}')
             index = project_tuple.index(project)
             project_name_tuple_to_str = str(project_tuple[index])
             project_name = project_name_tuple_to_str[1:len(project_name_tuple_to_str)-2]
@@ -1777,7 +1777,7 @@ def get_allprojectdata_withproject_alongtime_newbug_addandclose_orderby_date(sta
         # 循环拼接字符串
         for project in project_tuple:
             # 当前索引
-            print(f'当前project=={str(project)}')
+            # print(f'当前project=={str(project)}')
             index = project_tuple.index(project)
             project_name_tuple_to_str = str(project_tuple[index])
             project_name = project_name_tuple_to_str[1:len(project_name_tuple_to_str) - 2]
@@ -1803,7 +1803,7 @@ def get_allprojectdata_withproject_alongtime_newbug_addandclose_orderby_date(sta
 
         # for循环拼接sql end
         search_sql = searchsql_not_complete + search_sql_middle_about_project + searchsql_end
-        print(f'buglist.py.绘制新增bug趋势,最终查询sql ==={search_sql}')  # 项目名称并不是从sql语句中读出来的，而是单独查询project sql语句中读出
+        # print(f'buglist.py.绘制新增bug趋势,最终查询sql ==={search_sql}')  # 项目名称并不是从sql语句中读出来的，而是单独查询project sql语句中读出
 
         #  for 执行sql语句,查出结果，循环len(bug_submit_date_list) -1 次,从list取出来直接str设备
         for i in bug_submit_date_list:
@@ -1821,14 +1821,14 @@ def get_allprojectdata_withproject_alongtime_newbug_addandclose_orderby_date(sta
             conn.commit()
             # 执行语句，返回结果, 包括：时间,项目，新增，关闭，项目0，项目0新增，项目0关闭，项目1。。。。
             sql_return_result_tuple = cursor.fetchall()
-            print(f'buglist.py.绘制新增bug趋势，返回结果=={sql_return_result_tuple}')
+            # print(f'buglist.py.绘制新增bug趋势，返回结果=={sql_return_result_tuple}')
 
             # 3. 解析结果，加入到bugcount list表中，每次只返回一条数据所以不用for循环了
 
             bug = dict()
-            print(f'buglist.py.绘制新增bug趋势,tuple[0]', sql_return_result_tuple[0])
-            print(f'buglist.py.绘制新增bug趋势,tuple[0][0]', sql_return_result_tuple[0][0])
-            print(f'buglist.py.绘制新增bug趋势,tuple[0][1]', sql_return_result_tuple[0][1])
+            # print(f'buglist.py.绘制新增bug趋势,tuple[0]', sql_return_result_tuple[0])
+            # print(f'buglist.py.绘制新增bug趋势,tuple[0][0]', sql_return_result_tuple[0][0])
+            # print(f'buglist.py.绘制新增bug趋势,tuple[0][1]', sql_return_result_tuple[0][1])
             bug['bug_submit_date'] = str(endTime)  # 时间格式，转成str 否则报错：TypeError: Object of type date is not JSON serializable
             bug['project'] = sql_return_result_tuple[0][1]  # 项目名称
             bug['add'] = sql_return_result_tuple[0][2]  # 新增
@@ -1838,7 +1838,7 @@ def get_allprojectdata_withproject_alongtime_newbug_addandclose_orderby_date(sta
             for project in project_tuple:
 
                 # 当前索引
-                print(f'当前 project r=={str(project)}')
+                # print(f'当前 project r=={str(project)}')
                 index = project_tuple.index(project)
                 # print(f'当前索引=={index}')
                 # print(f'第{index}次循环开始================================================')
@@ -1855,7 +1855,7 @@ def get_allprojectdata_withproject_alongtime_newbug_addandclose_orderby_date(sta
 
                 # print(f'第{index}次循环结束================================================')
 
-            print(f'buglist.py.绘制新增bug趋势,bug===={bug}')
+            # print(f'buglist.py.绘制新增bug趋势,bug===={bug}')
             bugcount.append(bug)
             # for end
 
@@ -1954,7 +1954,7 @@ def get_allprojectdata_withproject_alongtime_allbug_orderby_date(startTime, endT
         # 循环拼接字符串
         for project in project_tuple:
             # 当前索引
-            print(f'当前project=={str(project)}')
+            # print(f'当前project=={str(project)}')
             index = project_tuple.index(project)
             project_name_tuple_to_str = str(project_tuple[index])
             project_name = project_name_tuple_to_str[1:len(project_name_tuple_to_str) - 2]
@@ -2075,7 +2075,7 @@ def get_allprojectdata_withproject_alongtime_allbug_orderby_date(startTime, endT
 
                 # print(f'第{index}次循环结束================================================')
 
-            print(f'绘制新增bug增长曲线和关闭曲线,bug===={bug}')
+            # print(f'绘制新增bug增长曲线和关闭曲线,bug===={bug}')
             bugcount.append(bug)
             # bugcount.append(totalbugtest)
             # for end
