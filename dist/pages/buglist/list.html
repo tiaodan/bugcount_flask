@@ -94,7 +94,7 @@
                     <input class="layui-input" name="id" id="tableReloadBtn" autocomplete="off" placeholder=" 搜索ID">
                   </div>
                   <button class="layui-btn" data-type="reload">搜索 <i class="layui-icon">&#xe615;</i></button>
-                  <button id="truncateTableBuglist" class="layui-btn layui-btn-danger">清空数据库</button>
+                  <span id="truncateBugSpan" hidden><button  id="truncateTableBuglist" class="layui-btn layui-btn-danger">清空数据库</button></span>
                   <button id="uploadBuglist" class="layui-btn">上传数据</button>
                   <!--<button id="downloadBuglistTemplate" class="layui-btn "><a href="../../excel_upload/template.xlsx"  target="_blank">下载模板</a></button> -->
                   <a href="../../excel_upload/template/template.xlsx" target="_blank"><button id="downloadBuglistTemplate" class="layui-btn ">下载模板</button></a>
@@ -141,41 +141,6 @@
                 layui.use('table', function(){
                   var table = layui.table;
 
-                  //渲染添加的 table
-                  table.render({
-                      elem: '#tableBugAdd',
-                      id: 'tableAddRenderReloadId',
-                      url: '../../json/test_buglist.json',
-                      // height: 'full-140',
-                      height: 300,
-                      cols: [[
-                      {type:'numbers',fixed: 'left' }//, fixed: true
-                      ,{checkbox: true, fixed: true}  //{type: 'checkbox'}
-                      ,{field:'bugid', title: 'bugid', sort: true, width: 80}
-                      ,{field:'bug_submit_date', title: '提交日期',sort: true, edit: 'text', width: 120}
-                      ,{field:'project', title: '项目', sort:true, edit: 'text', width: 80}
-                      ,{field:'software', title: '软件类', edit: 'text', width: 80}
-                      ,{field:'test_version', title: '测试版本', edit: 'text', width: 170 }
-                      ,{field:'bug_description', title: '描述', edit: 'text', width: 200} //暂时先200
-                      ,{field:'severity_level', title: '严重等级', sort: true, edit: 'text', width: 100}
-                      ,{field:'priority', title: '优先级', sort: true, edit: 'text', width: 80}
-                      ,{field:'bug_difficulty', title: '难度', sort: true, edit: 'text', width: 80}
-                      ,{field:'bug_status', title: '关闭情况',  edit: 'text', width: 100}
-                      ,{field:'bug_close_date', title: '关闭日期', sort: true, edit: 'text', width: 120}
-                      ,{field:'close_version', title: '关闭版本', sort: true, edit: 'text', width: 170}
-                      ,{field:'cause_analysis', title: '原因分析', edit: 'text', width: 120}
-                      ,{field:'bug_img', title: '图片', edit: 'text', width: 80}
-                      ,{field:'intermediate_situation', title: '中间情况', edit: 'text', width: 100}
-                      ,{field:'developer', title: '开发者', sort: true, edit: 'text', width: 100}
-                      ,{field:'remark', title: '备注', edit: 'text', width: 100}
-                      ,{title:'操作', toolbar: '#bugAddRowBar', width: '8%', fixed:'right'}
-                      // ,{title:'操作', toolbar: '#bugAddRowBar', width: '8%', fixed:'right'}
-                    ]],
-                      response: {
-                        statusCode: 200
-                      }
-                  });
-
                   <!-- ,url: '/demo/table/user/???' -->
                   //方法级渲染7
                   table.render({
@@ -214,7 +179,7 @@
                       ,{field:'regression_times', title: '回归次数', edit: 'text', width: 100}
                       ,{field:'reopen_times', title: '重开次数', edit: 'text', width: 100}
                       ,{field:'submitterindex', title: '提交者标识', edit: 'text', width: 100}
-                      ,{title:'操作', toolbar: '#rowBar', width: '10%', fixed:'right'}
+                      ,{title:'操作', toolbar: '#rowBar', width: '12%', fixed:'right'}
                       //,{title:'操作', toolbar: '#rowBar', fixed:'right'} //没有左右框
                     ]]
                     ,id: 'tableRenderReloadId' //给渲染制定一个id,共其他监听调用
@@ -264,14 +229,14 @@
                                 var datasJsonObj = $.parseJSON(datas);
                                 var privilege = datasJsonObj.privilege_int;
                                 console.log("bug列表，获取权限成功，清空数据库权限=" + privilege);
-                                if (privilege != 1){
-                                    $("#truncateTableBuglist").hide();
+                                if (privilege > 0){
+                                    $("#truncateBugSpan").show();
                                 }
                             },
                             error: function () {
                                 console.log("bug列表，获取权限异常error");
                             }
-                        });
+                 });
 
 
                       //执行重载
@@ -698,20 +663,27 @@
 						}
 					});
 
-                // 刚启动网页获取 权限
+                // 刚启动网页获取 权限(先从缓存中读取，没有请求后台，根据临时缓存的用户名来查)
+                //1. 读取sessionStorage中的【currentuser】
+                currentuser = sessionStorage.getItem("currentuser")
+                // layer.msg('当前用户' + currentuser)
+                //2. 请求后台数据，参数用户名
+
                 $.ajax({
                             type: "get", //请求方法
                             url: "/getPrivilge", //请求地址
                             datatype: "json",
                             async: false,
+                            // data:{"currentuser": currentuser},
+                            data: {"currentuser":currentuser},
                             success: function (datas) {
                                 //解析返回数据
                                 //转成json对象
                                 var datasJsonObj = $.parseJSON(datas);
                                 var privilege = datasJsonObj.privilege_int;
                                 console.log("bug列表，获取权限成功，清空数据库权限=" + privilege);
-                                if (privilege != 1){
-                                    $("#truncateTableBuglist").hide();
+                                if (privilege > 0){
+                                    $("#truncateBugSpan").show();
                                 }
                             },
                             error: function () {

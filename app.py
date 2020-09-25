@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for, Blueprint, send_from_directory
+from flask_login import LoginManager, login_required, login_user, logout_user, UserMixin
+# from flask import Flask, render_template, request, redirect, url_for, Blueprint, send_from_directory
+from flask import Flask, request, send_from_directory
 from py import c_account
 from py import dbutils
 from py import admin
@@ -7,9 +9,6 @@ from py import buglist
 from py import announcement
 import json
 import os
-import pymysql
-import time
-from datetime import datetime
 
 '''
 出现该问题主要原因是新版的flask抛弃了flask.ext这种引入扩展的方法，更改为 flask_扩展名
@@ -17,7 +16,7 @@ ModuleNotFoundError: No module named 'flask.ext' 的解决方法
 以前：from flask.ext.script import Manager
 现在：from flask_script import Manager
 '''
-from flask_login import LoginManager, login_required, login_user, logout_user, UserMixin
+
 
 #设置static_folder='.', static_url_path='' 表示从根目录查找文件
 

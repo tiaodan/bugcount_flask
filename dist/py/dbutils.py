@@ -891,10 +891,10 @@ def execute_onesql_returnjson_privilege(sql, *args):
         conn.commit()
         # 执行语句，返回结果
         sql_return_result_tuple = cursor.fetchall()
-        print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
-        print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
-        print("执行语句返回结果(类型)==", type(sql_return_result_tuple))  # tuple
-        print("sql语句执行成功")
+        print("获取权限，执行语句返回结果：", sql_return_result_tuple)  # 返回元组
+        print("获取权限执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
+        print("获取权限执行语句返回结果(类型)==", type(sql_return_result_tuple))  # tuple
+        print("获取权限sql语句执行成功")
 
         # 拼接返回数据,返回列表
         code = 200  # 成功

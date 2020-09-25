@@ -1,0 +1,206 @@
+1）前台首页快捷方式：√
+     链接1：使用手册 √
+     链接2：缺陷级别定义及规则 √
+     链接3：testlink xxxxxxx?没有链接
+     链接4：redmine √
+     链接5：OA √
+     。。。
+2）前台首页快捷方式的链接可不可以自己设置 √ -都能成管理员配置的模式（这个还没有弄-暂时在配置文件里，后面都要配置成管理员可配置的）
+3）前台首页介绍可以写一下这个系统实现的功能 √
+4）公告有没有可以编辑的地方，后续可以用于公告什么项目什么产品的里程碑节点，或迫在眉睫的节点 √
+5）信息统计部分显示项目维度的bug情况 √ --默认从2000-01-01 到至今的所有数据情况 √
+6）服务器信息隐藏掉 √
+7）发展历程可以每更新一个版本记录其更新的内容 √
+8）顶部导航“新增”可以去掉 √
+9）左侧导航树bug统计图归到bug管理下，系统统计不需要 √
+10）去掉bug列表的严重等级一栏的描述 √
+11）去掉bug统计图的严重等级一栏的描述 √
+12）bug列表，清空数据库功能只有超级管理员可操作 √
+13）bug列表，清空数据库点击后的提示信息“真的删除行么”修改为“是否已备份，确认要清空数据库？” √
+14）bug列表，清空数据库后数据库共有数据：88条 √,次数据目前只是刷新页面的时候才会请求后台，点击搜索按钮是不起作用的 √
+15）bug列表，上传数据选择为非1808的数据源，导入的仍然为1808数据 上传文件最好命名为template.xlsx,用其他的名字也可以， √但是上传文件里的sheet必须叫sheet1 √
+16）bug列表，添加bug可以整个作为一个菜单，改名为“bug记录”； √
+17）bug列表，添加bug下的表格编辑bug支持tab键，光标tab到新增按钮回车可增加一行，最下面有个提交按钮，指提交当前编辑的所有bug，  添加bug成功，需要删除该行吗，该行变颜色？·
+可以限制10条为一次提交的最大量，当回车增加超过10提示“请先完成当前十条数据的提交，避免数据丢失”  x 暂不知如何处理 -改成复选框提交
+18）bug列表，添加bug（bug记录）可以统一在上面定义提交时间、项目、软件版本、软件模块，
+表格内只需要可编辑描述、严重等级、优先级、难度，bugid自动生成、关闭情况自动置为处理，其他字段自动置空； x 暂不知如何处理 √
+19）bug列表，bug列表的添加功能需完成；√ （单条添加）
+20）bug列表，bug列表的编辑按钮是准备做成什么功能，单个bug的编辑界面吗？想法不错。2 暂时不弄，隐藏 x
+21）bug列表，翻页功能不可用，不能看到下一页。√
+22）bug列表，上传数据时不校验时间字段为空就不可导入，为空仍然可以导入。 √
+23）bug列表，导入的数据列去掉第一次回归、第二次回归、第三次回归等（√），状态字段取值：处理、回归、关闭、延迟、重开，增加“回归次数”或“重开次数”字段。 √
+即全部字段包括：bug_submit_date、project、software、test_version、bug_description、severity_level、priority、bug_difficulty、bug_status、bug_close_date、close_version、cause_analysis、bug_img、intermediate_situation、developer、remark、regression_times、reopen_times、 submitterindex。
+             提交时间          项目  软件类（调度、网管）测试版本    描述             严重等级         优先级     困难等级         状态         关闭时间         关闭版本        原因分析         bug图片   中间情况                 开发人员    备注    回归次数           重开次数        提交者索引
+             试下新加字段上传是否成功，前台显示是否正确 √
+24）bug列表，导入的数据字段bug_status为汉字、或者同等含义的英文都可以。 √
+25）bug统计图，XXX曲线重命名为XXX趋势，比如“新增bug增长关闭曲线”修改为“新增bug趋势”，“全部bug增长关闭曲线”修改为“累计bug趋势”。 √
+26）bug统计图，全部bug增长关闭曲线，绘制数据模型应该有问题，指累计的bug，bug应该是不断增加的，关闭也是不断增加的，剩余bug是指现存没关闭的。 x 属于项目的数据不对 √
+27）bug统计图，开发维度，易bug产生比率数据和bug解决率数据应该都放到每日数据里。√
+28）bug统计图，开发维度，新增bug增长关闭曲线不呈现剩余，全部bug增长关闭曲线呈现剩余。x 数据不正确！！-需要检查 √
+29）bug统计图，曲线图呈现比较慢，要缩在左侧不显示很久。 √(呈现慢设置animationDuration: 300 毫秒) √
+
+30) bug数据中有null值，怎么统计？？没考虑到 project不能==0 developer不能==null √
+31) bug统计图中加上重开字段？？
+
+
+32）导出的时候把 关闭情况从 数字 --》文字了
+33）趋势图可以根据
+34） 加载曲线，加加载框
+35) 数据表格组合搜索，类似excel透视图那样
+36） 找市面上有没有纯excel操作的网页软件，框架等
+37) table.reder如果有100个项目怎么办？？？
+38） 注册的只能是普通用户 √
+39） 普通用户只能看bug,不能看”管理员权限“ √
+40） 长时间加载tablerender不显示加载条
+41） 折线图随着数量的多少自己变化
+42） 记录做项目中遇到的问题，记录原因及解决办法
+43)  上传报错 bug truncate by bug_description
+44)  table某些列默认隐藏？？？如何做
+45） 批量删除 未实现
+
+
+25） pyinstaller -F app.py 打包报错：    exec(code, run_globals)
+  File "E:\venv\venv_bugcount\Scripts\pyinstaller.exe\__main__.py", line 7, in <module>
+  File "e:\venv\venv_bugcount\lib\site-packages\PyInstaller\__main__.py", line 114, in run
+    run_build(pyi_config, spec_file, **vars(args))
+  File "e:\venv\venv_bugcount\lib\site-packages\PyInstaller\__main__.py", line 65, in run_build
+    PyInstaller.building.build_main.main(pyi_config, spec_file, **kwargs)
+  File "e:\venv\venv_bugcount\lib\site-packages\PyInstaller\building\build_main.py", line 720, in main
+    build(specfile, kw.get('distpath'), kw.get('workpath'), kw.get('clean_build'))
+  File "e:\venv\venv_bugcount\lib\site-packages\PyInstaller\building\build_main.py", line 667, in build
+    exec(code, spec_namespace)
+  File "E:\software\C_workspace\pycharm_64\bugcount_flask\app.spec", line 20, in <module>
+    exe = EXE(pyz,
+  File "e:\venv\venv_bugcount\lib\site-packages\PyInstaller\building\api.py", line 434, in __init__
+    self.pkg = PKG(self.toc, cdict=kwargs.get('cdict', None),
+  File "e:\venv\venv_bugcount\lib\site-packages\PyInstaller\building\api.py", line 200, in __init__
+    self.__postinit__()
+  File "e:\venv\venv_bugcount\lib\site-packages\PyInstaller\building\datastruct.py", line 160, in __postinit__
+    self.assemble()
+  File "e:\venv\venv_bugcount\lib\site-packages\PyInstaller\building\api.py", line 260, in assemble
+    fnm = checkCache(fnm, strip=self.strip_binaries,
+  File "e:\venv\venv_bugcount\lib\site-packages\PyInstaller\building\utils.py", line 213, in checkCache
+    digest = cacheDigest(fnm, redirects)
+  File "e:\venv\venv_bugcount\lib\site-packages\PyInstaller\building\utils.py", line 358, in cacheDigest
+    with open(fnm, "rb") as f:
+FileNotFoundError: [Errno 2] No such file or directory: ''
+
+26) dell电脑打包错误，分析与代码无关，与环境有关
+27) 添加用户加字段roleId！！！！！！！！！！！！！！
+28) 登录提示
+[2020-09-24 11:34:07,968] ERROR in app: Exception on /login [POST]
+Traceback (most recent call last):
+  File "E:\venv\venv_bugcount\lib\site-packages\flask\app.py", line 2447, in wsgi_app
+    response = self.full_dispatch_request()
+  File "E:\venv\venv_bugcount\lib\site-packages\flask\app.py", line 1952, in full_dispatch_request
+    rv = self.handle_user_exception(e)
+  File "E:\venv\venv_bugcount\lib\site-packages\flask\app.py", line 1821, in handle_user_exception
+    reraise(exc_type, exc_value, tb)
+  File "E:\venv\venv_bugcount\lib\site-packages\flask\_compat.py", line 39, in reraise
+    raise value
+  File "E:\venv\venv_bugcount\lib\site-packages\flask\app.py", line 1950, in full_dispatch_request
+    rv = self.dispatch_request()
+  File "E:\venv\venv_bugcount\lib\site-packages\flask\app.py", line 1936, in dispatch_request
+    return self.view_functions[rule.endpoint](**req.view_args)
+  File "E:\software\C_workspace\pycharm_64\bugcount_flask\app.py", line 230, in login
+    login_return_json = c_account.login(username, password)
+  File "E:\software\C_workspace\pycharm_64\bugcount_flask\py\c_account.py", line 139, in login
+    userlevel = userlevel_tuple[0]
+TypeError: 'int' object is not subscriptable
+
+29） 开发维度title放在表格左上角,点击搜索后，在打开表格，没有左右拉的框
+30） 切换标签页，需要重新搜索才可以
+31） 登录系统后，切换到别的界面后，无法从缓存中读取数据
+32） 易bug比率 和bug解决率看的是累计的情况，还是每周的情--》就是看的每周的情况√
+
+
+
+！！！！！！！！！！！！！！！！遗留3个
+1. 权限管理 √
+2. 添加bug
+3. 趋势图 √
+4. 打包成linux(使用于所有系统)
+5. 翻页 √
+6. 日志
+
+///////////////////////////////////////////////////////////////////////////////////自己需求
+1. 累计bug查出来的项目名称一直是0？？？
+1. 一个问题对应多个开发如何处理？
+索引变中文
+0. 导入为空的时候，可以导入数据库 √
+0.1 导入数据时间为空时，可以导入数据 √
+1. table不编辑edit子多了，仍然可以自动看
+
+1. 配置数据库用户名密码后，尝试一下，如果不通提示用户链接不上数据库
+2. 登录默认，关闭浏览器就算退出了。（长时间不用退出）
+3. 开启合计行之后，数字如果后2位为0,则显示整数
+
+第一次启动系统需要去后台获取配置
+修改了后台配置，重启后台的时候，需要去后台重新获取配置/更新配置
+
+3. 后期所有配置项 支持域名
+4. 退出清除缓存
+5. linux 有启动、关闭脚本、自启动脚本
+6. window有启动、关闭脚本、自启动脚本
+7. 启动时检测数据库是否能连接上 √
+8. 后期权限可配置
+9. 权限管理的id设置成可控制的，相同的类型都挨着
+10. 显示当前用户名 √
+11. 修改了数据库授权后，还要修改增删改用户的语句
+
+12. 不关闭标签页情况下，仍在当前页登录，会有缓存未清空，数据读取错误问题/； 打开了多个标签页，只关闭其中一个，登录，仍然会有缓存读取错误问题
+13. 登录的时候，查看当前用户有哪些权限，然后前台做判断
+14. 后续做权限管理的时候，是否 要显示所有的权限和部分权限（是否有必要）
+15. 增删改查用户 需要默认加上roleid
+16. 右键功能
+
+
+17. 1808 的脚本挂载镜像 还有优化空间
+
+
+21. 去除所有标签页的第一行，文本内容
+22. 登录缓存逻辑
+23. 给所有的统计加一个汇总，总计
+
+2222.最后要优化一下所有页面跳转，读取配置文件等
+23. ！！！！！测试索引相同有什么影响 （测试通过）√
+24. 导出文件有另存为
+25. 可以导出所有bug文件 √
+26. 为什么pycharm修改了html后，刷新页面未更新（项目运行中）
+27. 关闭时间需晚于起始时间
+28. 折线图数据量大卡顿，界面卡顿+ 图卡顿，优化
+29. 优化前端打印报错与警告
+30. 做出一款，像excel一样操作数据网页版
+//////代办
+1. 用户权限最后改
+2. 清空数据库后自动刷新表格
+3. 14）bug列表，清空数据库后数据库共有数据：88条 √,次数据目前只是刷新页面的时候才会请求后台，点击搜索按钮是不起作用的 √
+4. 上传数据没有去重
+5. 模板表头不支持中文
+6. 上传的sheet必须叫sheet1,不能是其他的内容
+7. bug记录里的功能未完善
+8. 删除多余打印信息
+9. 打印bug分层级
+10. 打印bug到一个具体文件中
+11. 表头不能分行
+12. 页面内容过窄
+13. 没有唯一id索引
+14. 虚拟环境里上传不上去
+15. 导出已有数据
+16. 将所有方法封装成工具类
+17. python方法，不填默认是False这种怎么设计
+18. 另存为对话框
+19. 第一步封装
+20. 给打印定义级别，打印到文件（可以自己写，可以使用别人的，建议自己写）
+21. 清除多余打印内容（有了bug级别会方便很多，修改一个参数即可）
+22. 按照python编码标准规范化代码，根据pycharm去除报错，警告
+23. 加载buglist时候loading动画不明显
+24. 去除多余搜素内容：比如搜索bugid
+25. 做一套安装环境
+
+///////////////////////////////////////修改项目：
+1. 把所有路径修改为相对路径（读取配置文件、调用网页等） √ 配置文件均使用绝对路径，linux未测试
+
+
+
+

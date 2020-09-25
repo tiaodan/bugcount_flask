@@ -11,3 +11,8 @@ show variables like 'innodb_file_format';
 set global innodb_large_prefix=1;
 
 set global innodb_file_format=BARRACUDA;
+
+2. 打包pyinstaller 一直报错 no module named pywin32ctypes
+    原因，尽管在虚拟环境中使用的pyinstaller，pyinstaller还是全局的，需要调取全局的pywin32相关的东西，而不是虚拟环境中的。（全局的我没有装）
+    解决办法：
+    推出虚拟环境，pip install pywin32, pypiwin32,pywin32-ctypes

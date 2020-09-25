@@ -81,6 +81,26 @@
              <script>
                 layui.use('table', function(){
                   var table = layui.table;
+                  var $ = layui.jquery;
+
+                  // 页面加载时获取总数
+                  $.ajax({
+                            type: "get", //请求方法
+                            url: "/userTotalNum", //请求地址
+                            datatype: "json",
+                            async: false,
+                            success: function (datas) {
+                                //解析返回数据
+                                //转成json对象
+                                var datasJsonObj = $.parseJSON(datas)
+                                var userTotalNum = datasJsonObj.count
+                                console.log("用户列表，点击搜索获取总数成功，用户总数=" + userTotalNum);
+                                $("#userTotalNum").html(userTotalNum)
+                            },
+                            error: function () {
+                                console.log("用户列表，点击搜索获取总数异常error");
+                            }
+                        });
 
                   <!-- ,url: '/demo/table/user/???' -->
                   //方法级渲染
@@ -108,7 +128,7 @@
                       ,{field:'create_time', title: '创建时间', sort: true ,placeholder: "格式:YYYY-MM-DD", edit: 'text'}
                       ,{field:'session', title: '用户缓存', sort: true, edit: 'text'}
                       ,{field:'roleId', title: '角色ID', sort: true, edit: 'text'}
-                      ,{title:'操作', toolbar: '#rowBar', width: '15%'}
+                      ,{title:'操作', toolbar: '#rowBar', width: '17%'}
                     ]]
                     ,id: 'tableRenderReloadId' //给渲染制定一个id,共其他监听调用
                     ,page: true

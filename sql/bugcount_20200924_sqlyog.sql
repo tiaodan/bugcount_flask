@@ -2,7 +2,8 @@
 SQLyog Ultimate v11.24 (32 bit)
 MySQL - 5.7.17-log : Database - bugcount
 *********************************************************************
-*/
+*/
+
 
 /*!40101 SET NAMES utf8 */;
 
@@ -78,7 +79,7 @@ CREATE TABLE `buglist` (
   `remark` varchar(1024) DEFAULT NULL,
   `regression_times` int(11) DEFAULT NULL,
   `reopen_times` int(11) DEFAULT NULL,
-  `submitterindex` varchar(1024) NOT NULL,
+  `submitterindex` varchar(80) NOT NULL,
   PRIMARY KEY (`bugid`),
   UNIQUE KEY `submitterindex` (`submitterindex`) USING BTREE
 ) ENGINE=InnoDB AUTO_INCREMENT=40364 DEFAULT CHARSET=utf8;

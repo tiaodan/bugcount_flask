@@ -9,10 +9,12 @@ import time
 import sys
 
 # 初始化变量
-currentpath = os.path.abspath(__file__)
-print('当前路径', currentpath)
-rootdir = os.path.abspath(os.path.dirname(currentpath) + os.path.sep + '..') # 当前路径上一层
-print('根目录==', rootdir)
+# currentpath = os.path.abspath(__file__)
+currentpath = os.path.dirname(__file__)
+print('当前路径-///////开头', currentpath)
+# rootdir = os.path.abspath(os.path.dirname(currentpath) + os.path.sep + '..') # 当前路径上一层
+rootdir = os.path.dirname(os.path.dirname(__file__))  # 当前路径上一层
+print('根目录-//////开头==', rootdir)
 
 # 获取md5值
 def get_md5(arg):
@@ -113,11 +115,12 @@ def get_dbargs_from_config_byabspath():
     # # config.read('../conf/config.ini', encoding='utf-8')  # 打包的时候需要这样配置，否则读取不到配置文件
     # config.read(config_filepath, encoding='utf-8')
 
-    currentpath = os.path.abspath(__file__)
-    print('当前路径', currentpath)
+    # currentpath = os.path.abspath(__file__)
+    currentpath = os.path.dirname(__file__)
+    print('当前路径（绝对方法///////////））', currentpath)
     # root_dir = os.path.abspath(os.path.dirname(currentpath) + os.path.sep + "..")
-    root_dir = os.path.abspath(os.path.dirname(currentpath) + os.path.sep + "..")
-    print('根目录 ===', root_dir)
+    root_dir = os.path.dirname(os.path.dirname(__file__))
+    print('根目录(绝对方法/////////////) ===', root_dir)
     config_abspath = os.path.join(root_dir, 'conf\config.ini')
     print('配置文件绝对路径=', config_abspath)
     # 读取配置文件
