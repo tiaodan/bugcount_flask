@@ -6,7 +6,8 @@
   <meta name="renderer" content="webkit">
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <link rel="stylesheet" href="//res.layui.com/layui/dist/css/layui.css"  media="all">
+<!--  <link rel="stylesheet" href="//res.layui.com/layui/dist/css/layui.css"  media="all">-->
+  <link rel="stylesheet" href="../../lib/layui-v2.5.6/css/layui.css">
   <!-- 注意：如果你直接复制所有代码到本地，上述css路径需要改成你本地的 -->
   <link rel="stylesheet" href="../../static/css/font.css">
 		<link rel="stylesheet" href="../../static/css/weadmin.css">
@@ -21,20 +22,22 @@
 </head>
 <body>
     <fieldset class="layui-elem-field layui-field-title" style="margin-top: 30px;">
-      <legend>权限管理</legend>
+      <legend>普通用户权限管理</legend>
     </fieldset>
-    <div class="layui-btn-container">
-      <button type="button" class="layui-btn layui-btn-sm" lay-demo="getChecked">获取选中节点数据</button>
-      <button type="button" class="layui-btn layui-btn-sm" lay-demo="setChecked">勾选指定节点</button>
-      <button type="button" class="layui-btn layui-btn-sm" lay-demo="reload">重载实例</button>
+    <div class="layui-btn-container" style="margin-left: 20px">
+      <button type="button" class="layui-btn layui-btn-sm" lay-demo="getChecked">修改</button>
+      <span hidden><button type="button" class="layui-btn layui-btn-sm" lay-demo="setChecked" id="setChecked">勾选指定节点</button></span>
+      <button type="button" class="layui-btn layui-btn-sm" lay-demo="reload">重置</button>
     </div>
 
-    <div id="test12" class="demo-tree-more"></div>
+    <div id="test12" class="demo-tree-more" style="margin-left: 20px"></div>
 
-<script src="//res.layui.com/layui/dist/layui.js" charset="utf-8"></script>
+<script type="text/javascript" src="../../lib/layui-v2.5.6/layui.all.js" charset="utf-8"></script>
 <!-- 注意：如果你直接复制所有代码到本地，上述js路径需要改成你本地的 -->
 <script>
+
             layui.use(['tree', 'util'], function(){
+
               var tree = layui.tree
               ,layer = layui.layer
               ,util = layui.util
@@ -59,16 +62,55 @@
                 }
               });
 
+              treeid = 0  //要勾选的节点
               //按钮事件
               util.event('lay-demo', {
                 getChecked: function(othis){ // 获取节点数据
                   var checkedData = tree.getChecked('demoId1'); //获取选中节点的数据
 
-                  layer.alert("点击节点" + JSON.stringify(checkedData), {shade:0});
-                  console.log(checkedData);
+                  // layer.alert("点击节点" + JSON.stringify(checkedData), {shade:0});
+                  //后台修改数据
+                  isTruncateTableFlag = 0  // 不清空数据库
+                  if (checkedData[0] == null){  //什么都没有选中
+                      // layer.msg("kong")
+                      isTruncateTableFlag = 0
+                  }else{
+                      isTruncateTableFlag = 1
+                  }
+                  console.log('用户权限，点击修改 选中的数据' + isTruncateTableFlag);
+                  // 发送请求
+                  // 重载的时候重新请求bug总数
+                      $.ajax({
+                            type: "post", //请求方法
+                            url: "/editNomalUserPrivilege", //请求地址
+                            datatype: "json",
+                            async: false,
+                            data: { "isTruncateTableFlag": isTruncateTableFlag},
+                            success: function (datas) {
+                                //解析返回数据
+                                //转成json对象
+                                var datasJsonObj = $.parseJSON(datas)
+                                var code = datasJsonObj.code
+                                console.log("权限管理，修改权限,状态码：" + code);
+                                layer.msg("修改成功")
+                            },
+                            error: function () {
+                                console.log("权限管理，修改权限异常error");
+                                layer.msg("修改失败");
+                            }
+                        });
+
+                  var checkdDataJson = JSON.stringify(checkedData);
+                  // layer.msg(checkdDataJson.id + checkdDataJson.title);
+                  // layer.msg(checkdDataJson['id'] + checkdDataJson['title']);
+                  // layer.msg(checkedData.id + checkedData.title);
+                  // layer.msg(checkedData['id'] + checkedData['title']);
+
+
                 }
                 ,setChecked: function(){
-                  tree.setChecked('demoId1', [12, 16]); //勾选指定节点
+                  // tree.setChecked('demoId1', [12, 16]); //勾选指定节点
+                  tree.setChecked('demoId1', [treeid]); //勾选指定节点
                 }
                 ,reload: function(){
                   //重载实例
@@ -79,23 +121,47 @@
                 }
               });
 
+              //1. 网页加载获取数据，填充到tree中
+              currentuser = sessionStorage.getItem("currentuser")
+              $.ajax({
+                    type: "get", //请求方法
+                    url: "/getPrivilge", //请求地址
+                    datatype: "json",
+                    data:{"currentuser": currentuser},
+                    async: false,
+                    success: function (datas) {
+                        //解析返回数据
+                        //转成json对象
+                        var datasJsonObj = $.parseJSON(datas)
+                        treeid = datasJsonObj.privilege_int
+                        console.log("权限管理，获取权限成功" + treeid);
 
-              //开启复选框
+                        //2. 调用设置节点button
+                        console.log("调用点击按钮")
+                        $('#setChecked').click();
+                    },
+                    error: function () {
+                        console.log("bug列表，点击搜索获取总数异常error");
+                    }
+                });
+
+              /*//开启复选框
               tree.render({
                 elem: '#test7'
-                ,data: data2
+                ,data: data1
                 ,showCheckbox: true
-              });
+              });*/
 
               //开启节点操作图标
-              tree.render({
+              /*tree.render({
                 elem: '#test9'
                 ,data: data1
                 ,edit: ['add', 'update', 'del'] //操作节点的图标
                 ,click: function(obj){
                   layer.msg(JSON.stringify(obj.data));
                 }
-              });
+              });*/
+
             });
 </script>
 

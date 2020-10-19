@@ -93,6 +93,7 @@ def login(username_front, passwd_front):
     code = 500  # 返回给调用者的值，默认是500 Number类型的
     msg = '登录失败'
     count = 0
+    userlevel = 2  # 普通用户
     login_sql_return_json_data = list()
 
 
@@ -132,6 +133,11 @@ def login(username_front, passwd_front):
             print('<c_account>=====json返回的data 类型是==《list》', type(login_return_json_loads['data']))
             login_sql_return_json_data = login_return_json_loads['data']
 
+        # 获取用户权限
+        sql = 'select roleId from bugcount.user where username = %s'
+        userlevel_tuple = dbutils.execute_onesql_returnint(sql, username_front)
+        userlevel = userlevel_tuple[0]
+
     else:
         print('用户名或密码为空，不做操作')
 
@@ -140,6 +146,7 @@ def login(username_front, passwd_front):
     data['msg'] = msg
     data['count'] = count
     data['data'] = login_sql_return_json_data
+    data['userlevel'] = userlevel
     # 转化下查询结果为{},{},{}这种格式======================
     json_str = json.dumps(data, ensure_ascii=False)
     print('《c_account》返回json==jsonStr=====', json_str)

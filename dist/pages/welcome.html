@@ -536,15 +536,18 @@
                     , response: {
                         statusCode: 200
                     }
+                    ,totalRow: true
                     ,cols: [[
-                      {field:'project', width:"16.6%", title: '项目'}
-                      ,{field:'addNumByProject', width:"16.6%", title: '新增'}
-                      ,{field:'closeNumByProject', width:"16.6%", title: '关闭'}
-                      ,{field:'regressionNumByProject', width:"16.6%", title: '回归'}
-                      ,{field:'delayNumByProject', width:"16.6%", title: '延迟'} //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
-                      ,{field:'totalNumByProject', width:"16.6%", title: '汇总'}
+                      {field:'project', width:"14.28%", title: '项目', totalRowText: '合计'}
+                      ,{field:'addNumByProject', width:"14.28%", title: '新增',sort: true, totalRow: true}
+                      ,{field:'closeNumByProject', width:"14.28%", title: '关闭', totalRow: true}
+                      ,{field:'regressionNumByProject', width:"14.28%", title: '回归', totalRow: true}
+                      ,{field:'delayNumByProject', width:"14.28%", title: '延迟', totalRow: true} //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
+                      ,{field:'reopenNumByProject', width:"14.28%", title: '重开', totalRow: true}
+                      ,{field:'totalNumByProject', width:"14.28%", title: '汇总', totalRow: true}
                     ]]
                     ,even: true  //是否 开启隔行 背景
+                    //,height: 1080
                   });
                 });
         </script>

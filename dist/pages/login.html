@@ -68,7 +68,7 @@
                 dataFiled = data.field;
                 console.log("form-username == " + dataFiled.username);
                 console.log("form-password == " + dataFiled.password);
-
+                currentuser = dataFiled.username
                 //请求后台数据
                 $.ajax({
                     type: "post", //请求方法
@@ -77,7 +77,6 @@
                     //datatype: "json", //限制返回类型
                     //async:false,
                     success:function(datas){
-
                         //截取字符串前几位，如果是网页不做处理<!doctype html>
                         //subFrontDatas = datas.substring(0, 9); //包括前不包括后
                         //console.log("前15位==" + subFrontDatas);
@@ -92,12 +91,16 @@
                         console.log("msg--type==" + typeof (returnMsg));
                         returnCount = datasJson.count;
                         returnData = datasJson.data;
+                        userlevel = datasJson.userlevel
                         if (returnCode == 500) { //== 字符串
                             console.log("登录失败,用户名或者密码错误");
                             layer.msg("登录失败,用户名或者密码错误");
 
                         }
                         if (returnCode == 200) {
+                            //1. 网页缓存用户名
+                            sessionStorage.setItem("currentuser",currentuser)
+                            sessionStorage.setItem("userlevel", userlevel)
                             //成功的话，不在前台跳转，在后台跳转
                             console.log("登陆成功，跳转到主界面");
                             // layer.msg("写入缓存");

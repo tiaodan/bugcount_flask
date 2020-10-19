@@ -47,7 +47,7 @@
 
 			<ul class="layui-nav right" lay-filter="">
 				<li class="layui-nav-item">
-                    <a href="javascript:;"><h1>Admin</h1></a>
+                    <a href="javascript:;"><h1></h1></a>
 					<dl class="layui-nav-child">
 						<!-- 二级菜单 -->
 						<!--<dd>
@@ -126,7 +126,13 @@
 					admin = layui.admin,
 					menu = layui.menu;
 				$(function(){
-					menu.getMenu('./json/menu.json');
+					//读取缓存中用户权限，判断显示什么功能
+					userlevel = sessionStorage.getItem('userlevel')
+					if(userlevel == 2){
+						menu.getMenu('./json/nomalUserMenu.json');
+					}else{
+						menu.getMenu('./json/menu.json');
+					}
 					/*
 					var login = JSON.parse(localStorage.getItem("login"));
 					if(login){
@@ -147,9 +153,9 @@
                 var $ = layui.jquery;
                 console.log("替换用户名");
                 //从缓存中读取当前用户名数据
-				username = sessionStorage.getItem("username");
+				currentuser = sessionStorage.getItem("currentuser");
                 // $("h1").html(username);
-                $("h1").html("Admin");
+                $("h1").html(currentuser);
 
                 /* jquery 按钮监听事件
                 $("button[id='btn_submit']").click(function () {
