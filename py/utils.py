@@ -1,12 +1,13 @@
 import hashlib
 import configparser
 import json
-import datetime
+from datetime import datetime
 import pymysql
 import os
 import xlsxwriter
 import time
 import sys
+import xlrd
 
 # 初始化变量
 # currentpath = os.path.abspath(__file__)
@@ -363,3 +364,226 @@ def is_valid_date(str, dataformat="%Y-%m-%d"):
     return True
   except:
     return False
+
+
+# 功能：检查文件是否存在
+# 返回值：True /False
+def checkfile_exist(filepath):
+    isfile_exists = os.path.exists(filepath)
+    return isfile_exists
+
+
+# 功能：打开一个excel,返回workbook
+# 参数：1.filepath 文件路径
+# 返回值：workbook
+# 注意：使用时，记得关book.close()
+def openexcel_return_workbook(filepath):
+    workbook = xlrd.open_workbook(filepath)
+    return workbook
+
+# 功能：获取显示的表格,（如果有workbook对象，直接用；没有workbook，读取filepath获取workbook）
+# 返回值：list类型的 表格名称str
+def get_excel_show_sheetnames(filepath, *workbook):
+    # 0. 判断是否直接传了workbook对象
+    starttime = datetime.now()
+    if len(workbook) == 0:  # 没有传workbook对象，读取路径
+        print('没有传workbook对象')
+        book = xlrd.open_workbook(filepath)
+    else:
+        book = workbook
+        print('book==', book)
+        print(book.sheet_names())
+
+
+    show_sheetnames = list()
+    sheetnames = book.sheet_names()  # list
+    for sheetname in sheetnames:
+        sheet = book.sheet_by_name(sheetname)
+        if sheet.visibility == 0:
+            show_sheetnames.append(sheet.name)
+    print('excel显示的sheet有（list）', show_sheetnames)
+    # print(type(show_sheetnames))
+    # book.close()  # xlsxwriter才需要close()方法, xlrd不需要
+
+    endtime = datetime.now()
+    print('耗时', (endtime - starttime).seconds)
+    return show_sheetnames
+
+
+# 功能：获取隐藏的表格
+def get_excel_hide_sheetnames(filepath):
+    hide_sheetnames = list()
+
+    book = xlrd.open_workbook(filepath)
+    sheetnames = book.sheet_names()
+    for sheetname in sheetnames:
+        sheet = book.sheet_by_name(sheetname)
+        if sheet.visibility == 1:
+            hide_sheetnames.append(sheet.name)
+    print('excel隐藏的sheet有（list）', hide_sheetnames)
+    # book.close()  # xlsxwriter才需要close()方法, xlrd不需要
+    return hide_sheetnames
+
+
+# 功能：检查表头是否合法
+# 参数：1. 文件路径
+#       2.sheetnames（list/tuple） 只要是链表形式的都可以
+#       3.表头字符串（list/tuple）只要是链表形式的都可以
+def check_excel_tablehead(filepath, sheetnames, tablehead):
+    book = xlrd.open_workbook(filepath)
+    # 表头
+    tablehead_list = []
+    for sheetname in sheetnames: # 循环每一个sheet
+        sheet = book.sheet_by_name(sheetname)
+
+        for i in range(0, len(tablehead)-1):  # 循环每一列
+            excel_th_value = sheet.cell(0, i).value
+            print("表头内容=", excel_th_value)
+        print("==========")
+
+
+
+# 功能：检测excel表格数据是否符合要求
+# 参数：1. 文件路径
+#       2. 模板里的表头数据 （tuple/list）只要是链表格式即可
+
+# 返回结果： json,因为要给用户提示
+#     True:全部符合要求
+#     False:不符合要求
+def checkexcel_data(filepath, tablehead):
+    # 一、 初始化json数据
+    data = {}
+    tips = [] # 提示信息
+    code = 500  # 默认失败
+    msg = '文件不存在'
+    count = 0  # sql语句执行结果个数
+
+    starttime = datetime.now()
+    # 二、 检测内容
+    is_tablehead_legal = False  # 初始化flag,表头是否合法
+    is_index_none_legal = False  # 初始化flag,索引是否为空
+    is_index_repeat = False  # 索引是否重复
+    is_requiredcol_notnone = False  # 必填项是否非空
+    is_requiredcol_format_right = False  # 必填项格式是否正确
+    is_requiredcol_len_right = False  # 必填项长度是否正确
+    is_other_error = False  # 检测其他异常
+
+    # 1. 检查文件是否存在
+    isfile_exists = checkfile_exist(filepath)
+
+    # 2. 检查每个表格（显示表格）表头是否合法
+    if isfile_exists == True:
+        # 1)初始化
+        book = xlrd.open_workbook(filepath)  # 获取book
+        sheetnames = book.sheet_names()  # 显示的sheet
+
+        # 2)获取未隐藏sheetnames
+        show_sheetnames = list()
+        for sheetname in sheetnames:
+            sheet = book.sheet_by_name(sheetname)
+            if sheet.visibility == 0:
+                show_sheetnames.append(sheet.name)
+        print('excel显示的sheet有（list）', show_sheetnames)
+
+        # 3)比较每个 显示的sheet 表头
+        # for show_sheetname in show_sheetnames:  # 循环每一个sheet
+        error_sheetnames = list()
+        for show_sheetname in show_sheetnames:  # 循环每一个sheet
+            sheet = book.sheet_by_name(show_sheetname)
+            # print('当前sheetname==', show_sheetname)
+            # 表头列必须 >= 模板表头
+            # print('--------------------ncols', sheet.ncols)
+            if sheet.ncols < len(tablehead):  # ncols 从0开始
+                error_sheetnames.append(show_sheetname)
+                msg = '检测到上传文件表头“少于”模板表头，请检查上传文件。问题表格是:' + str(error_sheetnames)
+            else:  # 循环每一列,比较与模板表头字符是否一致
+                for i in range(0, len(tablehead)):  # range包左不包右
+                    # print('iiiiiiiiiiiiii=', i)
+                    # print(sheet.cell_value(0, i))
+                    importexcel_th_value = sheet.cell(0, i).value
+                    if importexcel_th_value != tablehead[i]:
+                        error_sheetnames.append(show_sheetname)
+                        msg = "检测到上传文件表头与模板不符，请检查上传文件。问题表格为" + str(error_sheetnames)
+                        print(msg)
+                        # break  # 检测所有的sheet,执行完循环
+        if len(error_sheetnames) == 0:
+            is_tablehead_legal = True  # 更改标志位
+
+    # print('---------------表头是否合法=', is_tablehead_legal)
+    # 3. 检查每个表索引是否有空
+    if is_tablehead_legal == True:
+        for show_sheetname in show_sheetnames:  # 循环每一个sheet
+            sheet = book.sheet_by_name(show_sheetname)
+            # 检查每一行索引是否为空
+            for i in range(1, sheet.nrows):
+                if sheet.cell_value(i, 18) is None or sheet.cell_value(i, 18) == '':
+                    error_sheetnames.append(show_sheetname)
+                    msg = "检测到索引列存在空单元格，请检查上传文件。问题表格为" + str(error_sheetnames)
+                    break  # 跳出表内循环
+        if len(error_sheetnames) == 0:
+            is_index_none_legal = True
+            print('---------------索引是否合法=', is_index_none_legal)
+
+    # 4. 检查每个表索引是否重复
+    if is_index_none_legal == True:
+        for show_sheetname in show_sheetnames:
+            sheet = book.sheet_by_name(show_sheetname)
+            # 检查索引是否有重复
+            indexlist = list()
+            for i in range(1, sheet.nrows):
+                indexlist.append(sheet.cell_value(i, 18))
+
+            indexlistset = set(indexlist)  # 去重列表
+            # print('-------------', str(indexlist))
+            # print('-------------', str(indexlistset))
+            if len(indexlistset) != len(indexlist):
+                error_sheetnames.append(show_sheetname)
+                msg = "检测到索引列存在重复项，请检查上传文件。问题表格为" + str(error_sheetnames)
+        if len(error_sheetnames) == 0:
+            is_index_repeat = True
+            print('---------------检测索引是否重复结果=', is_index_repeat)
+
+    # 5. 检查每个表必填项是否有空(必填项:原则上标识应是必填项) 提交日期（col:0）-上传可以不带，减轻用户操作excel表 描述(col:4) 提交者标识(col:18)
+    if is_index_repeat == True:
+        for show_sheetname in show_sheetnames:
+            sheet = book.sheet_by_name(show_sheetname)
+            print('当前sheetname==', show_sheetname)
+
+            # 检查每一行索引是否为空
+            for i in range(1, sheet.nrows):
+                if sheet.cell_value(i, 18) == '':
+                    error_sheetnames.append(show_sheetname)
+                    msg = "检测到‘必填列(xx、提交者标识)’存在空单元格，请检查上传文件。问题表格为" + str(error_sheetnames)
+                    break  # 跳出表内循环
+        if len(error_sheetnames) == 0:
+            is_requiredcol_notnone = True
+            print('---------------必填项是否非空=', is_requiredcol_notnone)
+
+    # 6. 检查每个表必填项 格式是否正确
+    if is_requiredcol_notnone == True:
+        is_requiredcol_format_right = True
+
+    # 7. 检查每个表必填项 长度是否超出范围
+    if is_requiredcol_format_right == True:
+
+        is_requiredcol_len_right = True
+    # 8. 检查每个表非必填项 格式是否正确
+    # 9. 检查每个表非必填项 长度是否超出范围
+    # 10. 检查其他异常错误处理-直接报错
+
+    endtime = datetime.now()
+    print('耗时', (endtime - starttime).seconds, '秒')
+
+    if is_other_error == True:
+        code = 200
+        msg = '上传文件正常'
+
+    #  N.返回json格式的数据
+    data['code'] = code
+    data['msg'] = msg
+    data['count'] = count
+    data['data'] = tips
+    # 转化下查询结果为{},{},{}这种格式======================
+    json_str = json.dumps(data, ensure_ascii=False)
+    print('dbutil==jsonStr=====', json_str)
+    return json_str

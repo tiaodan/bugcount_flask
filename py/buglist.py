@@ -297,7 +297,12 @@ def edit_bug(*args):
     try:
 
         # sql = 'update bugcount.user set username=%s, password=%s, user_remark=%s, user_email=%s, user_level=%s, create_time=%s, session=%s where userid=%s'
-        sql = 'update bugcount.buglist set bug_submit_date=%s, project=%s, software=%s, test_version=%s, bug_description=%s, severity_level=%s, priority=%s, bug_difficulty=%s, bug_status=%s, bug_close_date=%s, close_version=%s, cause_analysis=%s, bug_img=%s, intermediate_situation=%s, developer=%s, remark=%s, first_bug_regression_date=%s, first_bug_regression_status=%s, first_bug_regression_remark=%s, second_bug_regression_date=%s, second_bug_regression_status=%s, second_bug_regression_remark=%s, third_bug_regression_date=%s, third_bug_regression_status=%s, third_bug_regression_remark=%s where bugid=%s'
+        # sql = 'update bugcount.buglist set bug_submit_date=%s, project=%s, software=%s, test_version=%s, bug_description=%s,' \
+        #       ' severity_level=%s, priority=%s, bug_difficulty=%s, bug_status=%s, bug_close_date=%s, ' \
+        #       'close_version=%s, cause_analysis=%s, bug_img=%s, intermediate_situation=%s, developer=%s, ' \
+        #       'remark=%s, regression_times, reopen_times where submitterindex=%s'
+        sql = 'update bugcount.buglist set bug_submit_date=%s, project=%s, software=%s, test_version=%s, bug_description=%s, severity_level=%s, priority=%s, bug_difficulty=%s, bug_status=%s, bug_close_date=%s, close_version=%s, cause_analysis=%s, bug_img=%s, intermediate_situation=%s, developer=%s, remark=%s,regression_times=%s, reopen_times=%s where submitterindex=%s'
+
         print(f'sql语句为==', sql)
         print('sql语句参数 *args==== }', args)
         print('sql语句参数 *args type==== }', type(args))
@@ -313,29 +318,31 @@ def edit_bug(*args):
         if args[1] == '' or args[1] == 'None':
             print('将time赋值None')
             args_list[1] = None  # 转成None
+        # args[9]处理
+        if args[9] == '处理' or args[9] == 'handle':
+            print('将处理赋值1')
+            args_list[9] = 1
+        elif args[9] == '关闭' or args[9] == 'close':
+            args_list[9] = 2
+        elif args[9] == '回归' or args[9] == 'regression':
+            args_list[9] = 3
+        elif args[9] == '延迟' or args[9] == 'delay':
+            args_list[9] = 4
+        elif args[9] == '重开' or args[9] == 'reopen':
+            args_list[9] = 5
+
         if args[10] == '' or args[10] == 'None':
             print('将time赋值None')
             args_list[10] = None  # 转成None
-        if args[17] == '' or args[17] == 'None':
-            print('将time赋值None')
-            args_list[17] = None  # 转成None
-        if args[20] == '' or args[20] == 'None':
-            print('将time赋值None')
-            args_list[20] = None  # 转成None
-        if args[23] == '' or args[23] == 'None':
-            print('将time赋值None')
-            args_list[23] = None  # 转成None
-        
-        args = tuple(args_list) # list --> tuple
 
+        args = tuple(args_list)  # list --> tuple
 
         # 多参数，execute要传2个参数，sql 和args分解出来的
         print('type(args)===================================', type(args))
         # cursor.execute(sql, args)  # 偶尔不好用
-        args_test = [args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10]
-                    , args[11], args[12], args[13], args[14], args[15], args[16], args[17], args[18], args[19], args[20]
-                    , args[21], args[22], args[23], args[24], args[25], args[0]]  # 测试用
-        cursor.execute(sql, args_test)  #  测试 用
+        args_test = [args[1], args[2], args[3], args[4], args[5], args[6], args[7], args[8], args[9], args[10],
+                     args[11], args[12], args[13], args[14], args[15], args[16], args[17], args[18], args[19]]  # 测试用
+        cursor.execute(sql, args_test)  # 测试 用
         print('type(args_test)===================================', type(args_test))
         # 提交到数据库执行
         conn.commit()
@@ -371,15 +378,9 @@ def edit_bug(*args):
             bug['intermediate_situation'] = r[14]
             bug['developer'] = r[15]
             bug['remark'] = r[16]
-            bug['first_bug_regression_date'] = str(r[17])
-            bug['first_bug_regression_status'] = r[18]
-            bug['first_bug_regression_remark'] = r[19]
-            bug['second_bug_regression_date'] = str(r[20])
-            bug['second_bug_regression_status'] = r[21]
-            bug['second_bug_regression_remark'] = r[22]
-            bug['third_bug_regression_date'] = str(r[23])
-            bug['third_bug_regression_status'] = r[24]
-            bug['third_bug_regression_remark'] = r[25]
+            bug['regression_times'] = r[17]
+            bug['reopen_times'] = r[18]
+            bug['submitterindex'] = r[19]
 
             buglist.append(bug)
         print('????dbutil 转换完的【{}】格式数据users==', buglist)

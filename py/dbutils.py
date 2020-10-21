@@ -8,6 +8,7 @@ import os
 import xlsxwriter
 from py import utils
 from collections import Counter
+from datetime import datetime
 
 # 数据库配置
 """
@@ -141,9 +142,9 @@ def execute_db_onesql_nouse(sql, *args):
     # 打开数据库连接
 
     conn = pymysql.connect(db_host, db_user, db_passwd, db_dbname)
-    print(f'sql语句为==', sql)
-    print("*args====", args)
-    print('参数args类型=={args}', type(args))
+    # print(f'sql语句为==', sql)
+    # print("*args====", args)
+    # print('参数args类型=={args}', type(args))
 
     # 使用 cursor() 方法创建一个游标对象 cursor
     cursor = conn.cursor()
@@ -203,123 +204,177 @@ def import_mysql_by_excel():
 
     # 打开数据所在的工作簿，以及选择存有数据的工作表
     # book = xlrd.open_workbook("../excel_upload/buglist.xls")
-    book = xlrd.open_workbook("./excel_upload/template.xlsx")
-    sheet = book.sheet_by_name("Sheet1")
+    tablehead = ['提交日期', '项目', '软件类', '测试版本', '描述',
+                 '严重等级', '优先级', '难度', '关闭情况', '关闭日期',
+                 '关闭版本', '原因分析', '问题图片', '中间情况', '开发者',
+                 '备注', '回归次数', '重开次数', '提交者索引']
+    book = xlrd.open_workbook("./excel_upload/template.xlsx", tablehead)
+
+    # 1. 检测xecel表格内容是否符合标准
+    is_exceldata_ok = utils.checkexcel_data("./excel_upload/template.xlsx")
+
     # 建立一个MySQL连接
     conn = pymysql.connect(db_host, db_user, db_passwd, db_dbname)
-
     # 获得游标
     cur = conn.cursor()
-    # 创建插入SQL语句 带第一次回归、第二次回归、第三次回归相关列表的sql
-    # query = 'insert into bugcount.buglist (name,sex,minzu,danwei_zhiwu,phone_number,home_number) values (%s, %s, %s, %s, %s, %s)'
-    # query = 'INSERT INTO `buglist` VALUES ('2', '2020-01-10', '1808', 'icss', 'icss_disp_20200108', '调度台无法强插', '3', '2', '2', '1', '0', null, null, null, null, '李东东', null, null, null, null, null, null, null, null, null, null);'
-    # sql = 'insert into bugcount.buglist (bugid, bug_submit_date, project, software, test_version, bug_description, severity_level, priority, bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer, remark, first_bug_regression_date, first_bug_regression_status, first_bug_regression_remark, second_bug_regression_date, second_bug_regression_status, second_bug_regression_remark, third_bug_regression_date, third_bug_regression_status, third_bug_regression_remark) ' \
-    #         'values (null, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s) ' \
-    #         'on duplicate key update bug_submit_date=%s,project=%s,software=%s,test_version=%s,severity_level=%s,priority=%s,bug_difficulty=%s,bug_status=%s,bug_close_date=%s,close_version=%s,cause_analysis=%s,bug_img=%s,intermediate_situation=%s,developer=%s,remark=%s' \
-    #         ',first_bug_regression_date=%s,first_bug_regression_status=%s,first_bug_regression_remark=%s,second_bug_regression_date=%s,second_bug_regression_status=%s,second_bug_regression_remark=%s,third_bug_regression_date=%s,third_bug_regression_status=%s,third_bug_regression_remark=%s'
 
-    sql = 'insert into bugcount.buglist (bugid, bug_submit_date, project, software, test_version, bug_description, severity_level, priority, bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer, remark, regression_times, reopen_times, submitterindex) ' \
-          'values (null, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ' \
-          'on duplicate key update bug_submit_date=%s,project=%s,software=%s,test_version=%s,bug_description=%s,severity_level=%s,priority=%s,bug_difficulty=%s,bug_status=%s,bug_close_date=%s,close_version=%s,cause_analysis=%s,bug_img=%s,intermediate_situation=%s,developer=%s,remark=%s,regression_times=%s,reopen_times=%s'
+    # 1. 读取每一个sheet名称,并将可见的sheet组成一个list
+    sheetnames = book.sheet_names()
+    showsheet_names = list()
+    hidesheet_names = list()
+    for sheetname in sheetnames:
+        sheet = book.sheet_by_name(sheetname)
+        if sheet.visibility == 0:  # 可见
+            showsheet_names.append(sheet.name)
+        else:  # ==1 不可见
+            hidesheet_names.append(sheet.name)
+    print("??????????????显示sheet==", showsheet_names)
+    print("??????????????隐藏sheet==", hidesheet_names)
+    print("??????sheets===", sheetnames)
 
-    print('sql==', sql)
+    # 2. 循环写入数据
+    for showsheet_name in showsheet_names:
+        print('????当前sheet==', showsheet_name)
+        sheet = book.sheet_by_name(showsheet_name)
+        # sheet = book.sheet_by_name("Sheet1")
 
-    # 执行前先判断索引列（submitterindex）是否有重复的，提示用户,重复的行是submitterindex_col_list[n] +1
-    submitterindex_col_list = []
-    for r in range(1, sheet.nrows):
-        submitterindex = sheet.cell(r, 18).value
-        submitterindex_col_list.append(submitterindex)
-    for k, v in Counter(submitterindex_col_list).items():
-        if v > 1:
-            isrepeat = 1  # 有重复选项
-            msg = '上传的execel表索引有重复，请检查submitterindex列'
-            print('重复的元素', k)
-            repeatlist.append(k)
+        # 创建插入SQL语句 带第一次回归、第二次回归、第三次回归相关列表的sql
+        # query = 'insert into bugcount.buglist (name,sex,minzu,danwei_zhiwu,phone_number,home_number) values (%s, %s, %s, %s, %s, %s)'
+        # query = 'INSERT INTO `buglist` VALUES ('2', '2020-01-10', '1808', 'icss', 'icss_disp_20200108', '调度台无法强插', '3', '2', '2', '1', '0', null, null, null, null, '李东东', null, null, null, null, null, null, null, null, null, null);'
+        # sql = 'insert into bugcount.buglist (bugid, bug_submit_date, project, software, test_version, bug_description, severity_level, priority, bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer, remark, first_bug_regression_date, first_bug_regression_status, first_bug_regression_remark, second_bug_regression_date, second_bug_regression_status, second_bug_regression_remark, third_bug_regression_date, third_bug_regression_status, third_bug_regression_remark) ' \
+        #         'values (null, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s) ' \
+        #         'on duplicate key update bug_submit_date=%s,project=%s,software=%s,test_version=%s,severity_level=%s,priority=%s,bug_difficulty=%s,bug_status=%s,bug_close_date=%s,close_version=%s,cause_analysis=%s,bug_img=%s,intermediate_situation=%s,developer=%s,remark=%s' \
+        #         ',first_bug_regression_date=%s,first_bug_regression_status=%s,first_bug_regression_remark=%s,second_bug_regression_date=%s,second_bug_regression_status=%s,second_bug_regression_remark=%s,third_bug_regression_date=%s,third_bug_regression_status=%s,third_bug_regression_remark=%s'
 
-    if isrepeat != 1:  # 没有重复项
-        # 创建一个for循环迭代读取xls文件每行数据的, 从第二行开始是要跳过标题行
+        sql = 'insert into bugcount.buglist (bugid, bug_submit_date, project, software, test_version, bug_description, severity_level, priority, bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer, remark, regression_times, reopen_times, submitterindex) ' \
+              'values (null, %s, %s, %s, %s, %s, %s, %s, %s, %s,%s, %s, %s, %s, %s, %s, %s, %s, %s, %s) ' \
+              'on duplicate key update bug_submit_date=%s,project=%s,software=%s,test_version=%s,bug_description=%s,severity_level=%s,priority=%s,bug_difficulty=%s,bug_status=%s,bug_close_date=%s,close_version=%s,cause_analysis=%s,bug_img=%s,intermediate_situation=%s,developer=%s,remark=%s,regression_times=%s,reopen_times=%s'
+
+        print('sql==', sql)
+
+        # 执行前先判断索引列（submitterindex）是否有重复的，提示用户,重复的行是submitterindex_col_list[n] +1
+        submitterindex_col_list = []
         for r in range(1, sheet.nrows):
-            # print('Nlie nrows==', sheet.nrows)
-            # print('curent r ==', r)
-            n = 1
-            # print('shel.cell', sheet.cell(r, n))
-
-            # bug_submit_date_noformat = datetime.datetime.strptime(str(sheet.cell(r, 0).value), '%Y-%m-%d').time()
-            # time.strftime("%Y-%m-%d %H:%M:%S", sheet.cell(r, 0).value)
-            bug_submit_date = sheet.cell(r, 0).value
-            if bug_submit_date is None or bug_submit_date == '':
-                # bug_submit_date = "1888-01-01"
-                bug_submit_date = None
-            project = sheet.cell(r, 1).value
-            software = sheet.cell(r, 2).value
-            test_version = sheet.cell(r, 3).value
-            bug_description = sheet.cell(r, 4).value
-            severity_level = sheet.cell(r, 5).value  # 严重等级
-            if severity_level is None or severity_level == '':
-                severity_level = None
-            priority = sheet.cell(r, 6).value  # 优先级
-            if priority is None or priority == '':
-                priority = None
-            bug_difficulty = sheet.cell(r, 7).value
-            if bug_difficulty is None or bug_difficulty == '':
-                bug_difficulty = None
-            bug_status = sheet.cell(r, 8).value  # float
-            # 将用户导入的“关闭情况” --》转成数字
-            # 1 处理(handle)，2 关闭(close)，3 回归(regression)，4 延迟(delay)， 5 重开(reopen) 0 未知（可能用户上传时bug_status字段不对）//excel上传导入时，填写中文、英文均可
-            if bug_status == "处理" or bug_status == "handle":
-                bug_status = 1
-            elif bug_status == "关闭" or bug_status == "close":
-                bug_status = 2
-            elif bug_status == "回归" or bug_status == "regression":
-                bug_status = 3
-            elif bug_status == "延迟" or bug_status == "delay":
-                bug_status = 4
-            elif bug_status == "重开" or bug_status == "reopen":
-                bug_status = 5
-            else:
-                bug_status = 0  # 未知（可能用户上传时bug_status字段不对）
-
-            bug_close_date = sheet.cell(r, 9).value
-            if bug_close_date is None or bug_close_date == '':
-                bug_close_date = None
-            close_version = sheet.cell(r, 10).value
-            cause_analysis = sheet.cell(r, 11).value
-            bug_img = sheet.cell(r, 12).value
-            intermediate_situation = sheet.cell(r, 12).value
-            developer = sheet.cell(r, 14).value
-            remark = sheet.cell(r, 15).value
-            regression_times = sheet.cell(r, 16).value
-            # print("regression_times==============================", regression_times)
-            if regression_times is None or regression_times == '':
-                regression_times = None
-            reopen_times = sheet.cell(r, 17).value
-            # print("reopen_times==============================", reopen_times)
-            if reopen_times is None or reopen_times == '':
-                reopen_times = None
             submitterindex = sheet.cell(r, 18).value
-            n += 1
+            submitterindex_col_list.append(submitterindex)
+        for k, v in Counter(submitterindex_col_list).items():
+            if v > 1:
+                isrepeat = 1  # 有重复选项
+                msg = '上传的execel表索引有重复，请检查submitterindex列'
+                print('重复的元素', k)
+                repeatlist.append(k)
 
-            # values = (name, sex, minzu, danwei_zhiwu, phone_number, home_number) 第一行插入所需的变量（25个，除去bugid）;第二行数据相同更新参数（24个-出去bugid 喝bug_description）
-            values = (
-            bug_submit_date, project, software, test_version, bug_description, severity_level, priority, bug_difficulty,
-            bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer,
-            remark, regression_times, reopen_times, submitterindex,
-            bug_submit_date, project, software, test_version, bug_description, severity_level, priority, bug_difficulty,
-            bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer,
-            remark, regression_times, reopen_times)
+        if isrepeat != 1:  # 没有重复项
+            # 创建一个for循环迭代读取xls文件每行数据的, 从第二行开始是要跳过标题行
+            for r in range(1, sheet.nrows):
+                # print('Nlie nrows==', sheet.nrows)
+                # print('curent r ==', r)
+                n = 1
+                # print('shel.cell', sheet.cell(r, n))
 
-            # values = (bug_submit_date, project, software, test_version)
-            # print('import_mysql_by_excel（）方法 valuse=', values)
-            # 执行sql语句
-            cur.execute(sql, values)
-            code = 200
-            msg = '导入数据成功'
-        conn.commit()
-        cur.close()
-        conn.close()
-        columns = str(sheet.ncols)
-        rows = str(sheet.nrows)
-        print("导入 " + columns + " 列 " + rows + " 行数据到MySQL数据库!")
+                # bug_submit_date_noformat = datetime.datetime.strptime(str(sheet.cell(r, 0).value), '%Y-%m-%d').time()
+                # time.strftime("%Y-%m-%d %H:%M:%S", sheet.cell(r, 0).value)
+                bug_submit_date = sheet.cell(r, 0).value
+                # print('!!!!!!!!!!!!!!!!!!!!bug_submit_date', sheet.cell(r, 0).value)
+                if bug_submit_date is None or bug_submit_date == '':
+                    # bug_submit_date = "1888-01-01"
+                    bug_submit_date = None
+                elif type(bug_submit_date) == float:
+                    # 类型为时间戳
+                    bug_submit_date = xlrd.xldate.xldate_as_datetime(sheet.cell(r, 0).value, 0).strftime("%Y-%#m-%#d")  # 应该传一个时间数值
+                    # print("转换时间戳完成后", bug_submit_date)
+                elif type(bug_submit_date) == str:
+                    # 上传时为xxxx/xx/xx这种格式，转化成  xxxx-zz-zz
+                    bug_submit_date = bug_submit_date.replace("/", "-")
+                    # bug_submit_date = datetime.strftime(datetime.strptime(bug_submit_date, "%Y/%m/%d"), "%Y-%#m-%#d")
+                # print('!!!!!!!!!!!!!!!!!!!!bug_submit_date 转换后type', type(bug_submit_date))
+                # print('!!!!!!!!!!!!!!!!!!!!bug_submit_date 转换后', bug_submit_date)
+                # 因为excel里面是2020/01/10这种格式的，所以需要转化
+
+                project = sheet.cell(r, 1).value
+                software = sheet.cell(r, 2).value
+                test_version = sheet.cell(r, 3).value
+                bug_description = sheet.cell(r, 4).value
+                severity_level = sheet.cell(r, 5).value  # 严重等级
+                if severity_level is None or severity_level == '':
+                    severity_level = None
+                priority = sheet.cell(r, 6).value  # 优先级
+                if priority is None or priority == '':
+                    priority = None
+                bug_difficulty = sheet.cell(r, 7).value
+                if bug_difficulty is None or bug_difficulty == '':
+                    bug_difficulty = None
+                bug_status = sheet.cell(r, 8).value  # float
+                # 将用户导入的“关闭情况” --》转成数字
+                # 1 处理(handle)，2 关闭(close)，3 回归(regression)，4 延迟(delay)， 5 重开(reopen) 0 未知（可能用户上传时bug_status字段不对）//excel上传导入时，填写中文、英文均可
+                if bug_status == "处理" or bug_status == "handle":
+                    bug_status = 1
+                elif bug_status == "关闭" or bug_status == "close":
+                    bug_status = 2
+                elif bug_status == "回归" or bug_status == "regression":
+                    bug_status = 3
+                elif bug_status == "延迟" or bug_status == "delay":
+                    bug_status = 4
+                elif bug_status == "重开" or bug_status == "reopen":
+                    bug_status = 5
+                else:
+                    bug_status = 0  # 未知（可能用户上传时bug_status字段不对）
+
+                bug_close_date = sheet.cell(r, 9).value
+                # print('!!!!!!!!!!!!!!!!!!!!bug_close_dateexcel日期类型 前', bug_close_date)
+                if bug_close_date is None or bug_close_date == '':
+                    bug_close_date = None
+                elif type(bug_close_date) == float:
+                    bug_close_date = xlrd.xldate.xldate_as_datetime(sheet.cell(r, 9).value, 0).strftime("%Y-%#m-%#d")
+                    # print("转换时间戳完成后bug_close_date", bug_submit_date)
+                elif type(bug_close_date) == str:
+                    # 类型为xxxx/xx/xx这种格式，转化成  xxx    x-zz-zz
+                    bug_close_date = bug_close_date.replace("/", "-")
+                    # bug_close_date = datetime.strftime(datetime.strptime(bug_close_date, "%Y/%m/%d"), "%Y-%#m-%#d")
+                # print('!!!!!!!!!!!!!!!!!!!!bug_close_dateexcel日期类型 后', type(bug_close_date))
+                # print('!!!!!!!!!!!!!!!!!!!!bug_close_dateexcel日期 后', bug_close_date)
+
+                close_version = sheet.cell(r, 10).value
+                cause_analysis = sheet.cell(r, 11).value
+                bug_img = sheet.cell(r, 12).value
+                intermediate_situation = sheet.cell(r, 12).value
+                developer = sheet.cell(r, 14).value
+                remark = sheet.cell(r, 15).value
+                regression_times = sheet.cell(r, 16).value
+                # print("regression_times==============================", regression_times)
+                if regression_times is None or regression_times == '':
+                    regression_times = None
+                reopen_times = sheet.cell(r, 17).value
+                # print("reopen_times==============================", reopen_times)
+                if reopen_times is None or reopen_times == '':
+                    reopen_times = None
+                submitterindex = sheet.cell(r, 18).value
+                print('-------查到的索引==', submitterindex)
+                n += 1
+
+                # values = (name, sex, minzu, danwei_zhiwu, phone_number, home_number) 第一行插入所需的变量（25个，除去bugid）;第二行数据相同更新参数（24个-出去bugid 喝bug_description）
+                values = (
+                bug_submit_date, project, software, test_version, bug_description, severity_level, priority, bug_difficulty,
+                bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer,
+                remark, regression_times, reopen_times, submitterindex,
+                bug_submit_date, project, software, test_version, bug_description, severity_level, priority, bug_difficulty,
+                bug_status, bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation, developer,
+                remark, regression_times, reopen_times)
+                # print("!!!!!!!!!!!!!!导入values", values)
+
+                # values = (bug_submit_date, project, software, test_version)
+                # print('import_mysql_by_excel（）方法 valuse=', values)
+                # 执行sql语句
+                cur.execute(sql, values)
+                code = 200
+                msg = '导入数据成功'
+            conn.commit()
+            columns = str(sheet.ncols)
+            rows = str(sheet.nrows)
+            print("导入 " + columns + " 列 " + rows + " 行数据到MySQL数据库!")
+
+    cur.close()
+    conn.close()
 
     #  返回json格式的数据
     data['code'] = code
@@ -388,8 +443,8 @@ def register(*args):
     # 打开数据库连接
 
     conn = pymysql.connect(db_host, db_user, db_passwd, db_dbname)
-    print("*args====", args)
-    print('参数args类型=={args}', type(args))
+    # print("*args====", args)
+    # print('参数args类型=={args}', type(args))
 
     # 使用 cursor() 方法创建一个游标对象 cursor
     cursor = conn.cursor()
@@ -488,9 +543,9 @@ def login(*args):
     # 使用 execute()  方法执行 SQL 查询
     try:
         sql = 'select userid,username,password,user_remark,user_email,user_level,create_time,session from bugcount.user where username = %s and password = %s'
-        print(f'sql语句为==', sql)
-        print("*args====", args)
-        print('参数args类型=={args}', type(args))
+        # print(f'sql语句为==', sql)
+        # print("*args====", args)
+        # print('参数args类型=={args}', type(args))
 
         # 执行sql语句
         cursor.execute(sql, args)
@@ -500,25 +555,25 @@ def login(*args):
         sql_return_result_tuple = cursor.fetchall()
 
         # 转换查询结果为[{},{},{}]这种格式的
-        print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
-        print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
-        print("执行语句返回结果(类型)==", type(sql_return_result_tuple))
+        # print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
+        # print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
+        # print("执行语句返回结果(类型)==", type(sql_return_result_tuple))
         print("sql语句执行成功")
 
         # 转化下查询结果为{},{},{}这种格式======================
-        print('????????result=', sql_return_result_tuple)
-        print('????????????????????type = ', type(sql_return_result_tuple))
+        # print('????????result=', sql_return_result_tuple)
+        # print('????????????????????type = ', type(sql_return_result_tuple))
 
         for r in sql_return_result_tuple:
-            print('=============进入循环')
-            print('=============进入循环r0', r[0])
-            print('=============进入循环r1', r[1])
-            print('=============进入循环r2', r[2])
-            print('=============进入循环r3', r[3])
-            print('=============进入循环r4', r[4])
-            print('=============进入循环r5', r[5])
-            print('=============进入循环r6', str(r[6]))
-            print('=============进入循环r7', r[7])
+            # print('=============进入循环')
+            # print('=============进入循环r0', r[0])
+            # print('=============进入循环r1', r[1])
+            # print('=============进入循环r2', r[2])
+            # print('=============进入循环r3', r[3])
+            # print('=============进入循环r4', r[4])
+            # print('=============进入循环r5', r[5])
+            # print('=============进入循环r6', str(r[6]))
+            # print('=============进入循环r7', r[7])
 
             person = dict()
             person['userid'] = r[0]
@@ -589,9 +644,9 @@ def check_username_is_registered(username):
     try:
         # 执行sql语句
         sql = 'select userid,username,password,user_remark,user_email,user_level,create_time,session from bugcount.user where username=%s'
-        print(f'sql语句为==', sql)
-        print("*args====", username)
-        print('参数args类型=={args}', type(username))
+        # print(f'sql语句为==', sql)
+        # print("*args====", username)
+        # print('参数args类型=={args}', type(username))
 
         cursor.execute(sql, username)
         # 提交到数据库执行
@@ -600,16 +655,16 @@ def check_username_is_registered(username):
         sql_return_result_tuple = cursor.fetchall()
 
         # 转换查询结果为[{},{},{}]这种格式的
-        print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
-        print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
-        print("执行语句返回结果(类型)==", type(sql_return_result_tuple))
+        # print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
+        # print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
+        # print("执行语句返回结果(类型)==", type(sql_return_result_tuple))
         print("sql语句执行成功")
 
         # 转化下查询结果为{},{},{}这种格式======================
         print('????????result=', sql_return_result_tuple)
         print('????????????????????type = ', type(sql_return_result_tuple))
         for r in sql_return_result_tuple:
-            print('=============进入循环')
+            # print('=============进入循环')
             person = {}
             person['userid'] = r[0]
             person['username'] = r[1]
@@ -626,7 +681,7 @@ def check_username_is_registered(username):
         # 拼接返回数据,返回列表
         code = 200  # 成功
         msg = 'sql语句执行成功'
-        print('?????????????????????josn sql_return_result_tuple type = ', type(len(sql_return_result_tuple)))
+        # print('?????????????????????josn sql_return_result_tuple type = ', type(len(sql_return_result_tuple)))
         count = len(sql_return_result_tuple)  # sql语句结果个数
     except:
         # 如果发生错误则回滚
@@ -641,7 +696,6 @@ def check_username_is_registered(username):
     data['code'] = code
     data['msg'] = msg
     data['count'] = count
-    print('?????????????????????josn count type = ', type(data['count']))
     data['json_data'] = users
     # 转化下查询结果为{},{},{}这种格式======================
     json_str = json.dumps(data, ensure_ascii=False)
@@ -718,9 +772,9 @@ def execute_onesql(sql, *args):
     # 打开数据库连接
     conn = pymysql.connect(db_host, db_user, db_passwd, db_dbname)
 
-    print('sql语句为==', sql)
-    print("*args====", args)
-    print('参数args类型=={args}', type(args))
+    # print('sql语句为==', sql)
+    # print("*args====", args)
+    # print('参数args类型=={args}', type(args))
 
     # 使用 cursor() 方法创建一个游标对象 cursor
     cursor = conn.cursor()
@@ -733,9 +787,9 @@ def execute_onesql(sql, *args):
         conn.commit()
         # 执行语句，返回结果
         sql_return_result_tuple = cursor.fetchall()
-        print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
-        print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
-        print("执行语句返回结果(类型)==", type(sql_return_result_tuple))  # tuple
+        # print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
+        # print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
+        # print("执行语句返回结果(类型)==", type(sql_return_result_tuple))  # tuple
         print("sql语句执行成功")
 
         # 拼接返回数据,返回列表
@@ -751,8 +805,8 @@ def execute_onesql(sql, *args):
         cursor.close()
         conn.close()
 
-    print('返回数据如下：')
-    print(sql_return_result_tuple)
+    # print('返回数据如下：')
+    # print(sql_return_result_tuple)
     return sql_return_result_tuple
 
 
@@ -768,9 +822,9 @@ def execute_onesql_returnth(sql, *args):
     # 打开数据库连接
     conn = pymysql.connect(db_host, db_user, db_passwd, db_dbname)
 
-    print('sql语句为==', sql)
-    print("*args====", args)
-    print('参数args类型=={args}', type(args))
+    # print('sql语句为==', sql)
+    # print("*args====", args)
+    # print('参数args类型=={args}', type(args))
 
     # 使用 cursor() 方法创建一个游标对象 cursor
     cursor = conn.cursor()
@@ -783,9 +837,9 @@ def execute_onesql_returnth(sql, *args):
         conn.commit()
         # 执行语句，返回结果
         sql_return_result_tuple = cursor.description
-        print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
-        print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
-        print("执行语句返回结果(类型)==", type(sql_return_result_tuple))  # tuple
+        # print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
+        # print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
+        # print("执行语句返回结果(类型)==", type(sql_return_result_tuple))  # tuple
         print("sql语句执行成功")
 
         # 拼接返回数据,返回列表
@@ -801,8 +855,8 @@ def execute_onesql_returnth(sql, *args):
         cursor.close()
         conn.close()
 
-    print('返回数据如下：')
-    print(sql_return_result_tuple)
+    # print('返回数据如下：')
+    # print(sql_return_result_tuple)
     return sql_return_result_tuple
 
 
@@ -818,8 +872,8 @@ def execute_onesql_returnjson(sql, *args):
 
     # 打开数据库连接
     conn = pymysql.connect(db_host, db_user, db_passwd, db_dbname)
-    print('sql语句为==', sql)
-    print("*args====", args)
+    # print('sql语句为==', sql)
+    # print("*args====", args)
     # print('参数args类型=={args}', type(args))
 
     # 使用 cursor() 方法创建一个游标对象 cursor
@@ -833,9 +887,9 @@ def execute_onesql_returnjson(sql, *args):
         conn.commit()
         # 执行语句，返回结果
         sql_return_result_tuple = cursor.fetchall()
-        print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
-        print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
-        print("执行语句返回结果(类型)==", type(sql_return_result_tuple))  # tuple
+        # print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
+        # print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
+        # print("执行语句返回结果(类型)==", type(sql_return_result_tuple))  # tuple
         print("sql语句执行成功")
 
         # 拼接返回数据,返回列表
@@ -876,8 +930,8 @@ def execute_onesql_returnjson_privilege(sql, *args):
 
     # 打开数据库连接
     conn = pymysql.connect(db_host, db_user, db_passwd, db_dbname)
-    print('sql语句为==', sql)
-    print("*args====", args)
+    # print('sql语句为==', sql)
+    # print("*args====", args)
     # print('参数args类型=={args}', type(args))
 
     # 使用 cursor() 方法创建一个游标对象 cursor
@@ -931,8 +985,8 @@ def execute_onesql_returnint(sql, *args):
 
     # 打开数据库连接
     conn = pymysql.connect(db_host, db_user, db_passwd, db_dbname)
-    print('sql语句为==', sql)
-    print("*args====", args)
+    # print('sql语句为==', sql)
+    # print("*args====", args)
     # print('参数args类型=={args}', type(args))
 
     # 使用 cursor() 方法创建一个游标对象 cursor
@@ -946,14 +1000,14 @@ def execute_onesql_returnint(sql, *args):
         conn.commit()
         # 执行语句，返回结果
         sql_return_result_tuple = cursor.fetchall()
-        print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
-        print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
-        print("执行语句返回结果(类型)==", type(sql_return_result_tuple))  # tuple
+        # print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
+        # print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
+        # print("执行语句返回结果(类型)==", type(sql_return_result_tuple))  # tuple
         print("sql语句执行成功")
 
         # 拼接返回数据,返回列表
         result_int = sql_return_result_tuple[0]  # 成功
-        print('获取权限，typesql_return_result_tuple ========================', sql_return_result_tuple)
+        # print('获取权限，typesql_return_result_tuple ========================', sql_return_result_tuple)
         msg = 'sql语句执行成功'
     except:
         # 如果发生错误则回滚
@@ -967,6 +1021,50 @@ def execute_onesql_returnint(sql, *args):
 
     # 5.返回json格式的数据
     return result_int
+
+
+# 功能：执行一条sql语句,返回tuple数据
+# 1. sql 2. 参数后面的匹配变量
+def execute_onesql_returntuple(sql, *args):
+    # 初始化数据
+    result_int = 0  # sql语句执行结果
+
+    # 打开数据库连接
+    conn = pymysql.connect(db_host, db_user, db_passwd, db_dbname)
+    # print('sql语句为==', sql)
+    # print("*args====", args)
+    # print('参数args类型=={args}', type(args))
+
+    # 使用 cursor() 方法创建一个游标对象 cursor
+    cursor = conn.cursor()
+
+    # 使用 execute()  方法执行 SQL 查询
+    try:
+        # 执行sql语句
+        cursor.execute(sql, args)
+        # 提交到数据库执行
+        conn.commit()
+        # 执行语句，返回结果
+        sql_return_result_tuple = cursor.fetchall()
+        # print("执行语句返回结果：", sql_return_result_tuple)  # 返回元组
+        # print("执行语句返回结果个数：", len(sql_return_result_tuple))  # 返回元组
+        # print("执行语句返回结果(类型)==", type(sql_return_result_tuple))  # tuple
+        print("sql语句执行成功")
+
+        # 拼接返回数据,返回列表
+        msg = 'sql语句执行成功'
+    except:
+        # 如果发生错误则回滚
+        print('sql语句执行失败')
+        conn.rollback()
+        return 0  # 异常返回数字0
+    finally:
+        # 不管是否异常，都关闭数据库连接
+        cursor.close()
+        conn.close()
+
+    # 5.返回json格式的数据
+    return sql_return_result_tuple
 
 
 # 写入excel文件
@@ -1014,7 +1112,7 @@ def wirte2excelfile(excelrelpath):
 注意：1. excel文件名不存在会自动创建
      2. excel文件上级文件夹，如果不存在，不会自动创建
 """
-def wirte2excelfile_returnjson(excelrelpath, searchsql, ifwrite_th=True):
+def write2excelfile_returnjson_onesheet(excelrelpath, searchsql, ifwrite_th=True):
     # 1. 初始化json数据
     code = 500  # 默认失败
     count = 0  # sql语句执行结果个数
@@ -1034,7 +1132,7 @@ def wirte2excelfile_returnjson(excelrelpath, searchsql, ifwrite_th=True):
     excelabspath = rootdir + "\\" + excelrelpath
     print("excel绝对路径=", excelabspath)
     book = xlsxwriter.Workbook(excelabspath)
-    sheet1 = book.add_worksheet("Sheet1")  # 写入哪个sheet
+    sheet1 = book.add_worksheet("Sheet1")  # 写入哪个Sheet
 
     # 如果ifwrite_th = True,写入表头，写上字段信息,写入时将英文转成中文表头
     if ifwrite_th is True:
@@ -1049,11 +1147,19 @@ def wirte2excelfile_returnjson(excelrelpath, searchsql, ifwrite_th=True):
     col = 0
     for row in range(1, len(tdtuples) + 1):
         for col in range(0, len(thtuples)):
-            if tdtuples[row - 1][col] is None:  # 表格内容是None,替换成空字符串
+            if tdtuples[row - 1][col] is None or tdtuples[row - 1][col] == '':  # 表格内容是None,替换成空字符串
                 sheet1.write(row, col, '')
             else:
+                # 转换日期格式 ‘提交日期’列数从0开始
+                if col == 0:
+                    # 不为空的话，转成YYYY-MM-DD这种格式的,
+                    # sheet1.write(row, col, datetime.strptime(tdtuples[row - 1][col], '%Y-%m-%d').date().strftime("%Y/%m/%d"))  # 导出前已经是日期格式，这样写法错误
+                    # print("?????????????", tdtuples[row - 1][col].strftime("%Y/%#m/%#d"))
+                    # sheet1.write(row, col, tdtuples[row - 1][col].strftime("%Y/%#m/%#d"))
+                    sheet1.write(row, col, datetime.strftime(tdtuples[row - 1][col], "%Y/%#m/%#d"))  # 转成日期格式str
+
                 # 将 ‘关闭情况’int--> 文字
-                if col == 8:  # 第9列是 ‘关闭情况’
+                elif col == 8:  # 第9列是 ‘关闭情况’
                     # print('tdtuples[row - 1][col]type======================', type(tdtuples[row - 1][col])) # int
                     # print('tdtuples[row - 1][col]======================', tdtuples[row - 1][col])
                     if tdtuples[row - 1][col] == 1:
@@ -1069,6 +1175,12 @@ def wirte2excelfile_returnjson(excelrelpath, searchsql, ifwrite_th=True):
                         sheet1.write(row, col, '重开')
                     else:
                         sheet1.write(row, col, '未知')
+                elif col == 9:  # 关闭时间
+                    # 不为空
+                    # print("?????????????当前值", tdtuples[row - 1][col])
+                    # print("?????????????当前值type", type(tdtuples[row - 1][col]))
+                    # print("?????????????", tdtuples[row - 1][col].strftime("%Y/%#m/%#d"))
+                    sheet1.write(row, col, tdtuples[row - 1][col].strftime("%Y/%#m/%#d"))
                 else:
                     sheet1.write(row, col, u'%s' % tdtuples[row - 1][col])  # 写入具体内容
     book.close()  # 必须关闭流，否则写不进去
@@ -1087,6 +1199,128 @@ def wirte2excelfile_returnjson(excelrelpath, searchsql, ifwrite_th=True):
     json_str = json.dumps(data, ensure_ascii=False)
     print('dbutil==jsonStr=====', json_str)
     return json_str
+
+
+"""
+功能：写入excel文件
+参数：1. excelrelpath : excel文件的输出路径(相对根目录的路径，路径前不用加\\)，结尾必须带上文件后缀,基于项目根目录的路径。如 根目录是“D:” excelrelapath = "test1.xlsx" ->最前面不用加\\
+     2. searchsql : 查询语句
+     2. ifwirte_th : 是否写入表头,默认是True,即写入表头
+注意：1. excel文件名不存在会自动创建
+     2. excel文件上级文件夹，如果不存在，不会自动创建
+"""
+def write2excelfile_returnjson_nsheet(excelrelpath, searchsql, ifwrite_th=True):
+    # 1. 初始化json数据
+    code = 500  # 默认失败
+    count = 0  # sql语句执行结果个数
+    data = {}
+    buglist = []
+    msg = '写入excel数据失败'
+
+    # 打开数据库连接
+    conn = pymysql.connect(db_host, db_user, db_passwd, db_dbname)
+    # 使用 cursor() 方法创建一个游标对象 cursor
+    cursor = conn.cursor()
+
+    get_project_sql = "select project from bugcount.buglist where project is not null and project != '' group by project"
+    projects = execute_onesql_returntuple(get_project_sql)
+    print("???????项目==", projects)
+
+    # 2. 执行sql语句，获取返回值
+    sql = 'select bug_submit_date, project, software, test_version, bug_description, severity_level, priority, ' \
+          'bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, ' \
+          'intermediate_situation, developer, remark, regression_times, reopen_times, submitterindex ' \
+          'from bugcount.buglist '
+    thtuples = execute_onesql_returnth(sql)
+    print("====================thtuple=", thtuples)
+    # tdtuples = execute_onesql(searchsql)
+    # print("excel内容=========", tdtuples)
+
+    # 3. 写入excel
+    # XlsxWriter方式创建workbook
+    excelabspath = rootdir + "\\" + excelrelpath
+    print("excel绝对路径=", excelabspath)
+    book = xlsxwriter.Workbook(excelabspath)
+
+    # 返回的这种格式的 (('1808',), ('C8 3+4G',), ('FH03',), ('JC二期',), ('K项目',), ('K项目-多仓库',), ('K项目-马来',), ('K项目-鹰潭',), ('LJG',), ('WRJ',), ('ZG',), ('大S北向审计日志系统',), ('大S项目',), ('视频问题',))
+    for i in projects:
+        # print("!!!!!!!!项目==", i)
+        index = projects.index(i)
+        print("!!!!!!!!项目type==", i[0])
+        print("!!!!!!!!项目type==", type(i[0]))
+        sheetN = book.add_worksheet(i[0])
+
+        # 1. 每个表写入表头
+        # 如果ifwrite_th = True,写入表头，写上字段信息,写入时将英文转成中文表头
+        if ifwrite_th is True:
+            for th in range(0, len(thtuples)):  # th是数字
+                # print("表头", thtuples[th][0])
+                # sheetN.write(0, th, thtuples[th][0])
+                sheetN.write(0, th, tableheaddict[thtuples[th][0]])
+
+        # 2. 获取表数据
+        tdtuples = execute_onesql(searchsql, i[0])
+
+        # 3.写入数据
+        # 获取并写入数据段信息
+        row = 1
+        col = 0
+        for row in range(1, len(tdtuples) + 1):
+            for col in range(0, len(thtuples)):
+                if tdtuples[row - 1][col] is None or tdtuples[row - 1][col] == '':  # 表格内容是None,替换成空字符串
+                    sheetN.write(row, col, '')
+                else:
+                    # 转换日期格式 ‘提交日期’列数从0开始
+                    if col == 0:
+                        # 不为空的话，转成YYYY-MM-DD这种格式的,
+                        # sheetN.write(row, col, datetime.strptime(tdtuples[row - 1][col], '%Y-%m-%d').date().strftime("%Y/%m/%d"))  # 导出前已经是日期格式，这样写法错误
+                        # print("?????????????", tdtuples[row - 1][col].strftime("%Y/%#m/%#d"))
+                        # sheetN.write(row, col, tdtuples[row - 1][col].strftime("%Y/%#m/%#d"))
+                        sheetN.write(row, col, datetime.strftime(tdtuples[row - 1][col], "%Y/%#m/%#d"))  # 转成日期格式str
+
+                    # 将 ‘关闭情况’int--> 文字
+                    elif col == 8:  # 第9列是 ‘关闭情况’
+                        # print('tdtuples[row - 1][col]type======================', type(tdtuples[row - 1][col])) # int
+                        # print('tdtuples[row - 1][col]======================', tdtuples[row - 1][col])
+                        if tdtuples[row - 1][col] == 1:
+                            # tdtuples[row - 1][col] = '处理'  # 因为tuple 不能复制，所以这种写法错误，报错TypeError: 'tuple' object does not support item assignment
+                            sheetN.write(row, col, '处理')
+                        elif tdtuples[row - 1][col] == 2:
+                            sheetN.write(row, col, '关闭')
+                        elif tdtuples[row - 1][col] == 3:
+                            sheetN.write(row, col, '回归')
+                        elif tdtuples[row - 1][col] == 4:
+                            sheetN.write(row, col, '延迟')
+                        elif tdtuples[row - 1][col] == 5:
+                            sheetN.write(row, col, '重开')
+                        else:
+                            sheetN.write(row, col, '未知')
+                    elif col == 9:  # 关闭时间
+                        # 不为空
+                        # print("?????????????当前值", tdtuples[row - 1][col])
+                        # print("?????????????当前值type", type(tdtuples[row - 1][col]))
+                        # print("?????????????", tdtuples[row - 1][col].strftime("%Y/%#m/%#d"))
+                        sheetN.write(row, col, tdtuples[row - 1][col].strftime("%Y/%#m/%#d"))
+                    else:
+                        sheetN.write(row, col, u'%s' % tdtuples[row - 1][col])  # 写入具体内容
+    book.close()  # 必须关闭流，否则写不进去
+
+    # 4. 重置json数据,顺序执行完就算陈公公
+    code = 200
+    msg = '写入excel数据成功'
+    count = len(thtuples)
+
+    # 5.返回json格式的数据
+    data['code'] = code
+    data['msg'] = msg
+    data['count'] = count
+    data['data'] = buglist
+    # 转化下查询结果为{},{},{}这种格式======================
+    json_str = json.dumps(data, ensure_ascii=False)
+    print('dbutil==jsonStr=====', json_str)
+    return json_str
+
+
 
 
 # 另存为到用户自定义文件，并写入excel文件
@@ -1111,7 +1345,7 @@ def wirte2excelfile_storage_returnjson(excelabspath, searchsql, ifwrite_th=True)
     thtuples = execute_onesql_returnth(searchsql)
     print("====================thtuple=", thtuples)
     tdtuples = execute_onesql(searchsql)
-    print("excel内容=========", tdtuples)
+    # print("excel内容=========", tdtuples)
 
     # 3. 写入excel
     # XlsxWriter方式创建workbook

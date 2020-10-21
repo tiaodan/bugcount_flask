@@ -688,18 +688,33 @@ def truncateTableBuglist():
     return json_str
 
 
-# post 导出所有buglist数据
-@app.route('/exportAllBug', methods=["POST"])
-def export_allbug():
-    print('<app.py> /exportAllBug 导出所有bug')
+# post 导出所有buglist数据到一个Sheet
+@app.route('/exportAllBugOneSheet', methods=["POST"])
+def export_allbug_onesheet():
+    print('<app.py> /exportAllBugOneSheet 导出所有bug')
     excelabspath = request.values.get("excelabspath")
     sql = 'select bug_submit_date, project, software, test_version, bug_description, severity_level, priority, ' \
           'bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, ' \
           'intermediate_situation, developer, remark, regression_times, reopen_times, submitterindex ' \
           'from bugcount.buglist'
-    jsonstr = dbutils.wirte2excelfile_returnjson("excel_upload\\export\\buglist.xlsx", sql, True)
+    jsonstr = dbutils.write2excelfile_returnjson_onesheet("excel_upload\\export\\buglist.xlsx", sql, True)
     print('《app.py》/exportAllBug 导出所有bug 返回jsonStr==', jsonstr)
     return jsonstr
+
+
+# post 导出所有buglist数据
+@app.route('/exportAllBugNSheet', methods=["POST"])
+def export_allbug_nsheet():
+    print('<app.py> /exportAllBugNSheet 导出所有bug')
+    excelabspath = request.values.get("excelabspath")
+    sql = 'select bug_submit_date, project, software, test_version, bug_description, severity_level, priority, ' \
+          'bug_difficulty, bug_status, bug_close_date, close_version, cause_analysis, bug_img, ' \
+          'intermediate_situation, developer, remark, regression_times, reopen_times, submitterindex ' \
+          'from bugcount.buglist where project = %s order by submitterindex'
+    jsonstr = dbutils.write2excelfile_returnjson_nsheet("excel_upload\\export\\buglist.xlsx", sql, True)
+    print('《app.py》/exportAllBug 导出所有bug 返回jsonStr==', jsonstr)
+    return jsonstr
+
 
 #post 编辑bug
 @app.route('/editBug', methods=("GET", "POST"))
@@ -754,20 +769,9 @@ def editBug():
         # 4
         developer = request.form.get('developer')
         remark = request.form.get('remark')
-        first_bug_regression_date = request.form.get('first_bug_regression_date')
-        first_bug_regression_status = request.form.get('first_bug_regression_status')
-        first_bug_regression_remark = request.form.get('first_bug_regression_remark')
-
-        # 5
-        second_bug_regression_date = request.form.get('second_bug_regression_date')
-        second_bug_regression_status = request.form.get('second_bug_regression_status')
-        second_bug_regression_remark = request.form.get('second_bug_regression_remark')
-        third_bug_regression_date = request.form.get('third_bug_regression_date')
-        third_bug_regression_status = request.form.get('third_bug_regression_status')
-        third_bug_regression_remark = request.form.get('third_bug_regression_remark')
-
-
-
+        regression_times = request.form.get('regression_times')  # 回归次数
+        reopen_times = request.form.get('reopen_times')  # 重开次数
+        submitterindex = request.form.get('submitterindex')  # 提交者索引
         # 账号或密码不能为空
         if bugid is not None:
             if bugid.strip() == '':
@@ -785,9 +789,7 @@ def editBug():
                 editbug_return_json = buglist.edit_bug(bugid, bug_submit_date, project, software, test_version
                                                        , bug_description, severity_level, priority, bug_difficulty, bug_status
                                                        , bug_close_date, close_version, cause_analysis, bug_img, intermediate_situation
-                                                       , developer, remark, first_bug_regression_date, first_bug_regression_status, first_bug_regression_remark
-                                                       , second_bug_regression_date, second_bug_regression_status, second_bug_regression_remark
-                                                       , third_bug_regression_date, third_bug_regression_status, third_bug_regression_remark)
+                                                       , developer, remark, regression_times, reopen_times, submitterindex)
 
                 # 判断执行结果,我只要成功或者失败就可以了
                 # 获取到json需要解析
