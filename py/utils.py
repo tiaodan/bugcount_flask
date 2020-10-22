@@ -565,8 +565,20 @@ def checkexcel_data(filepath, tablehead):
 
     # 7. 检查每个表必填项 长度是否超出范围
     if is_requiredcol_format_right == True:
+        for show_sheetname in show_sheetnames:
+            sheet = book.sheet_by_name(show_sheetname)
+            print('当前sheetname==', show_sheetname)
 
-        is_requiredcol_len_right = True
+            # 检查每一行 索引是否 长度是否超出范围80字符
+            for i in range(1, sheet.nrows):
+                if len(sheet.cell_value(i, 18)) > 80:
+                    error_sheetnames.append(show_sheetname)
+                    msg = "检测到'提交者标识’列长度过长，请检查上传文件。问题表格为" + str(error_sheetnames)
+                    break  # 跳出表内循环
+        if len(error_sheetnames) == 0:
+            is_requiredcol_len_right = True
+            print('---------------必填项是否非空=', is_requiredcol_len_right)
+
     # 8. 检查每个表非必填项 格式是否正确
     # 9. 检查每个表非必填项 长度是否超出范围
     # 10. 检查其他异常错误处理-直接报错

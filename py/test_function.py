@@ -26,8 +26,10 @@ tablehead = ['提交日期', '项目', '软件类', '测试版本', '描述',
      '严重等级', '优先级', '难度', '关闭情况', '关闭日期',
      '关闭版本', '原因分析', '问题图片', '中间情况', '开发者',
      '备注', '回归次数', '重开次数', '提交者索引']
-utils.checkexcel_data('C:\\Users\\root\\Desktop\\工具\\11. Navicat\\fu.xlsx', tablehead)
+# utils.checkexcel_data('C:\\Users\\root\\Desktop\\工具\\11. Navicat\\fu.xlsx', tablehead)
 
+aa = '汉字'
+print(len(aa))
 # print('aaaa\nss\n' + 'sssssss')
 # book = xlrd.open_workbook('../excel_upload/template.xlsx')
 # sheet = book.sheet_by_name('视频问题')
