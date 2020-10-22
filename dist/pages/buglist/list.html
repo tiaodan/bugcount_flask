@@ -39,11 +39,11 @@
             <!--<button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>-->
             <!--<button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>-->
             <!--<button class="layui-btn layui-btn-sm" onclick="WeAdminShow('添加用户','./add.html')"><i class="layui-icon"></i>添加</button> -->
-            <button class="layui-btn layui-btn-sm" onclick="layer.msg('待开发')"><i class="layui-icon"></i>添加</button>
+<!--            <button class="layui-btn layui-btn-sm" onclick="layer.msg('待开发')"><i class="layui-icon"></i>添加</button>-->
             <!--<button class="layui-btn layui-btn-sm  layui-btn-danger" onclick="delAll()">批量删除</button>-->
-            <button class="layui-btn layui-btn-sm  layui-btn-danger" onclick="layer.msg('待开发')">批量删除</button>
+<!--            <button class="layui-btn layui-btn-sm  layui-btn-danger" onclick="layer.msg('待开发')">批量删除</button>-->
 
-            <!-- <button id="no" class="layui-btn layui-btn-sm  layui-btn-danger" >清空数据表</button> -->
+<!--             <button id="no" class="layui-btn layui-btn-sm  layui-btn-danger" >清空数据表</button>-->
                 <span style="float: right">数据库共有数据：<span id="bugTotalNum">88</span> 条</span>
             </div>
         <!-- dody div end-->
@@ -98,10 +98,14 @@
                   <button id="uploadBuglist" class="layui-btn">上传数据</button>
                   <!--<button id="downloadBuglistTemplate" class="layui-btn "><a href="../../excel_upload/template.xlsx"  target="_blank">下载模板</a></button> -->
                   <a href="../../excel_upload/template/template.xlsx" target="_blank"><button id="downloadBuglistTemplate" class="layui-btn ">下载模板</button></a>
-                  <button id="exportAllBug" class="layui-btn" onclick="exportAllBugs()">导出所有</button>
+                  <button  id="exportAllBug" class="layui-btn" style="position: absolute;margin-left: 4px ">导出所有</button>
+                    <!--  表格搜索框 end-->
+<!--                    <span id="showExportBug" hidden style="position: relative; left: 30px; top: 30px" >-->
+                    <span id="showExportBug" hidden style="position: relative; left: 30px; top: 30px" >
+                        <button id="exportAllBugOneSheet" class="layui-btn" onclick="exportAllBugOneSheet()">导出为一个表</button>
+                        <button id="exportAllBugNSheet" class="layui-btn" onclick="exportAllBugNSheet()">按项目导出多个表</button>
+                    </span>
             </div>
-            <!--  表格搜索框 end-->
-
 
           </div>
             <!-- dody demoTable-->
@@ -786,7 +790,8 @@
                                         if(isrepeat == 1){  //有重复项
                                             alert(returnMsg + ":\n" + repeatlist)
                                         }else{
-                                            layer.msg(returnMsg)
+                                            // layer.msg(returnMsg);
+                                            layer.alert(returnMsg)
                                         }
                                         console.log(returnMsg);
 
@@ -850,13 +855,13 @@
                 });
                 //ajax end
 
-            })
+            });
 
             //监听 导出数据
-            $("button[id='exportAllBug']").click(function () {
+            /*$("button[id='exportAllBug']").click(function () {
                      console.log('前台点击了按钮,导出所有数据');
                      $.ajax({
-                            url:"/exportAllBug",
+                            url:"/exportAllBugOneSheet",
                             type:"post",
                             success:function (datas) {
                                 console.log(typeof(datas)); //返回的json是str
@@ -890,6 +895,94 @@
                     //ajax end
 
             });
+*/
+            $("button[id='exportAllBug']").hover(function () {
+                // layer.msg("hah")
+                // 显示导出按钮
+                //     $("#showExportBug").show()
+                    $("#showExportBug").show();
+                }
+            );
+            $("#showExportBug").mouseleave(function () {
+                // layer.msg("移出了");
+                $("#showExportBug").hide();
+            });
+
+            //监听导出方法
+            function exportAllBugOneSheet(){
+                console.log('导出bug到一张表');
+                     $.ajax({
+                            url:"/exportAllBugOneSheet",
+                            type:"post",
+                            success:function (datas) {
+                                console.log(typeof(datas)); //返回的json是str
+                                console.log("导出所有数据 请求成功，返回内容如下：");
+                                //转成json
+                                datasJson = $.parseJSON(datas);
+                                console.log("返回结果" + datas);
+                                console.log(datasJson.code);
+
+                                returnCode = datasJson.code;
+                                returnMsg = datasJson.msg;
+                                console.log("msg--type==" + typeof(returnMsg));
+                                returnCount = datasJson.count;
+                                returnData = datasJson.data;
+                                //判断跳转
+                                if(returnCode == 500 ){ //== 字符串
+                                    console.log("导出bug到一张表 失败");
+                                    layer.msg("导出bug到一张表 失败");
+                                }
+                                if(returnCode == 200){
+                                    console.log("导出成功，存储在项目目录--> excel_upload\\export\\buglist.xlsx");
+                                    layer.msg("导出成功，存储在-->项目目录 excel_upload\\export\\buglist.xlsx",{
+                                        icon:1,
+                                        time:4000  ////默认是3秒
+                                    });
+                                }
+                            },error:function () {
+                                alert("导出所有数据，请求异常")
+                            }
+                        });
+                    //ajax end
+            }
+
+            function exportAllBugNSheet(){
+                console.log('按项目导出多张表');
+                     $.ajax({
+                            url:"/exportAllBugNSheet",
+                            type:"post",
+                            success:function (datas) {
+                                console.log(typeof(datas)); //返回的json是str
+                                console.log("按项目导出多张表 请求成功，返回内容如下：");
+                                //转成json
+                                datasJson = $.parseJSON(datas);
+                                console.log("返回结果" + datas);
+                                console.log(datasJson.code);
+
+                                returnCode = datasJson.code;
+                                returnMsg = datasJson.msg;
+                                console.log("msg--type==" + typeof(returnMsg));
+                                returnCount = datasJson.count;
+                                returnData = datasJson.data;
+                                //判断跳转
+                                if(returnCode == 500 ){ //== 字符串
+                                    console.log("按项目导出多张表 失败");
+                                    layer.msg("按项目导出多张表 失败");
+                                }
+                                if(returnCode == 200){
+                                    console.log("导出成功，存储在项目目录--> excel_upload\\export\\buglist.xlsx");
+                                    layer.msg("导出成功，存储在-->项目目录 excel_upload\\export\\buglist.xlsx",{
+                                        icon:1,
+                                        time:4000  ////默认是3秒
+                                    });
+                                }
+                            },error:function () {
+                                alert("导出所有数据，请求异常")
+                            }
+                        });
+                    //ajax end
+            }
+
 
         </script>
 

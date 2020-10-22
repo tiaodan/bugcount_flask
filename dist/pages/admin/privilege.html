@@ -125,7 +125,7 @@
               currentuser = sessionStorage.getItem("currentuser")
               $.ajax({
                     type: "get", //请求方法
-                    url: "/getPrivilge", //请求地址
+                    url: "/getPrivilgeNomalUser", //请求地址
                     datatype: "json",
                     data:{"currentuser": currentuser},
                     async: false,

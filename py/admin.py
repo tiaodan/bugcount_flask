@@ -172,7 +172,7 @@ def add_user(*args):
 
         # sql = 'selectselect userid,username,password,user_remark,user_email,user_level,create_time,session from bugcount.user limit %s,%s'
         # 默认userid 是null 就按顺序加入mysql
-        sql = 'insert into bugcount.user (userid, username, password, user_remark, user_email, user_level, create_time, session) value (null, %s, %s, %s, %s, %s, %s, %s)'
+        sql = 'insert into bugcount.user (userid, username, password, user_remark, user_email, user_level, create_time, session, roleId) value (null, %s, %s, %s, %s, %s, %s, %s, %s)'
         print(f'sql语句为==', sql)
         print('sql语句参数 *args==== }', args)
         print('sql语句参数 *args type==== }', type(args))
@@ -200,43 +200,43 @@ def add_user(*args):
         print("执行语句返回结果(类型)==", type(sql_return_result_tuple))
         print("sql语句执行成功")
 
-        # 转化下查询结果为{},{},{}这种格式======================
-        print('????????result=', sql_return_result_tuple)
-        print('????????????????????type = ', type(sql_return_result_tuple))
-
-        for r in sql_return_result_tuple:
-            """
-
-            print('=============进入循环')
-            print('=============进入循环r0', r[0])
-            print('=============进入循环r1', r[1])
-            print('=============进入循环r2', r[2])
-            print('=============进入循环r3', r[3])
-            print('=============进入循环r4', r[4])
-            print('=============进入循环r5', r[5])
-            print('=============进入循环r6', r[6])
-            print('=============进入循环r7', r[7])
-            """
-            person = dict()
-            person['userid'] = r[0]
-            person['username'] = r[1]
-            person['password'] = r[2]
-            person['user_remark'] = r[3]
-            person['user_email'] = r[4]
-            person['user_level'] = r[5]
-            person['create_time'] = str(r[6])  # 转成str，否则会报TypeError: Object of type datetime is not JSON serializable
-            print('person(create_time)===', person['create_time'])
-            if person['create_time'] == '':
-                print('person(create_time)===空')
-                person['create_time'] = None
-            person['session'] = r[7]
-            # print('==============循环person==', person)
-
-            users.append(person)
-            print('????dbutil 转换完的【{}】格式数据users==', users)
-
-        # 拼接返回数据,返回列表
-        count = len(sql_return_result_tuple)  # sql语句结果个数
+        # # 转化下查询结果为{},{},{}这种格式======================
+        # print('????????result=', sql_return_result_tuple)
+        # print('????????????????????type = ', type(sql_return_result_tuple))
+        #
+        # for r in sql_return_result_tuple:
+        #     """
+        #
+        #     print('=============进入循环')
+        #     print('=============进入循环r0', r[0])
+        #     print('=============进入循环r1', r[1])
+        #     print('=============进入循环r2', r[2])
+        #     print('=============进入循环r3', r[3])
+        #     print('=============进入循环r4', r[4])
+        #     print('=============进入循环r5', r[5])
+        #     print('=============进入循环r6', r[6])
+        #     print('=============进入循环r7', r[7])
+        #     """
+        #     person = dict()
+        #     person['userid'] = r[0]
+        #     person['username'] = r[1]
+        #     person['password'] = r[2]
+        #     person['user_remark'] = r[3]
+        #     person['user_email'] = r[4]
+        #     person['user_level'] = r[5]
+        #     person['create_time'] = str(r[6])  # 转成str，否则会报TypeError: Object of type datetime is not JSON serializable
+        #     print('person(create_time)===', person['create_time'])
+        #     if person['create_time'] == '':
+        #         print('person(create_time)===空')
+        #         person['create_time'] = None
+        #     person['session'] = r[7]
+        #     # print('==============循环person==', person)
+        #
+        #     users.append(person)
+        #     print('????dbutil 转换完的【{}】格式数据users==', users)
+        #
+        # # 拼接返回数据,返回列表
+        # count = len(sql_return_result_tuple)  # sql语句结果个数
 
         # 判断是否 能登录
         # if count > 0:

@@ -1,10 +1,11 @@
 # str和日期转换
-from datetime import datetime
+# from datetime import datetime
 import xlrd
 import xlwt
 import  pandas
 import xlsxwriter
 from py import utils
+import datetime
 
 # 日期格式
 # datastyle = xlwt.XFStyle()
@@ -26,14 +27,76 @@ tablehead = ['提交日期', '项目', '软件类', '测试版本', '描述',
      '严重等级', '优先级', '难度', '关闭情况', '关闭日期',
      '关闭版本', '原因分析', '问题图片', '中间情况', '开发者',
      '备注', '回归次数', '重开次数', '提交者索引']
-# utils.checkexcel_data('C:\\Users\\root\\Desktop\\工具\\11. Navicat\\fu.xlsx', tablehead)
+# # a = ' 2020/11/22 ss'
+# a = ' 2020/11/31 '
+# a = a.strip()
 
-aa = '汉字'
-print(len(aa))
+"""
+def isVaildDate(date):
+    try:
+        if ":" in date:
+            datetime.strptime(date, "%Y/%m/%d %H:%M:%S")
+        else:
+            datetime.strptime(date, "%Y/%m/%d")
+        return True
+    except:
+        return False
+print(isVaildDate(a))
+"""
+# a = datetime.strptime(a, "%Y/%m/%d")
+# print(type(a))
+# print(isinstance(a, datetime))
+
+
+# """
+starttime = datetime.now()
+utils.checkexcel_data('C:\\Users\\root\\Desktop\\工具\\11. Navicat\\fu.xlsx', tablehead)
+endtime = datetime.now()
+print('方法总耗时', (endtime - starttime).seconds, '秒')
+# """
+
+# aa = '汉字'
+# print(len(aa))
 # print('aaaa\nss\n' + 'sssssss')
 # book = xlrd.open_workbook('../excel_upload/template.xlsx')
+# book = xlrd.open_workbook('C:\\Users\\root\\Desktop\\工具\\11. Navicat\\fu.xlsx')
 # sheet = book.sheet_by_name('视频问题')
-# print(sheet.cell_value(1, 10))
+# print('nei', sheet.cell(9, 0).value)
+# print('类型', sheet.cell(9, 0).ctype)
+
+def is_legal_date(strdate):
+    try:
+        datetime.strptime(strdate, "%Y/%m/%d")
+        return True
+    except:
+        return False
+
+a = "2020/4/2220203/4/22"
+# b = datetime.strptime(a, "%Y/%m/%d")
+# print("b", b)
+print(is_legal_date(a))
+
+"""
+
+sheetnames = book.sheet_names()
+show_sheetnames = list()
+for sheetname in sheetnames:
+    sheet = book.sheet_by_name(sheetname)
+    if sheet.visibility == 0:
+        show_sheetnames.append(sheet.name)
+
+for show_sheetname in show_sheetnames:
+    sheet = book.sheet_by_name(show_sheetname)
+    print('local sheet=', sheet.name)
+    # 需换行
+    for row in range(1, sheet.nrows):
+        if sheet.cell(row, 0).ctype != 3 :
+            print('不是日期的行为:', row)
+        if sheet.cell(row, 0).ctype == 0:  # empty
+            print('单元格为空', row)
+    print('--------------')
+"""
+# ctype :  0 empty,1 string, 2 number, 3 date, 4 boolean, 5 error
 # if sheet.cell_value(1, 10) == '':
 #     print('haaha')
 # print(type(sheet.cell_value(0, 1)))

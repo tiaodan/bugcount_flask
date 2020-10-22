@@ -7,12 +7,16 @@ import os
 import xlsxwriter
 import time
 import sys
+import xlrd
 
 # 初始化变量
-currentpath = os.path.abspath(__file__)
-print('当前路径', currentpath)
-rootdir = os.path.abspath(os.path.dirname(currentpath) + os.path.sep + '..') # 当前路径上一层
-print('根目录==', rootdir)
+# currentpath = os.path.abspath(__file__)
+currentpath = os.path.dirname(__file__)
+print('当前路径-///////开头', currentpath)
+# rootdir = os.path.abspath(os.path.dirname(currentpath) + os.path.sep + '..') # 打包环境使用
+# rootdir = os.path.dirname(os.path.dirname(__file__))  # 开发环境使用
+rootdir = os.path.dirname(os.path.realpath(sys.executable))  # 打包用
+print('根目录-//////开头==', rootdir)
 
 # 获取md5值
 def get_md5(arg):
@@ -113,12 +117,13 @@ def get_dbargs_from_config_byabspath():
     # # config.read('../conf/config.ini', encoding='utf-8')  # 打包的时候需要这样配置，否则读取不到配置文件
     # config.read(config_filepath, encoding='utf-8')
 
-    currentpath = os.path.abspath(__file__)
-    print('当前路径', currentpath)
+    # currentpath = os.path.abspath(__file__)
+    currentpath = os.path.dirname(__file__)
+    # print('当前路径（绝对方法///////////））', currentpath)
     # root_dir = os.path.abspath(os.path.dirname(currentpath) + os.path.sep + "..")
-    root_dir = os.path.abspath(os.path.dirname(currentpath) + os.path.sep + "..")
-    print('根目录 ===', root_dir)
-    config_abspath = os.path.join(root_dir, 'conf\config.ini')
+    # root_dir = os.path.dirname(os.path.dirname(__file__))
+    print('根目录(绝对方法/////////////) ===', rootdir)  # 使用全局变量
+    config_abspath = os.path.join(rootdir, 'conf\config.ini')
     print('配置文件绝对路径=', config_abspath)
     # 读取配置文件
     config.read(config_abspath, encoding='utf-8')
@@ -360,3 +365,373 @@ def is_valid_date(str, dataformat="%Y-%m-%d"):
     return True
   except:
     return False
+
+
+# 功能：检查文件是否存在
+# 返回值：True /False
+def checkfile_exist(filepath):
+    isfile_exists = os.path.exists(filepath)
+    return isfile_exists
+
+
+# 功能：打开一个excel,返回workbook
+# 参数：1.filepath 文件路径
+# 返回值：workbook
+# 注意：使用时，记得关book.close()
+def openexcel_return_workbook(filepath):
+    workbook = xlrd.open_workbook(filepath)
+    return workbook
+
+# 功能：获取显示的表格,（如果有workbook对象，直接用；没有workbook，读取filepath获取workbook）
+# 返回值：list类型的 表格名称str
+def get_excel_show_sheetnames(filepath, *workbook):
+    # 0. 判断是否直接传了workbook对象
+    starttime = datetime.datetime.now()
+    if len(workbook) == 0:  # 没有传workbook对象，读取路径
+        print('没有传workbook对象')
+        book = xlrd.open_workbook(filepath)
+    else:
+        book = workbook
+        print('book==', book)
+        print(book.sheet_names())
+
+
+    show_sheetnames = list()
+    sheetnames = book.sheet_names()  # list
+    for sheetname in sheetnames:
+        sheet = book.sheet_by_name(sheetname)
+        if sheet.visibility == 0:
+            show_sheetnames.append(sheet.name)
+    print('excel显示的sheet有（list）', show_sheetnames)
+    # print(type(show_sheetnames))
+    # book.close()  # xlsxwriter才需要close()方法, xlrd不需要
+
+    endtime = datetime.datetime.now()
+    print('耗时', (endtime - starttime).seconds)
+    return show_sheetnames
+
+
+# 功能：获取隐藏的表格
+def get_excel_hide_sheetnames(filepath):
+    hide_sheetnames = list()
+
+    book = xlrd.open_workbook(filepath)
+    sheetnames = book.sheet_names()
+    for sheetname in sheetnames:
+        sheet = book.sheet_by_name(sheetname)
+        if sheet.visibility == 1:
+            hide_sheetnames.append(sheet.name)
+    print('excel隐藏的sheet有（list）', hide_sheetnames)
+    # book.close()  # xlsxwriter才需要close()方法, xlrd不需要
+    return hide_sheetnames
+
+
+# 功能：检查表头是否合法
+# 参数：1. 文件路径
+#       2.sheetnames（list/tuple） 只要是链表形式的都可以
+#       3.表头字符串（list/tuple）只要是链表形式的都可以
+def check_excel_tablehead(filepath, sheetnames, tablehead):
+    book = xlrd.open_workbook(filepath)
+    # 表头
+    tablehead_list = []
+    for sheetname in sheetnames: # 循环每一个sheet
+        sheet = book.sheet_by_name(sheetname)
+
+        for i in range(0, len(tablehead)-1):  # 循环每一列
+            excel_th_value = sheet.cell(0, i).value
+            print("表头内容=", excel_th_value)
+        print("==========")
+
+
+# 功能：判断一个字符串是否是日期类型
+def is_legal_date(strdate):
+    try:
+        if ":" in strdate:
+            datetime.datetime.strptime(strdate, "%Y/%m/%d %H:%M:%S")
+        else:
+            datetime.datetime.strptime(strdate, "%Y/%m/%d")
+        return True
+    except:
+        return False
+
+
+# 功能：检测excel表格数据是否符合要求
+# 参数：1. 文件路径
+#       2. 模板里的表头数据 （tuple/list）只要是链表格式即可
+
+# 返回结果： json,因为要给用户提示
+#     True:全部符合要求
+#     False:不符合要求
+def checkexcel_data(filepath, tablehead):
+    # 一、 初始化json数据
+    data = {}
+    tips = [] # 提示信息
+    code = 500  # 默认失败
+    msg = '文件不存在'
+    count = 0  # sql语句执行结果个数
+
+    starttime = datetime.datetime.now()
+    # 二、 检测内容
+    is_tablehead_legal = False  # 初始化flag,表头是否合法
+    is_index_none_legal = False  # 初始化flag,索引是否为空
+    is_index_repeat = False  # 索引是否重复
+    is_requiredcol_notnone = False  # 必填项是否非空
+    is_requiredcol_format_right = False  # 必填项格式是否正确
+    is_requiredcol_len_right = False  # 必填项长度是否正确
+    is_not_requiredcol_format_right = False  # 非必填项格式是否正确
+    is_not_requiredcol_len_right = False  # 非必填项长度是否正确
+    is_other_error = False  # 检测其他异常
+    # ctype :  0 empty,1 string, 2 number, 3 date, 4 boolean, 5 error  # 单元格类型
+
+    # 1. 检查文件是否存在
+    isfile_exists = checkfile_exist(filepath)
+
+    # 2. 检查每个表格（显示表格）表头是否合法
+    if isfile_exists == True:
+        # 1)初始化
+        book = xlrd.open_workbook(filepath)  # 获取book
+        sheetnames = book.sheet_names()  # 显示的sheet
+
+        # 2)获取未隐藏sheetnames
+        show_sheetnames = list()
+        for sheetname in sheetnames:
+            sheet = book.sheet_by_name(sheetname)
+            if sheet.visibility == 0:
+                show_sheetnames.append(sheet.name)
+        print('excel显示的sheet有（list）', show_sheetnames)
+
+        # 3)比较每个 显示的sheet 表头
+        # for show_sheetname in show_sheetnames:  # 循环每一个sheet
+        error_sheetnames = list()  # 错误sheet数组
+        error_rows = list()  # 错误行数组
+        error_cols = list()  # 错误列数组
+        for show_sheetname in show_sheetnames:  # 循环每一个sheet
+            sheet = book.sheet_by_name(show_sheetname)
+            # print('当前sheetname==', show_sheetname)
+            # 表头列必须 >= 模板表头
+            # print('--------------------ncols', sheet.ncols)
+            if sheet.ncols < len(tablehead):  # ncols 从0开始
+                error_sheetnames.append(show_sheetname)
+                msg = '检测到上传文件表头“少于”模板表头，请检查上传文件。问题表格是:' + str(error_sheetnames)
+            else:  # 循环每一列,比较与模板表头字符是否一致
+                for i in range(0, len(tablehead)):  # range包左不包右
+                    # print('iiiiiiiiiiiiii=', i)
+                    # print(sheet.cell_value(0, i))
+                    importexcel_th_value = sheet.cell(0, i).value
+                    if importexcel_th_value != tablehead[i]:
+                        error_sheetnames.append(show_sheetname)
+                        msg = "检测到上传文件表头与模板不符，请检查上传文件。问题表格为" + str(error_sheetnames)
+                        print(msg)
+                        # break  # 检测所有的sheet,执行完循环
+        if len(error_sheetnames) == 0:
+            is_tablehead_legal = True  # 更改标志位
+
+    # print('---------------表头是否合法=', is_tablehead_legal)
+    # 3. 检查每个表索引是否有空
+    if is_tablehead_legal == True:
+        for show_sheetname in show_sheetnames:  # 循环每一个sheet
+            sheet = book.sheet_by_name(show_sheetname)
+            # 检查每一行索引是否为空
+            for i in range(1, sheet.nrows):
+                if sheet.cell_value(i, 18) is None or sheet.cell_value(i, 18) == '':
+                    error_sheetnames.append(show_sheetname)
+                    msg = "检测到索引列存在空单元格，请检查上传文件。问题表格为" + str(error_sheetnames)
+                    break  # 跳出表内循环
+        if len(error_sheetnames) == 0:
+            is_index_none_legal = True
+            print('---------------索引是否合法=', is_index_none_legal)
+
+    # 4. 检查每个表索引是否重复
+    if is_index_none_legal == True:
+        for show_sheetname in show_sheetnames:
+            sheet = book.sheet_by_name(show_sheetname)
+            # 检查索引是否有重复
+            indexlist = list()
+            for i in range(1, sheet.nrows):
+                indexlist.append(sheet.cell_value(i, 18))
+
+            indexlistset = set(indexlist)  # 去重列表
+            # print('-------------', str(indexlist))
+            # print('-------------', str(indexlistset))
+            if len(indexlistset) != len(indexlist):
+                error_sheetnames.append(show_sheetname)
+                error_rows.append(i+1)
+                msg = "检测到索引列存在重复项，请检查上传文件。问题表格为" + str(error_sheetnames) + ', 行数为：' + str(error_rows)
+        if len(error_sheetnames) == 0:
+            is_index_repeat = True
+            print('---------------检测索引是否重复结果=', is_index_repeat)
+
+    # 5. 检查每个表必填项是否有空(必填项:原则上标识应是必填项) 提交日期（col:0）-上传可以不带，减轻用户操作excel表 描述(col:4) 提交者索引(col:18)
+    if is_index_repeat == True:
+        for show_sheetname in show_sheetnames:
+            sheet = book.sheet_by_name(show_sheetname)
+            # print('当前sheetname==', show_sheetname)
+
+            # 检查每一行索引是否为空
+            for i in range(1, sheet.nrows):
+                if sheet.cell_value(i, 18) == '':
+                    error_sheetnames.append(show_sheetname)
+                    msg = "检测到‘必填列(提交者索引)’存在空单元格，请检查上传文件。问题表格为" + str(error_sheetnames)
+                    break  # 跳出表内循环
+        if len(error_sheetnames) == 0:
+            is_requiredcol_notnone = True
+            print('---------------必填项是否非空=', is_requiredcol_notnone)
+
+    # 6. 检查每个表必填项 格式是否正确
+    if is_requiredcol_notnone == True:
+        is_requiredcol_format_right = True
+
+    # 7. 检查每个表必填项 长度是否超出范围
+    if is_requiredcol_format_right == True:
+        for show_sheetname in show_sheetnames:
+            sheet = book.sheet_by_name(show_sheetname)
+            # print('当前sheetname==', show_sheetname)
+
+            # 检查每一行 索引是否 长度是否超出范围80字符
+            for i in range(1, sheet.nrows):
+                error_rows_onesheet = list()
+                if len(sheet.cell_value(i, 18)) > 80:
+                    error_sheetnames.append(show_sheetname)
+                    error_rows_onesheet.append(i+1)
+                    error_rows.append(error_rows_onesheet)
+                    msg = "检测到'提交者索引’列长度过长，请检查上传文件。问题表格为" + str(error_sheetnames) + " ，对应行：" + str(error_rows)
+                    break  # 跳出表内循环
+        if len(error_sheetnames) == 0:
+            is_requiredcol_len_right = True
+            print('---------------必填项是否非空=', is_requiredcol_len_right)
+
+    # 8. 检查每个表非必填项 格式是否正确
+    if is_requiredcol_len_right == True:
+        for show_sheetname in show_sheetnames:
+            sheet = book.sheet_by_name(show_sheetname)
+            print('当前sheetname==', show_sheetname)
+            # print("type=", type(show_sheetname))  # str
+
+            # 遍历每一行
+            print('检查每个表非必填项 格式是否正确')
+            for row in range(1, sheet.nrows):
+                error_cols_onesheet = list()
+                # print('======读出的excel日期类型==', sheet.cell_value(row, 17))
+                # print('======读出的excel日期类型==', sheet.cell(row, 17).ctype)
+                # ctype :  0 empty,1 string, 2 number, 3 date, 4 boolean, 5 error
+                if sheet.cell(row, 0).ctype != 0 and sheet.cell(row, 0).ctype != 3:  # 提交日期 空或者日期类型
+                    print('进入日期判断=============')
+                    if sheet.cell(row, 0).ctype == 1:  # string类型 , 去除前后空额，再判断是否是正确日期类型
+                        cellvalue = str(sheet.cell_value(row, 0)).strip()
+                        if is_legal_date(cellvalue) == False:
+                            error_cols_onesheet.append('0-提交日期，行数:' + str(row+1))
+                if sheet.cell(row, 5).ctype != 0 and sheet.cell(row, 5).ctype != 2:  # 严重等级
+                    # error_cols_onesheet.append('第6列(严重等级，应是数值或者空)')
+                    error_cols_onesheet.append('6.严重等级')
+                if sheet.cell(row, 6).ctype != 0 and sheet.cell(row, 6).ctype != 2:  # 优先级
+                    # error_cols_onesheet.append('第7列(优先级，应是数值或者空)')
+                    error_cols_onesheet.append('7-优先级')
+                if sheet.cell(row, 7).ctype != 0 and sheet.cell(row, 7).ctype != 2:  # 难度
+                    # error_cols_onesheet.append('第8列(难度，应是数值或者空)')
+                    error_cols_onesheet.append('8-难度')
+                if sheet.cell(row, 9).ctype != 0 and sheet.cell(row, 9).ctype != 3:  # 关闭日期  2-number
+                    # error_cols_onesheet.append('第10列(关闭日期，应是日期类型xxxx/xx/xx或者空)')
+                    # 是字符串的情况下，去除前后空格，然后判断是否是日期类型
+                    print(f'====9列==第及行{row+1} ', sheet.cell(row, 9).value, '前后可能有空格')
+                    if sheet.cell(row, 9).ctype == 1:  # string类型 , 去除前后空额，再判断是否是正确日期类型
+                        cellvalue = str(sheet.cell_value(row, 9)).strip()
+                        if is_legal_date(cellvalue) == False:
+                            error_cols_onesheet.append('10-关闭日期,行数：' + str(row+1))
+                if sheet.cell(row, 16).ctype != 0 and sheet.cell(row, 16).ctype != 2:  # 回归次数
+                    # error_cols_onesheet.append('第17列(回归次数，应是数值或者空)')
+                    error_cols_onesheet.append('17-回归次数')
+                if sheet.cell(row, 17).ctype != 0 and sheet.cell(row, 17).ctype != 2:  # 重开次数
+                    # error_cols_onesheet.append('第18列(重开次数，应是数值或者空)')
+                    error_cols_onesheet.append('18-重开次数')
+                if len(error_cols_onesheet) > 0:
+                    error_sheetnames.append(show_sheetname)
+                    error_cols.append(error_cols_onesheet)
+                    break  # 跳出行循环
+
+        if len(error_sheetnames) > 0:
+            # msg = "检测到‘部分非必填列(提交日期(日期：xxxx/xx/xx)、严重等级(数字)、优先级(数字)、难度(数字)、关闭日期（日期：xxxx/xx/xx）、回归次数(数字)、重开次数(数字)’格式错误，请检查上传文件。问题表格为" + str(error_sheetnames) + '， 对应列：' + str(error_cols)
+            msg = "检测到格式错误，请检查上传文件。问题表格为" + str(error_sheetnames) + '， 对应列：' + str(error_cols)  + ' \n正确格式：时间(xxxx/xx/xx); 严重等级、优先级、难度、重开次数、回归次数都是数字'
+        if len(error_sheetnames) == 0:
+            is_not_requiredcol_format_right = True
+            print('---------------非必填项格式是否正确=', is_not_requiredcol_format_right)
+
+    # 9. 检查每个表非必填项 长度是否超出范围
+    if is_not_requiredcol_format_right == True:
+        pass
+        for show_sheetname in show_sheetnames:
+            sheet = book.sheet_by_name(show_sheetname)
+            print('当前sheetname==', show_sheetname)
+
+            # 遍历每一行
+            for row in range(1, sheet.nrows):
+                error_cols_onesheet = list()
+                # print('======读出的excel日期类型==', sheet.cell_value(row, 10), row+1)
+                # print('======读出的excel日期类型==', sheet.cell(row, 0).ctype)
+
+                # ？？？为什么封装成str,因为用户不一定传什么数据类型给你
+                if len(str(sheet.cell_value(row, 1))) > 256:  # 项目256 第2列
+                    error_cols_onesheet.append('2.项目，行数:' + str(row))
+                if len(str(sheet.cell_value(row, 2))) > 256:  # 项目256 第3列
+                    error_cols_onesheet.append('3.软件类，行数:' + str(row))
+                if len(str(sheet.cell_value(row, 3))) > 256:  # 项目256 第4列
+                    error_cols_onesheet.append('4.测试版本，行数:' + str(row))
+                if len(str(sheet.cell_value(row, 4))) > 6144:  # 项目256 第5列
+                    error_cols_onesheet.append('5.描述，行数:' + str(row))
+                if len(str(sheet.cell_value(row, 5))) > 11:  # 项目256 第6列
+                    error_cols_onesheet.append('6.严重等级，行数:' + str(row))
+                if len(str(sheet.cell_value(row, 6))) > 11:  # 项目256 第7列
+                    error_cols_onesheet.append('7.优先级，行数:' + str(row))
+                if len(str(sheet.cell_value(row, 7))) > 11:  # 项目256 第8列
+                    error_cols_onesheet.append('8.难度，行数:' + str(row))
+                if len(str(sheet.cell_value(row, 8))) > 11:  # 项目256 第9列
+                    error_cols_onesheet.append('9.关闭情况，行数:' + str(row))
+                if len(str(sheet.cell_value(row, 10))) > 256:  # 项目256 第11列
+                    error_cols_onesheet.append('11.关闭版本，行数:' + str(row))
+                if len(str(sheet.cell_value(row, 11))) > 3072:  # 项目256 第12列
+                    error_cols_onesheet.append('12.原因分析，行数:' + str(row))
+                if len(str(sheet.cell_value(row, 12))) > 1024:  # 项目256 第13列
+                    error_cols_onesheet.append('13.问题图片，行数:' + str(row))
+                if len(str(sheet.cell_value(row, 13))) > 1024:  # 项目256 第14列
+                    error_cols_onesheet.append('14.中间情况，行数:' + str(row))
+                if len(str(sheet.cell_value(row, 14))) > 256:  # 项目256 第15列
+                    error_cols_onesheet.append('15.开发者，行数:' + str(row))
+                if len(str(sheet.cell_value(row, 15))) > 1024:  # 项目256 第16列
+                    error_cols_onesheet.append('16.备注，行数:' + str(row))
+                if len(str(sheet.cell_value(row, 16))) > 11:  # 项目256 第17列
+                    error_cols_onesheet.append('17.回归次数，行数:' + str(row))
+                if len(str(sheet.cell_value(row, 17))) > 11:  # 项目256 第18列
+                    error_cols_onesheet.append('18.重开次数，行数:' + str(row))
+                if len(str(sheet.cell_value(row, 18))) > 80:  # 项目256 第19列
+                    error_cols_onesheet.append('19.提交者索引，行数:' + str(row))
+
+                if len(error_cols_onesheet) > 0:
+                    error_sheetnames.append(show_sheetname)
+                    error_cols.append(error_cols_onesheet)
+                    break  # 跳出行循环
+
+        if len(error_sheetnames) > 0:
+            msg = "检测到单元格长度过长，请检查上传文件。问题表格为" + str(error_sheetnames) + '， 对应列：' + str(error_cols)
+        if len(error_sheetnames) == 0:
+            is_not_requiredcol_len_right = True
+            print('---------------非必填项 长度是否正常=', is_not_requiredcol_len_right)
+    # 10. 检查其他异常错误处理-直接报错(判断日期是否有效)
+
+    endtime = datetime.datetime.now()
+    print('耗时', (endtime - starttime).seconds, '秒')
+
+    if is_not_requiredcol_len_right == True:
+        code = 200
+        msg = '上传文件正常'
+
+    #  N.返回json格式的数据
+    data['code'] = code
+    data['msg'] = msg
+    data['count'] = count
+    data['data'] = tips
+    # 转化下查询结果为{},{},{}这种格式======================
+    json_str = json.dumps(data, ensure_ascii=False)
+    print('dbutil==jsonStr=====', json_str)
+    return json_str
+
+
+

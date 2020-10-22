@@ -564,16 +564,39 @@ def add_bug(*args):  # 建议传的时候就是list
 
     # 2. 判断参数是否合法，主要判断日期格式
     print("==========================传入参数args", args)  # tuple
-    if utils.is_valid_date(args[0]) is False or utils.is_valid_date(args[9]) is False:  # 判断日期格式
-        msg = '日期格式错误，请检查"提交日期"和"关闭日期"列'
+    if utils.is_valid_date(args[0]) is False:  # 判断日期格式
+        msg = '日期格式错误，请检查"提交日期"列'
         is_args_legal = False
+    print('============关闭日期==',  args[9])
+    print(type(args[9]))
+    print(args[9] == '')
+    if args[9] != '':
+        if utils.is_valid_date(args[9]) is False:
+            msg = '日期格式错误，请检查"关闭日期"列'
+            is_args_legal = False
+
     if args[4] == 'NaN' or args[4] == '' or args[4] == None:  # 判断描述是否为空
         msg = '描述不能为空，请检查'
         is_args_legal = False
-    print("sssss????????????????????????????",args[18])
+    print("sssss????????????????????????????", args[18])
     if args[18] == 'NaN' or args[18] == '' or args[18] == None:  # 判断submitterindex是否为空
         msg = '提交者索引不能为空，请检查'
         is_args_legal = False
+
+    #     转换关闭情况
+    if args[8] == '处理':
+        args[8] = 1
+    elif args[8] == '关闭':
+        args[8] = 2
+    elif args[8] == '回归':
+        args[8] = 3
+    elif args[8] == '延迟':
+        args[8] = 4
+    elif args[8] == '重开':
+        args[8] = 5
+    else:
+        args[8] = 0
+    print('args===========', args)
 
     if is_args_legal is True:
         # 3.打开数据库连接
@@ -605,12 +628,12 @@ def add_bug(*args):  # 建议传的时候就是list
             args_list = list(args)  # tuple --> list
             if args[1] == '' or args[0] == 'None':  # 开始时间
                 print('将time赋值None')
-                args_list[1] = '0000-00-00'  # 转成None
+                args_list[1] = '1900-01-01'  # 转成None
                 print('args_list[1] = ', args_list[1])
             if args[10] == '' or args[9] == 'None':  # 关闭时间
                 print('将time赋值None')
                 # args_list[10] = None  # 转成None
-                args_list[10] = '0000-00-00'  # 转成None
+                args_list[10] = '1900-01-01'  # 转成None
                 print('args_list[1] = ', args_list[10])
 
             print('sql语句参数 转换后  *args==== }', args)

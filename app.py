@@ -305,7 +305,7 @@ def getUserList():
 @app.route('/userTotalNum', methods=["GET"])
 def getusertotalnum():
     print('获取用户总数')
-    json_str=''
+    json_str = ''
 
     if request.method == "GET":
         sql = 'select userid,username,password,user_remark,user_email,user_level,create_time,session,roleId from bugcount.user'
@@ -354,11 +354,11 @@ def addUser():
         print('???????????????user level===============================', user_level)
         create_time = request.form.get('create_time')
         session = request.form.get('session')
+        roleId = request.form.get('roleId')
 
         # 密码需要md5加密
         # 1. 加密passwd
         md5_passwd = utils.get_md5(password)
-
 
         print('获取到的参数 ==', username, password)
 
@@ -368,7 +368,8 @@ def addUser():
                 msg = '用户名或密码为空'
             else:
                 # 执行sql
-                adduser_return_json = admin.add_user(username, md5_passwd, user_remark, user_email, user_level, create_time, session)
+                print('???????????????user level===============================', user_level)
+                adduser_return_json = admin.add_user(username, md5_passwd, user_remark, user_email, user_level, create_time, session, roleId)
                 # 判断执行结果,我只要成功或者失败就可以了
                 # 获取到json需要解析
                 adduser_return_json_loads = json.loads(adduser_return_json)
@@ -1238,10 +1239,33 @@ def getprivilge():
     if request.method == "GET":
         print('get请求 获取用户权限')
         sql = "SELECT COUNT(privilegeId=38 OR NULL) FROM bugcount.role_privilege WHERE roleId = (SELECT roleId FROM USER WHERE username = %s)"
+        # sql = "SELECT COUNT(privilegeId=38 OR NULL) FROM bugcount.role_privilege WHERE roleId = 2"
+        # jsonstr = dbutils.execute_onesql_returnjson_privilege(sql, currentuser)
         jsonstr = dbutils.execute_onesql_returnjson_privilege(sql, currentuser)
         print('《app.py》get请求 获取用户权限, 返回jsonStr=====', jsonstr)
 
     return jsonstr
+
+
+# 获取普通用户权限 g
+@app.route('/getPrivilgeNomalUser', methods=['GET'])
+def getprivilge_nomal_user():
+    print('获取用户权限，进入app.py 方法')
+    print(request.values)
+    privilgeint = 0  # 没有权限
+    currentuser = request.values.get("currentuser")
+    print('获取用户权限currentuser= ', currentuser)
+
+    # 默认使用 get 请求
+    if request.method == "GET":
+        print('get请求 获取用户权限')
+        sql = "SELECT COUNT(privilegeId=38 OR NULL) FROM bugcount.role_privilege WHERE roleId = 2"
+        # jsonstr = dbutils.execute_onesql_returnjson_privilege(sql, currentuser)
+        jsonstr = dbutils.execute_onesql_returnjson_privilege(sql)
+        print('《app.py》get请求 获取用户权限, 返回jsonStr=====', jsonstr)
+
+    return jsonstr
+
 
 
 # 修改普通用户权限 getPrivilge getPermission

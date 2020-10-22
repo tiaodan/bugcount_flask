@@ -1,6 +1,0 @@
-﻿userid,用户名,密码,用户备注,邮箱,用户等级,创建时间,用户缓存
-"71","admin1","95fb21b186bfac539062f55d1bc5945e","11","34234@123.com","2","None",""
-"72","admin2","885ee4b6ee92fc9aba945f2641fa3eca","admin23666","admin2@sunksisen.com","2","2020-01-02","nosession"
-"73","admin3","32cacb2f994f6b42183a1300d9a3e8d6","admin3","admin3@123.com","2","2020-01-03","no"
-"74","admin4","fc1ebc848e31e0a68e868432225e3c82","admin4","admin4@123.com","2","None",""
-"75","admin5","26a91342190d515231d7238b0c5438e1","admin5","admin5@123.com","2","2020-01-05",""

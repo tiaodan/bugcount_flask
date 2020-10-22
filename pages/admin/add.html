@@ -153,6 +153,7 @@
                 user_remark = jsonData.remark;
                 user_email = jsonData.email;
                 user_level = parseInt(jsonData.level);  // 转成int
+                console.log('用户等级====' + user_level);
                 create_time = jsonData.createTime;
                 /*前端 判断没用
                 if(create_time == ""){
@@ -177,7 +178,7 @@
                     type: "post", //请求方法
                     url: "/addUser", //请求地址
                     //data: {"username":username, "password":password, "user_remark":user_remark, "user_email":user_email, "user_level":user_level, "create_time":create_time, "session":session},
-                    data: {"username":username, "password":password, "user_remark":user_remark, "user_email":user_email, "user_level":user_level, "create_time":create_time, "session":session},
+                    data: {"username":username, "password":password, "user_remark":user_remark, "user_email":user_email, "user_level":user_level, "create_time":create_time, "session":session, "roleId":user_level},
                     datatype: "json",
                     success:function(datas){
 

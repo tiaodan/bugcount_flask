@@ -39,11 +39,11 @@
             <!--<button class="layui-btn layui-btn-sm" lay-event="getCheckLength">获取选中数目</button>-->
             <!--<button class="layui-btn layui-btn-sm" lay-event="isAll">验证是否全选</button>-->
             <!--<button class="layui-btn layui-btn-sm" onclick="WeAdminShow('添加用户','./add.html')"><i class="layui-icon"></i>添加</button> -->
-            <button class="layui-btn layui-btn-sm" onclick="layer.msg('待开发')"><i class="layui-icon"></i>添加</button>
+<!--            <button class="layui-btn layui-btn-sm" onclick="layer.msg('待开发')"><i class="layui-icon"></i>添加</button>-->
             <!--<button class="layui-btn layui-btn-sm  layui-btn-danger" onclick="delAll()">批量删除</button>-->
-            <button class="layui-btn layui-btn-sm  layui-btn-danger" onclick="layer.msg('待开发')">批量删除</button>
+<!--            <button class="layui-btn layui-btn-sm  layui-btn-danger" onclick="layer.msg('待开发')">批量删除</button>-->
 
-            <!-- <button id="no" class="layui-btn layui-btn-sm  layui-btn-danger" >清空数据表</button> -->
+<!--             <button id="no" class="layui-btn layui-btn-sm  layui-btn-danger" >清空数据表</button>-->
                 <span style="float: right">数据库共有数据：<span id="bugTotalNum">88</span> 条</span>
             </div>
         <!-- dody div end-->
@@ -790,7 +790,8 @@
                                         if(isrepeat == 1){  //有重复项
                                             alert(returnMsg + ":\n" + repeatlist)
                                         }else{
-                                            layer.msg(returnMsg)
+                                            // layer.msg(returnMsg);
+                                            layer.alert(returnMsg)
                                         }
                                         console.log(returnMsg);
 
